@@ -1,36 +1,44 @@
-import React, { useState } from "react";
-import ForceGraph2D from "react-force-graph-2d";
+import { useContext } from "react";
+import { MyBookshelfContext } from "../context/MyBookshelfContext";
 
 const GraphView = () => {
-    const [graphData, setGraphData] = useState({
-        nodes: [
-        { id: "1", name: "スタート" }
-        ],
-        links: []
-    });
+    const { myBookshelf = [] } = useContext(MyBookshelfContext);
+    const count = myBookshelf.length;
 
-    const addNode = () => {
-        const newId = (graphData.nodes.length + 1).toString();
-        const newNode = { id: newId, name: `Book ${newId}` };
-
-        setGraphData({
-        nodes: [...graphData.nodes, newNode],
-        links: [
-            ...graphData.links,
-            { source: "1", target: newId } // 最初は仮で全部 root につなぐ
-        ]
-        });
-    };
+    const maxPerRow = count <= 5 ? count : 5;
+    const rows = count <= 5 ? 1 : 2;
 
     return (
-        <div>
-        <button onClick={addNode}>ノード追加</button>
-        <ForceGraph2D
-            graphData={graphData}
-            nodeLabel="name"
-            width={800}
-            height={600}
-        />
+        <div
+            style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                marginTop: "24px",
+            }}
+        >
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${maxPerRow}, 90px)`,
+                    gridTemplateRows: `repeat(${rows}, 130px)`,
+                    gap: "16px",
+                }}
+            >
+                {myBookshelf.map((b) => (
+                    <img
+                        key={b.book_id}
+                        src={b.cover}
+                        alt={b.title}
+                        style={{
+                            width: "90px",
+                            height: "130px",
+                            objectFit: "cover",
+                            borderRadius: "6px",
+                        }}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

@@ -1,17 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import { MyHandProvider } from "./context/MyHandContext";
+import { MyBookshelfProvider } from "./context/MyBookshelfContext";
+
 import Home from "./pages/Home";
 import Search from "./pages/Search";
+import Navbar from "./components/Navbar";
 
 function App() {
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Search" element={<Search />} />
-      </Routes>
-    </Router>
+    <MyHandProvider>
+      <MyBookshelfProvider>
+        <Router>
+          <Navbar/>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/Search" element={<Search />} />
+          </Routes>
+        </Router>
+      </MyBookshelfProvider>
+    </MyHandProvider>
   );
 }
 

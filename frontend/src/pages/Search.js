@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import Layout from "../components/Layout";
 import axios from "axios";
+import { MyHandContext } from "../context/MyHandContext";
 
 function Search() {
     const [query, setQuery] = useState("");
     const [books, setBooks] = useState([]);
-    // const [myHand, setMyHand] = useState([]);
+    const { myHand, setMyHand } = useContext(MyHandContext);
     const [loading, setLoading] = useState(false);
     
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const perPage = 20;
 
+    // 📚 検索する
     const searchBooks = async (p) => {
         if (!query.trim()) return;
         setLoading(true);
@@ -26,6 +28,36 @@ function Search() {
             console.error("検索エラー：", error);
         }
         setLoading(false);
+    };
+    
+    // 📚 手元に追加する処理
+    const addToHand = async (book) => {
+        try {
+            const res = await axios.post("http://localhost:8000/books/add_to_hand", {
+                book_id: book.id,
+                title: book.title,
+                author: book.author,
+                cover: book.cover,
+            });
+            
+            if (res.data.message === "already exists") {
+                alert("既に追加されています。");
+                return;
+            }
+
+            setMyHand([...myHand, { 
+                book_id: book.id,
+                title: book.title,
+                author: book.author,
+                cover: book.cover,
+            }]);
+            
+            alert(`📚『${book.title}』を手元に追加しました！`);
+
+        } catch (error) {
+            console.error("追加エラー：", error);
+            alert("追加に失敗しました");
+        }
     };
 
     const viewDetails = (book) => {
@@ -127,6 +159,20 @@ function Search() {
                                                 }}
                                             >
                                                 詳細
+                                            </button>
+
+                                            {/* ⭐ 追加ボタン */}
+                                            <button
+                                                style={{
+                                                    marginLeft: "5px",
+                                                    padding: "5px 10px",
+                                                    borderRadius: "5px",
+                                                    backgroundColor: "#ddf",
+                                                    border: "1px solid #99c",
+                                                }}
+                                                onClick={() => addToHand(book)}
+                                            >
+                                                📚 追加
                                             </button>
                                         </div>
                                     </div>

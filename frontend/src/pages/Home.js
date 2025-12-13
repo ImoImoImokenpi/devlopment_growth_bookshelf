@@ -1,26 +1,15 @@
-import { useState, useEffect } from "react";
-import Layout from "../components/Layout"; 
-import axios from "axios";
+import { useContext } from "react";
+import Layout from "../components/Layout";
 import GraphView from "../components/Graph";
+import { MyHandContext } from "../context/MyHandContext";
 
 function Home() {
-    const [graph, setGraph] = useState({ nodes: [], links: [] });
-    
-    const loadGraph = async () => {
-        const res = await axios.get("http://localhost:8000/get_graph");
-        setGraph(res.data);
-    };
-
-    useEffect(() => {
-        loadGraph();
-    }, []);
-
     return (
         <Layout>
-        <div>
-            <h1>本棚空間</h1>
-            <GraphView graphData={graph} />
-        </div>
+            <div>
+                <h1>本棚空間</h1>
+                <GraphView />
+            </div>
         </Layout>
     );
 }

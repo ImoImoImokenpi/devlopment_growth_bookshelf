@@ -1,13 +1,16 @@
-from fastapi import FastAPI, Query, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, Query, HTTPException, Depends, Body
 from fastapi.middleware.cors import CORSMiddleware
-import requests
-import networkx as nx
+import requests  # ← 必須！
+
+from database import Base, engine, get_db
+import routers.myhand as myhand_router
+
+# DB初期化
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-G = nx.Graph()
-
+# CORS設定
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"], 
@@ -18,11 +21,12 @@ app.add_middleware(
 
 GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes"
 
-@app.get("/get_graph")
-def get_graph():
-    nodes = [{"id": n, "type": d["type"]} for n, d in G.nodes(data=True)]
-    links = [{"source": u, "target": v} for u, v in G.edges()]
-    return {"nodes": nodes, "links": links}
+# ルータ
+app.include_router(myhand_router.router)
+
+@app.get("/")
+def root():
+    return {"message": "backend running!"}
 
 @app.get("/search")
 def search_books(q: str = Query(...), page: int = 1, per_page: int = 20):
@@ -36,6 +40,7 @@ def search_books(q: str = Query(...), page: int = 1, per_page: int = 20):
         res = requests.get(GOOGLE_BOOKS_API, params=params, timeout=5)
         res.raise_for_status()
         data = res.json()
+
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -54,7 +59,6 @@ def search_books(q: str = Query(...), page: int = 1, per_page: int = 20):
             "isbn_10": next((i["identifier"] for i in info.get("industryIdentifiers", []) if i["type"]=="ISBN_10"), None),
         })
 
-    # Google Books APIには全件数が明示されないことが多いため仮で1000冊までとする
     total_items = data.get("totalItems", 0)
     total_pages = max(1, (total_items + per_page - 1) // per_page)
 

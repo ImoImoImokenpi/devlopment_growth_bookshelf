@@ -3,19 +3,27 @@ import axios from "axios";
 
 export const MyBookshelfContext = createContext();
 
-export const MyBookshelfProvider = ({ children }) => {
-    const [myBookshelf, setMyBookshelf] = useState([]);
+export function MyBookshelfProvider({ children }) {
+  const [myBookshelf, setMyBookshelf] = useState([]);
 
-    // 初回だけDBから取得
-    useEffect(() => {
-        axios.get("http://localhost:8000/books/mybookshelf")
-        .then(res => setMyBookshelf(res.data))
-        .catch(err => console.error(err));
-    }, []);
+  const fetchBookshelf = async () => {
+    try {
+      const res = await axios.get("http://localhost:8000/mybookshelf");
+      setMyBookshelf(res.data);
+    } catch (error) {
+      console.error("本棚取得エラー:", error);
+    }
+  };
 
-    return (
-        <MyBookshelfContext.Provider value={{ myBookshelf, setMyBookshelf }}>
-        {children}
-        </MyBookshelfContext.Provider>
-    );
-};
+  useEffect(() => {
+    fetchBookshelf();
+  }, []);
+
+  return (
+    <MyBookshelfContext.Provider
+      value={{ myBookshelf, setMyBookshelf, fetchBookshelf }}
+    >
+      {children}
+    </MyBookshelfContext.Provider>
+  );
+}

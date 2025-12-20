@@ -7,6 +7,7 @@ import { MyBookshelfProvider } from "./context/MyBookshelfContext";
 
 import Home from "./pages/Home";
 import Search from "./pages/Search";
+import KnowledgeGraph from "./pages/KnowledgeGraph";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/Search" element={<Search />} />
+            <Route path="/KnowledgeGraph" element={<KnowledgeGraph />} />
           </Routes>
         </Router>
       </MyBookshelfProvider>

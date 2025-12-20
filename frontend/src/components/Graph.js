@@ -1,46 +1,63 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { MyBookshelfContext } from "../context/MyBookshelfContext";
 
-const GraphView = () => {
-    const { myBookshelf = [] } = useContext(MyBookshelfContext);
-    const count = myBookshelf.length;
+function GraphView() {
+  const { myBookshelf } = useContext(MyBookshelfContext);
 
-    const maxPerRow = count <= 5 ? count : 5;
-    const rows = count <= 5 ? 1 : 2;
+  if (myBookshelf.length === 0) {
+    return <p>本棚に本がありません。</p>;
+  }
 
-    return (
+  // 1️⃣ 行列サイズを自動計算
+  const rows = Math.max(...myBookshelf.map((b) => b.row)) + 1;
+  const cols = Math.max(...myBookshelf.map((b) => b.col)) + 1;
+
+  // 2️⃣ 空マトリクス作成
+  const matrix = Array.from({ length: rows }, () => Array(cols).fill(null));
+  myBookshelf.forEach((b) => {
+    if (b.row !== null && b.col !== null) {
+      matrix[b.row][b.col] = b;
+    }
+  });
+
+  return (
+    <div style={{ display: "inline-block", padding: "20px" }}>
+      {matrix.map((row, rIdx) => (
         <div
-            style={{
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "24px",
-            }}
+          key={rIdx}
+          style={{ display: "flex", gap: "10px", marginBottom: "10px" }}
         >
+          {row.map((book, cIdx) => (
             <div
-                style={{
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${maxPerRow}, 90px)`,
-                    gridTemplateRows: `repeat(${rows}, 130px)`,
-                    gap: "16px",
-                }}
+              key={cIdx}
+              style={{
+                width: "80px",
+                height: "120px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+                background: "#f9f9f9",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+              }}
             >
-                {myBookshelf.map((b) => (
-                    <img
-                        key={b.book_id}
-                        src={b.cover}
-                        alt={b.title}
-                        style={{
-                            width: "90px",
-                            height: "130px",
-                            objectFit: "cover",
-                            borderRadius: "6px",
-                        }}
-                    />
-                ))}
+              {book ? (
+                <img
+                  src={book.cover}
+                  alt={book.title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  onError={(e) => (e.target.style.display = "none")}
+                />
+              ) : (
+                <span style={{ fontSize: "10px", color: "#999" }}>空</span>
+              )}
             </div>
+          ))}
         </div>
-    );
-};
+      ))}
+    </div>
+  );
+}
 
 export default GraphView;

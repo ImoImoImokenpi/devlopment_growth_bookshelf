@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, Float
 from database import Base
 
 class MyHand(Base):
@@ -18,3 +18,6 @@ class MyBookshelf(Base):
     title = Column(String)
     author = Column(String)
     cover = Column(String)
+    # 📍 知識グラフに基づく配置座標
+    row = Column(Integer, nullable=True)
+    col = Column(Integer, nullable=True)

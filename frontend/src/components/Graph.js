@@ -3,21 +3,17 @@ import { MyBookshelfContext } from "../context/MyBookshelfContext";
 
 function GraphView() {
   const { myBookshelf } = useContext(MyBookshelfContext);
+  const { rows, cols, cells } = myBookshelf;
 
-  if (myBookshelf.length === 0) {
+  if (!cells || cells.length === 0) {
     return <p>本棚に本がありません。</p>;
   }
 
-  // 1️⃣ 行列サイズを自動計算
-  const rows = Math.max(...myBookshelf.map((b) => b.row)) + 1;
-  const cols = Math.max(...myBookshelf.map((b) => b.col)) + 1;
-
   // 2️⃣ 空マトリクス作成
   const matrix = Array.from({ length: rows }, () => Array(cols).fill(null));
-  myBookshelf.forEach((b) => {
-    if (b.row !== null && b.col !== null) {
-      matrix[b.row][b.col] = b;
-    }
+
+  cells.forEach((cell) => {
+    matrix[cell.row][cell.col] = cell.book;
   });
 
   return (

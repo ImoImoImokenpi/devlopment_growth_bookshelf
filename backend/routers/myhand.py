@@ -2,10 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.orm import Session
 from database import get_db
 from models import MyHand, MyBookshelf
-import requests
-import math
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from routers.knowledge_graph import rebuild_knowledge_graph
 
 router = APIRouter(prefix="/books")
 
@@ -18,7 +15,7 @@ def get_myhand(db: Session = Depends(get_db)):
     results = []
     for item in items:
         results.append({
-            "id": item.book_id,
+            "book_id": item.book_id,
             "title": item.title,
             "author": item.author,
             "cover": item.cover,
@@ -85,77 +82,7 @@ def add_from_hand(data: dict = Body(...), db: Session = Depends(get_db)):
         db.delete(h)
 
     db.commit()
-
-    books = db.query(MyBookshelf).all()
-    N = len(books)
-    if N < 1:
-        raise HTTPException(status_code=400, detail="No books to arrange")
-
-    # ---- 本のテキスト情報作成 ----
-    texts = []
-    for b in books:
-        desc = ""
-        try:
-            r = requests.get(f"{GOOGLE_BOOKS_API}/{b.book_id}", timeout=5)
-            if r.status_code == 200:
-                desc = r.json().get("volumeInfo", {}).get("description", "")
-        except:
-            pass
-        texts.append(f"{b.title} {b.author or ''} {desc}")
-
-    # ---- 類似度マトリックス ----
-    vec = TfidfVectorizer(max_features=5000)
-    X = vec.fit_transform(texts)
-    sim = cosine_similarity(X)
-    dist = 1 - sim
-
-    # ---- 棚マトリックス準備 ----
-    cols = math.ceil(math.sqrt(N))
-    rows = math.ceil(N / cols)
-    shelf = [[None for _ in range(cols)] for _ in range(rows)]
-    placed = {}
-
-    # ---- 中央に最初の本 ----
-    center = (rows // 2, cols // 2)
-    shelf[center[0]][center[1]] = 0
-    placed[0] = center
-
-    # ---- Greedy 配置 ----
-    for i in range(1, N):
-        best_pos = None
-        best_score = float("inf")
-        for r in range(rows):
-            for c in range(cols):
-                if shelf[r][c] is not None:
-                    continue
-                score = sum(dist[i][j] * (abs(r-pr)+abs(c-pc)+1) for j, (pr, pc) in placed.items())
-                if score < best_score:
-                    best_score = score
-                    best_pos = (r, c)
-        shelf[best_pos[0]][best_pos[1]] = i
-        placed[i] = best_pos
-
-    # ---- DB 更新 & レスポンス ----
-    nodes = []
-    for i, b in enumerate(books):
-        r, c = placed[i]
-        b.row = r
-        b.col = c
-        nodes.append({
-            "id": b.book_id,
-            "title": b.title,
-            "author": b.author,
-            "cover": b.cover,
-            "row": r,
-            "col": c,
-        })
-
+    rebuild_knowledge_graph(db)
     db.commit()
-    
-    return {
-        "message": "added_to_shelf_and_arranged",
-        "count": len(hand_books),
-        "rows": rows,
-        "cols": cols,
-        "nodes": nodes
-    }
+
+    return {"message": "added", "count": len(hand_books)}

@@ -19,5 +19,5 @@ class MyBookshelf(Base):
     author = Column(String)
     cover = Column(String)
     # 📍 知識グラフに基づく配置座標
-    row = Column(Integer, nullable=True)
-    col = Column(Integer, nullable=True)
+    x = Column(Float, nullable=True)
+    y = Column(Float, nullable=True)

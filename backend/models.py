@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, JSON
 from database import Base
 
 class MyHand(Base):
@@ -21,3 +21,4 @@ class MyBookshelf(Base):
     # 📍 知識グラフに基づく配置座標
     x = Column(Float, nullable=True)
     y = Column(Float, nullable=True)
+    concepts = Column(JSON, default=list)

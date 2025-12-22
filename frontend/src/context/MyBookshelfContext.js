@@ -12,7 +12,7 @@ export function MyBookshelfProvider({ children }) {
 
   const fetchBookshelf = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/bookshelf");
+      const res = await axios.get("http://localhost:8000/bookshelf/");
       setMyBookshelf(res.data);
     } catch (error) {
       console.error("本棚取得エラー:", error);

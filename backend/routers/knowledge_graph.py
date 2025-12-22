@@ -13,34 +13,39 @@ import requests
 router = APIRouter(prefix="/knowledge-graph")
 
 GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes"
-DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql"
+# DBPEDIA_ENDPOINT = "https://dbpedia.org/sparql"
 
-def fetch_dbpedia_subjects(label: str, limit=5):
-    query = f"""
-    SELECT DISTINCT ?subjectLabel WHERE {{
-        ?s rdfs:label "{label}"@ja .
-        ?s dct:subject ?subject .
-        ?subject rdfs:label ?subjectLabel .
-        FILTER(lang(?subjectLabel)="ja")
-    }} LIMIT {limit}
-    """
+# def fetch_dbpedia_subjects(label: str, limit=5):
+#     clean_label = label.split('（')[0].split('(')[0].strip()
 
-    try:
-        r = requests.get(
-            DBPEDIA_ENDPOINT,
-            params={"query": query, "format": "json"},
-            timeout=5
-        )
-        if r.status_code != 200:
-            return []
+#     query = f"""
+#     SELECT DISTINCT ?subjectLabel WHERE {{
+#         ?s rdfs:label ?label .
+#         FILTER (contains(?label, "{clean_label}")) 
+#         FILTER (lang(?label)="ja")
+        
+#         ?s dct:subject ?subject .
+#         ?subject rdfs:label ?subjectLabel .
+#         FILTER(lang(?subjectLabel)="ja")
+#     }} LIMIT {limit}
+#     """
 
-        data = r.json()
-        return [
-            b["subjectLabel"]["value"]
-            for b in data["results"]["bindings"]
-        ]
-    except Exception:
-        return []
+#     try:
+#         r = requests.get(
+#             DBPEDIA_ENDPOINT,
+#             params={"query": query, "format": "json"},
+#             timeout=5
+#         )
+#         if r.status_code != 200:
+#             return []
+
+#         data = r.json()
+#         return [
+#             b["subjectLabel"]["value"]
+#             for b in data["results"]["bindings"]
+#         ]
+#     except Exception:
+#         return []
 
 def rebuild_knowledge_graph(db: Session):
     books = db.query(MyBookshelf).all()
@@ -54,20 +59,30 @@ def rebuild_knowledge_graph(db: Session):
         return
 
     # =========================
-    # 1. テキスト構築
+    # 1. テキスト構築 & ジャンル取得
     # =========================
     texts = []
     for b in books:
         desc = ""
+        categories = [] # カテゴリ用
         try:
             r = requests.get(f"{GOOGLE_BOOKS_API}/{b.book_id}", timeout=5)
             if r.status_code == 200:
-                desc = r.json().get("volumeInfo", {}).get("description", "") or ""
+                volume_info = r.json().get("volumeInfo", {})
+                desc = volume_info.get("description", "") or ""
+                # Google Books からカテゴリ（ジャンル）を取得
+                categories = volume_info.get("categories", [])
         except Exception:
             pass
 
         texts.append(f"{b.title or ''} {b.author or ''} {desc}")
 
+        # DBpediaがダメでも、Googleのカテゴリがあればそれを使う
+        if categories:
+            b.concepts = categories
+        else:
+            if b.concepts is None:
+                b.concepts = []
     # =========================
     # 2. TF-IDF → 距離行列
     # =========================
@@ -87,7 +102,7 @@ def rebuild_knowledge_graph(db: Session):
     # =========================
     mds = MDS(
         n_components=2,
-        dissimilarity="precomputed",
+        metric=True,
         random_state=42,
         n_init=4,
         max_iter=300
@@ -104,7 +119,6 @@ def rebuild_knowledge_graph(db: Session):
 
     db.commit()
 
-
 @router.get("/")
 def knowledge_graph(db: Session = Depends(get_db)):
     books = db.query(MyBookshelf).all()
@@ -120,6 +134,7 @@ def knowledge_graph(db: Session = Depends(get_db)):
             "cover": b.cover,
             "x": b.x,
             "y": b.y,
+            "concepts": b.concepts or []
         })
 
     # --- 距離計算 ---
@@ -164,5 +179,25 @@ def knowledge_graph(db: Session = Depends(get_db)):
                     "type": "knn",
                 })
                 added.add(key)
+        
+        concept_map = {}
+        for b in books:
+            if not b.concepts:
+                continue
+            for c in b.concepts:
+                concept_map.setdefault(c, []).append(b)
+
+        for concept, bs in concept_map.items():
+            if len(bs) < 2:
+                continue
+            for i in range(len(bs)):
+                for j in range(i + 1, len(bs)):
+                    edges.append({
+                        "source": bs[i].book_id,
+                        "target": bs[j].book_id,
+                        "type": "same_concept",
+                        "label": concept,
+                        "weight": 0.5
+                    })
 
     return {"nodes": nodes, "edges": edges}

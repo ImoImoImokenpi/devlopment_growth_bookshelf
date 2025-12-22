@@ -50,9 +50,15 @@ def search_books(q: str = Query(...), page: int = 1, per_page: int = 20):
     books = []
     for item in data.get("items", []):
         info = item.get("volumeInfo", {})
+        
+        categories = info.get("categories", [])
+        if not categories or len(categories) == 0:
+            continue
+
         book_id = item.get("id")
         if not book_id:
             continue
+
         books.append({
             "id": book_id,
             "title": info.get("title", "不明"),
@@ -60,6 +66,7 @@ def search_books(q: str = Query(...), page: int = 1, per_page: int = 20):
             "cover": info.get("imageLinks", {}).get("thumbnail"),
             "isbn_13": next((i["identifier"] for i in info.get("industryIdentifiers", []) if i["type"]=="ISBN_13"), None),
             "isbn_10": next((i["identifier"] for i in info.get("industryIdentifiers", []) if i["type"]=="ISBN_10"), None),
+            "concepts": categories
         })
 
     total_items = data.get("totalItems", 0)

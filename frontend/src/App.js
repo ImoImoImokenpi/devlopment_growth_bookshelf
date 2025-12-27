@@ -1,3 +1,14 @@
+// import ShelfView from "./pages/ShelfView";
+
+// export default function App() {
+//   return (
+//     <div style={{ padding: 20 }}>
+//       <h1>Growing Bookshelf</h1>
+//       <ShelfView />
+//     </div>
+//   );
+// }
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -15,7 +26,7 @@ function App() {
     <MyHandProvider>
       <MyBookshelfProvider>
         <Router>
-          <Navbar/>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/Search" element={<Search />} />

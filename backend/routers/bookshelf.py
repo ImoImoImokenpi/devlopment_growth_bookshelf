@@ -75,27 +75,43 @@ SHELF_MARGIN_Y = 30
 SHELF_HEIGHT = 150
 SHELF_GAP = 30
 
-def calc_shelf_position(index: int):
-    """
-    index: 本棚に追加された順番（0,1,2,...）
-    戻り値: (row, col)
-    """
-    row = index // BOOKS_PER_SHELF
-    col = index % BOOKS_PER_SHELF
-    return row, col
+def calc_shelf_position(groups, books_per_shelf):
+    positioned_books = []
+    seen_ids = set()
+    current_row = 0
+    current_col = 0
 
-def get_current_shelf_count(db: Session) -> int:
-    return db.query(ShelfLayout).count()
+    for group in groups:
+        # 念のため重複排除
+        filtered_group = [
+            b for b in group if b["book_id"] not in seen_ids
+        ]
+        if not filtered_group:
+            continue
 
-def add_book_to_shelf_layout(db: Session, book_id: str, index: int):
-    row, col = calc_shelf_position(index)
+        group_size = len(filtered_group)
+        remaining_space = books_per_shelf - current_col
 
-    layout = ShelfLayout(
-        book_id=book_id,
-        x=row,
-        y=col
-    )
-    db.add(layout)
+        # グループが現在段に収まらなければ改行
+        if group_size > remaining_space and current_col > 0:
+            current_row += 1
+            current_col = 0
+
+        for book in filtered_group:
+            if current_col >= books_per_shelf:
+                current_row += 1
+                current_col = 0
+
+            positioned_books.append({
+                "book_id": book["book_id"],
+                "row": current_row,
+                "col": current_col
+            })
+
+            seen_ids.add(book["book_id"])
+            current_col += 1
+
+    return positioned_books
 
 def get_shelf_books(db: Session):
     layouts = db.query(ShelfLayout).all()

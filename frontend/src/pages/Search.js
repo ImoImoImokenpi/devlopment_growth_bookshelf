@@ -22,7 +22,7 @@ function Search() {
         `http://localhost:8000/search?q=${query}&page=${p}&per_page=${perPage}`
       );
       const data = res.data;
-      const validBooks = (data.books || []).filter((b) => b.id);
+      const validBooks = (data.books || []).filter((b) => b.isbn);
       setBooks(validBooks);
       setPage(p);
       setTotalPages(data.total_pages || 1);
@@ -36,9 +36,9 @@ function Search() {
   const addToHand = async (book) => {
     try {
       const res = await axios.post("http://localhost:8000/books/add_to_hand", {
-        book_id: book.id,
+        isbn: book.isbn,
         title: book.title,
-        author: book.author,
+        authors: book.authors,
         cover: book.cover,
       });
 
@@ -50,9 +50,9 @@ function Search() {
       setMyHand([
         ...myHand,
         {
-          book_id: book.id,
+          isbn: book.isbn,
           title: book.title,
-          author: book.author,
+          authors: book.authors,
           cover: book.cover,
         },
       ]);
@@ -67,11 +67,12 @@ function Search() {
   const viewDetails = (book) => {
     alert(
       `📘 タイトル: ${book.title}\n` +
-        `👤 著者: ${book.author}\n` +
-        `ID: ${book.id}\n` +
-        `ISBN-13: ${book.isbn_13 || "不明"}\n` +
-        `ISBN-10: ${book.isbn_10 || "不明"}\n` +
-        `ジャンル: ${book.concepts || "不明"}`
+      `👤 著者: ${book.authors?.join(", ") || "不明"}\n` +
+      `ISBN: ${book.isbn}\n` +
+      `出版社: ${book.publisher || "不明"}\n` +
+      `出版年: ${book.published_year || "不明"}\n` +
+      `NDC: ${book.ndc?.ndc_full || "不明"}\n` +
+      `件名: ${book.subjects?.slice(0, 5).join(", ") || "なし"}`
     );
   };
 
@@ -106,7 +107,7 @@ function Search() {
               ) : (
                 books.map((book) => (
                   <div
-                    key={book.id}
+                    key={book.isbn}
                     style={{
                       border: "1px solid #ddd",
                       borderRadius: "10px",
@@ -126,7 +127,6 @@ function Search() {
                           objectFit: "cover",
                           borderRadius: "5px",
                         }}
-                        onError={(e) => (e.target.style.display = "none")}
                       />
                     ) : (
                       <div
@@ -148,7 +148,7 @@ function Search() {
                       {book.title}
                     </h3>
                     <p style={{ fontSize: "12px", color: "#555" }}>
-                      {book.author}
+                      {book.authors?.join(", ")}
                     </p>
 
                     <div style={{ marginTop: "10px" }}>

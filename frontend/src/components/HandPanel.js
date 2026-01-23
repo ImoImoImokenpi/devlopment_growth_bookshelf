@@ -9,13 +9,13 @@ function HandPanel({ isOpen, onClose }) {
   const [selectedIds, setSelectedIds] = useState([]);
 
   // 手元から削除する処理
-  const removeFromHand = async (bookId) => {
+  const removeFromHand = async (bookIsbn) => {
     try {
       const res = await axios.delete(
-        `http://localhost:8000/books/remove_from_hand/${bookId}`
+        `http://localhost:8000/books/remove_from_hand/${bookIsbn}`
       );
 
-      setMyHand((prev) => prev.filter((b) => b.book_id !== bookId));
+      setMyHand((prev) => prev.filter((b) => b.isbn !== bookIsbn));
       alert("本を手元から削除しました。");
     } catch (error) {
       console.error("削除エラー：", error);
@@ -28,11 +28,11 @@ function HandPanel({ isOpen, onClose }) {
   };
 
   // チェック切り替え
-  const toggleSelect = (bookId) => {
+  const toggleSelect = (bookIsbn) => {
     setSelectedIds((prev) =>
-      prev.includes(bookId)
-        ? prev.filter((id) => id !== bookId)
-        : [...prev, bookId]
+      prev.includes(bookIsbn)
+        ? prev.filter((id) => id !== bookIsbn)
+        : [...prev, bookIsbn]
     );
   };
 
@@ -45,11 +45,11 @@ function HandPanel({ isOpen, onClose }) {
 
     try {
       await axios.post("http://localhost:8000/books/add_from_hand", {
-        book_ids: selectedIds,
+        isbns: selectedIds,
       });
 
       // ✅ 手元だけは即時更新してOK
-      setMyHand((prev) => prev.filter((b) => !selectedIds.includes(b.book_id)));
+      setMyHand((prev) => prev.filter((b) => !selectedIds.includes(b.isbn)));
 
       // ✅ 本棚は必ず GET で再取得
       await fetchBookshelf();
@@ -155,11 +155,11 @@ function HandPanel({ isOpen, onClose }) {
             <p style={{ padding: "20px" }}>まだ手元に本がありません。</p>
           ) : (
             myHand.map((b) => {
-              const checked = selectedIds.includes(b.book_id);
+              const checked = selectedIds.includes(b.isbn);
 
               return (
                 <div
-                  key={b.book_id}
+                  key={b.isbn}
                   style={{
                     padding: "12px",
                     borderBottom: "1px solid #eee",
@@ -172,7 +172,7 @@ function HandPanel({ isOpen, onClose }) {
                   <input
                     type="checkbox"
                     checked={checked}
-                    onChange={() => toggleSelect(b.book_id)}
+                    onChange={() => toggleSelect(b.isbn)}
                     style={{ marginTop: "6px" }}
                   />
 
@@ -220,13 +220,13 @@ function HandPanel({ isOpen, onClose }) {
                     </div>
 
                     <div style={{ fontSize: "12px", color: "#666" }}>
-                      {b.author}
+                      {b.authors}
                     </div>
                   </div>
 
                   {/* 削除ボタン */}
                   <button
-                    onClick={() => removeFromHand(b.book_id)}
+                    onClick={() => removeFromHand(b.isbn)}
                     style={{
                       padding: "5px 8px",
                       fontSize: "12px",

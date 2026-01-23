@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import MyHand, ShelfLayout
 from neo4j_crud import add_book_with_meaning, groups_from_neo4j
-from routers.google_books import fetch_book_metadata
+from routers.book_data import fetch_book_metadata
 from routers.bookshelf import calc_shelf_position
 # from routers.knowledge_graph import rebuild_knowledge_graph
 
@@ -19,47 +19,77 @@ def get_myhand(db: Session = Depends(get_db)):
     results = []
     for item in items:
         results.append({
-            "book_id": item.book_id,
+            "isbn": item.isbn,
             "title": item.title,
-            "author": item.author,
+            "authors": item.authors,
             "cover": item.cover,
         })
 
     return results
 
 @router.post("/add_to_hand")
-def add_to_hand(data: dict = Body(...), db: Session = Depends(get_db)):
-    book_id = data["book_id"]
+def add_to_hand(
+    data: dict = Body(...),
+    db: Session = Depends(get_db)
+):
+    # -------------------------
+    # ① ISBN チェック & 正規化
+    # -------------------------
+    isbn = data.get("isbn")
+    if not isbn:
+        raise HTTPException(status_code=400, detail="ISBN is required")
 
-    existing = db.query(MyHand).filter(MyHand.book_id == book_id).first()
+    # -------------------------
+    # ② 既存チェック
+    # -------------------------
+    existing = db.query(MyHand).filter(MyHand.isbn == isbn).first()
     if existing:
-        return {"message": "already exists"}
+        return {
+            "message": "already exists",
+            "isbn": isbn,
+            "id": existing.id
+        }
 
+    # -------------------------
+    # ③ メタデータ取得
+    # -------------------------
+    authors = data.get("authors") or []
+    authors_str = ",".join(authors) if isinstance(authors, list) else str(authors)
+
+    # -------------------------
+    # ④ MyHand に保存
+    # -------------------------
     new_book = MyHand(
-        book_id=book_id,
-        title=data["title"],
-        author=data["author"],
-        cover=data["cover"],
+        isbn=isbn,
+        title=data.get("title"),
+        authors=authors_str,
+        cover=data.get("cover"),
     )
+
     db.add(new_book)
     db.commit()
+    db.refresh(new_book)
 
-    return {"message": "added", "book_id": book_id}
+    return {
+        "message": "added",
+        "isbn": isbn,
+        "id": new_book.id
+    }
 
 @router.post("/add_from_hand")
 def add_from_hand(req: AddFromHandRequest, db: Session = Depends(get_db)):
     if not req.book_ids:
         raise HTTPException(status_code=400, detail="No books selected")
 
-    for book_id in req.book_ids:
+    for isbn in req.book_ids:
         # ① メタデータ取得
-        book = fetch_book_metadata(book_id)
+        book = fetch_book_metadata(isbn)
         # ② Neo4j に保存（意味・概念）
         add_book_with_meaning(book)
 
         hand_item = (
             db.query(MyHand)
-            .filter(MyHand.book_id == book_id)
+            .filter(MyHand.isbn == isbn)
             .first()
         )
         if hand_item:
@@ -77,12 +107,12 @@ def add_from_hand(req: AddFromHandRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="No books selected")
 
     # 1. Neo4j にすべての本を保存（意味を解析）
-    for book_id in req.book_ids:
-        book = fetch_book_metadata(book_id)
+    for isbn in req.book_ids:
+        book = fetch_book_metadata(isbn)
         add_book_with_meaning(book)
         
         # 手元（MyHand）から削除
-        hand_item = db.query(MyHand).filter(MyHand.book_id == book_id).first()
+        hand_item = db.query(MyHand).filter(MyHand.isbn == isbn).first()
         if hand_item:
             db.delete(hand_item)
 

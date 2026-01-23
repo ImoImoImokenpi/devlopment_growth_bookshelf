@@ -5,16 +5,16 @@ class MyHand(Base):
     __tablename__ = "myhand"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    book_id = Column(String, unique=True, index=True)  # Google Books API の ID
+    isbn = Column(String, unique=True, index=True, nullable=False)  # Google Books API の ID
     title = Column(String)
-    author = Column(String)
+    authors = Column(String)
     cover = Column(String)
 
 class ShelfLayout(Base):
     __tablename__ = "shelflayout"
     
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    book_id = Column(String, unique=True, index=True)  # Google Books API の ID
+    isbn = Column(String, unique=True, index=True)  # Google Books API の ID
     x = Column(Integer)
     y = Column(Integer)
     

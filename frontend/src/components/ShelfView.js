@@ -2,10 +2,66 @@ import React, { useEffect, useRef, useContext, useMemo, useState, useCallback } 
 import * as d3 from "d3";
 import { MyBookshelfContext } from "../context/MyBookshelfContext";
 
+// ─────────────────────────────────────────────
+// 【修正①】押し出しロジックを純粋関数として外部化
+//   drag中・end時の両方からこの関数を呼ぶことで重複を解消する。
+//
+//   引数:
+//     positions  : Map<isbn, {x: row, y: col}>  (変更対象。呼び出し元が用意する)
+//     targetIsbn : ドラッグ中の本のisbn（押し出し対象から除外）
+//     targetRow  : 移動先 row
+//     targetCol  : 移動先 col
+//     dragDx     : ドラッグのx方向変位（正=右優先、負=左優先）
+//     booksPerShelf : 最大列数
+//
+//   戻り値: 押し出し成功なら true、失敗なら false
+// ─────────────────────────────────────────────
+function applyPushLogic(positions, targetIsbn, targetRow, targetCol, dragDx, booksPerShelf) {
+  const findIntruder = (row, col) => {
+    for (const [isbn, pos] of positions.entries()) {
+      if (isbn !== targetIsbn && pos.x === row && pos.y === col) return [isbn, pos];
+    }
+    return null;
+  };
+
+  const pushRight = (row, col) => {
+    const intruder = findIntruder(row, col);
+    if (!intruder) return true;
+    const [isbn, pos] = intruder;
+    if (pos.y + 1 >= booksPerShelf) return false;
+    if (pushRight(row, pos.y + 1)) {
+      positions.set(isbn, { x: pos.x, y: pos.y + 1 });
+      return true;
+    }
+    return false;
+  };
+
+  const pushLeft = (row, col) => {
+    const intruder = findIntruder(row, col);
+    if (!intruder) return true;
+    const [isbn, pos] = intruder;
+    if (pos.y - 1 < 0) return false;
+    if (pushLeft(row, pos.y - 1)) {
+      positions.set(isbn, { x: pos.x, y: pos.y - 1 });
+      return true;
+    }
+    return false;
+  };
+
+  return dragDx >= 0
+    ? pushRight(targetRow, targetCol) || pushLeft(targetRow, targetCol)
+    : pushLeft(targetRow, targetCol) || pushRight(targetRow, targetCol);
+}
+
+// ─────────────────────────────────────────────
+
 function ShelfView() {
   const { myBookshelf, fetchBookshelf, updateShelfLayout, addShelfRow, removeShelfRow } =
     useContext(MyBookshelfContext);
   const svgRef = useRef();
+
+  // タイマー管理用のRef
+  const syncTimerRef = useRef(null);
 
   // --- 1. 定数設定 ---
   const BOOK_WIDTH = 80;
@@ -20,6 +76,14 @@ function ShelfView() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedIsbns, setSelectedIsbns] = useState([]);
   const [meaning, setMeaning] = useState("");
+
+  // 【修正②】localLayout を「唯一の配置状態」として扱う
+  //   - books（サーバー由来）が変わった時だけ初期化
+  //   - drag終了時にここを更新し、保存APIにも localLayout を渡す
+  //   - D3の描画依存配列にも localLayout を使うことで
+  //     fetchBookshelf() 後に自動的に再描画される
+  const [localLayout, setLocalLayout] = useState([]);
+  
 
   const books = myBookshelf?.books || [];
   const currentBooksPerShelf = myBookshelf?.books_per_shelf || 5;
@@ -56,17 +120,30 @@ function ShelfView() {
     [unitShelfHeight, shelfCount, currentBooksPerShelf]
   );
 
+  // booksWithPosition: localLayout の row/col からピクセル座標を計算して付加する
+  // 【修正③】books ではなく localLayout を使うことで、
+  //   サーバーからの更新と drag後のローカル更新が一本化される
   const booksWithPosition = useMemo(() => {
-    return books.map((book) => ({
-      ...book,
-      ...getPhysPos(book.x || 0, book.y || 0),
-    }));
-  }, [books, getPhysPos]);
+    return books.map((book) => {
+      const layout = localLayout.find((l) => l.isbn === book.isbn);
+      const row = layout?.x ?? book.x ?? 0;
+      const col = layout?.y ?? book.y ?? 0;
+      const phys = getPhysPos(row, col);
+      return { ...book, gridRow: row, gridCol: col, x: phys.x, y: phys.y };
+    });
+  }, [books, localLayout, getPhysPos]);
 
   // --- 4. ライフサイクル ---
   useEffect(() => {
     fetchBookshelf();
   }, []);
+
+  // サーバーから books が変わった時だけ localLayout を初期化
+  useEffect(() => {
+    if (!books.length) return;
+    setLocalLayout(books.map((b) => ({ isbn: b.isbn, x: b.x, y: b.y })));
+  }, [books]);
+
   useEffect(() => {
     setInputValue(currentBooksPerShelf);
   }, [currentBooksPerShelf]);
@@ -76,6 +153,7 @@ function ShelfView() {
     setIsModalOpen(false);
     setMeaning("");
     setSelectedIsbns([]);
+    // ハイライトは D3 の再描画（selectedIsbns → [] → useEffect）でクリアされる
   }, []);
 
   const handleRemoveRow = async () => {
@@ -99,6 +177,28 @@ function ShelfView() {
       console.error("Save Error:", err);
     }
   };
+
+  const handleSyncLayout = useCallback(async (layoutData) => {
+    console.log("Saving layout to server...", layoutData);
+    try {
+      await fetch("http://localhost:8000/bookshelf/sync-layout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(layoutData),
+      });
+      // 保存完了後に最新の状態を取得（任意）
+      // fetchBookshelf(); 
+    } catch (err) {
+      console.error("Layout sync failed:", err);
+    }
+  }, []);
+
+  // 【追加】アンマウント時にタイマーをクリアするクリーンアップ
+  useEffect(() => {
+    return () => {
+      if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+    };
+  }, []);
 
   // --- 6. D3 描画ロジック ---
   useEffect(() => {
@@ -158,7 +258,136 @@ function ShelfView() {
       .style("visibility", "hidden")
       .attr("rx", 6);
 
-    // ドラッグハンドラー (連鎖押し出しロジック)
+    // ─────────────────────────────────────────────
+    // ラバーバンド選択ロジック
+    //
+    // SVG上の「本以外のエリア」でマウスダウン → ドラッグ中は点線矩形を表示
+    // マウスアップ時に矩形と重なる本を selectedIsbns に設定してモーダルを開く
+    //
+    // 本の上でのドラッグと区別するため、dragHandler 側の start で
+    // "dragging-book" フラグを svg に立て、rubberband 側はそれを見て無視する
+    // ─────────────────────────────────────────────
+
+    // ラバーバンド矩形（点線）
+    const rubberband = svg
+      .append("rect")
+      .attr("fill", "rgba(100, 180, 255, 0.15)")
+      .attr("stroke", "#64b4ff")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-dasharray", "6,3")
+      .attr("rx", 4)
+      .style("visibility", "hidden")
+      .style("pointer-events", "none");
+
+    // 選択ハイライト用レイヤー（本の上に薄い青を重ねる）
+    const updateHighlights = (isbns) => {
+      svg.selectAll(".book-highlight").remove();
+      if (!isbns.length) return;
+      booksWithPosition
+        .filter((b) => isbns.includes(b.isbn))
+        .forEach((b) => {
+          svg
+            .append("rect")
+            .attr("class", "book-highlight")
+            .attr("x", b.x)
+            .attr("y", b.y)
+            .attr("width", BOOK_WIDTH)
+            .attr("height", BOOK_HEIGHT)
+            .attr("rx", 4)
+            .attr("fill", "rgba(100, 180, 255, 0.35)")
+            .attr("stroke", "#64b4ff")
+            .attr("stroke-width", 2)
+            .style("pointer-events", "none");
+        });
+    };
+
+    // SVG全体にラバーバンド用ドラッグを設定
+    let rbStartX = 0;
+    let rbStartY = 0;
+    let isDraggingBook = false;
+
+    const rubberbandDrag = d3
+      .drag()
+      .filter((event) => {
+        // 本の上でのクリックは除外（book-group は自分の dragHandler を持つ）
+        return !event.target.classList.contains("book-group");
+      })
+      .on("start", function (event) {
+        if (isModalOpen) return;
+        isDraggingBook = false;
+        const [mx, my] = d3.pointer(event, svgRef.current);
+        rbStartX = mx;
+        rbStartY = my;
+        rubberband
+          .attr("x", mx)
+          .attr("y", my)
+          .attr("width", 0)
+          .attr("height", 0)
+          .style("visibility", "visible");
+      })
+      .on("drag", function (event) {
+        if (isModalOpen) return;
+        const [mx, my] = d3.pointer(event, svgRef.current);
+        const rx = Math.min(mx, rbStartX);
+        const ry = Math.min(my, rbStartY);
+        const rw = Math.abs(mx - rbStartX);
+        const rh = Math.abs(my - rbStartY);
+        rubberband.attr("x", rx).attr("y", ry).attr("width", rw).attr("height", rh);
+
+        // ドラッグ中もリアルタイムでハイライト更新
+        const hit = booksWithPosition
+          .filter((b) => {
+            return (
+              b.x < rx + rw &&
+              b.x + BOOK_WIDTH > rx &&
+              b.y < ry + rh &&
+              b.y + BOOK_HEIGHT > ry
+            );
+          })
+          .map((b) => b.isbn);
+        updateHighlights(hit);
+      })
+      .on("end", function (event) {
+        rubberband.style("visibility", "hidden");
+        if (isModalOpen) return;
+
+        const [mx, my] = d3.pointer(event, svgRef.current);
+        const rx = Math.min(mx, rbStartX);
+        const ry = Math.min(my, rbStartY);
+        const rw = Math.abs(mx - rbStartX);
+        const rh = Math.abs(my - rbStartY);
+
+        // 5px未満の動きはクリックとみなして選択解除
+        if (rw < 5 && rh < 5) {
+          updateHighlights([]);
+          return;
+        }
+
+        const hit = booksWithPosition
+          .filter((b) => {
+            return (
+              b.x < rx + rw &&
+              b.x + BOOK_WIDTH > rx &&
+              b.y < ry + rh &&
+              b.y + BOOK_HEIGHT > ry
+            );
+          })
+          .map((b) => b.isbn);
+
+        if (hit.length > 0) {
+          setSelectedIsbns(hit);
+          setIsModalOpen(true);
+        } else {
+          updateHighlights([]);
+        }
+      });
+
+    svg.call(rubberbandDrag);
+
+    // ─────────────────────────────────────────────
+    // ドラッグハンドラー
+    // 【修正①】押し出しロジックは applyPushLogic() を呼ぶだけ
+    // ─────────────────────────────────────────────
     const dragHandler = d3
       .drag()
       .on("start", function (event) {
@@ -179,50 +408,22 @@ function ShelfView() {
         me.attr("x", newX).attr("y", newY);
 
         const target = getGridPos(newX + BOOK_WIDTH / 2, newY + BOOK_HEIGHT / 2);
+
+        // 【修正①】drag中のプレビュー用 Map を作り applyPushLogic に渡す
         const virtualPositions = new Map(
-          books.filter((b) => b.isbn !== d.isbn).map((b) => [b.isbn, { x: b.x, y: b.y }])
+          booksWithPosition
+            .filter((b) => b.isbn !== d.isbn)
+            .map((b) => [b.isbn, { x: b.gridRow, y: b.gridCol }])
         );
 
-        // --- 再帰的な押し出しチェック（左右対応） ---
-        const findIntruder = (row, col) => {
-          return Array.from(virtualPositions.entries()).find(([isbn, pos]) => pos.x === row && pos.y === col);
-        };
-
-        const pushRight = (row, col) => {
-          const intruder = findIntruder(row, col);
-          if (!intruder) return true;
-
-          const [isbn, pos] = intruder;
-          if (pos.y + 1 >= currentBooksPerShelf) return false; // 右端ガード
-
-          if (pushRight(row, pos.y + 1)) {
-            virtualPositions.set(isbn, { x: pos.x, y: pos.y + 1 });
-            return true;
-          }
-          return false;
-        };
-
-        const pushLeft = (row, col) => {
-          const intruder = findIntruder(row, col);
-          if (!intruder) return true;
-
-          const [isbn, pos] = intruder;
-          if (pos.y - 1 < 0) return false; // 左端ガード
-
-          if (pushLeft(row, pos.y - 1)) {
-            virtualPositions.set(isbn, { x: pos.x, y: pos.y - 1 });
-            return true;
-          }
-          return false;
-        };
-
-        // ★ドラッグ方向で優先押し出し方向を切り替える（右ドラッグ→右優先、左ドラッグ→左優先）
-        const dragDx = event.dx;
-
-        const canPush =
-          dragDx >= 0
-            ? pushRight(target.row, target.col) || pushLeft(target.row, target.col)
-            : pushLeft(target.row, target.col) || pushRight(target.row, target.col);
+        const canPush = applyPushLogic(
+          virtualPositions,
+          d.isbn,
+          target.row,
+          target.col,
+          event.dx,
+          currentBooksPerShelf
+        );
 
         if (canPush) {
           const snap = getPhysPos(target.row, target.col);
@@ -250,52 +451,35 @@ function ShelfView() {
         const me = d3.select(this);
         const target = getGridPos(+me.attr("x") + BOOK_WIDTH / 2, +me.attr("y") + BOOK_HEIGHT / 2);
 
-        let finalPositions = books.map((b) => ({ isbn: b.isbn, x: b.x, y: b.y }));
-        const currentD = finalPositions.find((b) => b.isbn === d.isbn);
+        const positionMap = new Map(
+          booksWithPosition.map((b) => [b.isbn, { x: b.gridRow, y: b.gridCol }])
+        );
 
-        const findIntruder = (row, col) => {
-          return finalPositions.find((b) => b.isbn !== d.isbn && b.x === row && b.y === col);
-        };
+        const pushed = applyPushLogic(
+          positionMap,
+          d.isbn,
+          target.row,
+          target.col,
+          event.dx,
+          currentBooksPerShelf
+        );
 
-        const applyPushRight = (row, col) => {
-          const intruder = findIntruder(row, col);
-          if (!intruder) return true;
-
-          if (intruder.y + 1 >= currentBooksPerShelf) return false; // 右端ガード
-          if (applyPushRight(row, intruder.y + 1)) {
-            intruder.y += 1;
-            return true;
-          }
-          return false;
-        };
-
-        const applyPushLeft = (row, col) => {
-          const intruder = findIntruder(row, col);
-          if (!intruder) return true;
-
-          if (intruder.y - 1 < 0) return false; // 左端ガード
-          if (applyPushLeft(row, intruder.y - 1)) {
-            intruder.y -= 1;
-            return true;
-          }
-          return false;
-        };
-
-        // ★ドラッグ方向で優先押し出し方向を切り替える
-        const dragDx = event.dx;
-
-        const pushed =
-          dragDx >= 0
-            ? applyPushRight(target.row, target.col) || applyPushLeft(target.row, target.col)
-            : applyPushLeft(target.row, target.col) || applyPushRight(target.row, target.col);
-
-        // 成功した時だけ位置を更新、失敗なら元の位置
         if (pushed) {
-          currentD.x = target.row;
-          currentD.y = target.col;
+          positionMap.set(d.isbn, { x: target.row, y: target.col });
         }
 
-        const finalPhys = getPhysPos(currentD.x, currentD.y);
+        const nextLayout = Array.from(positionMap.entries()).map(([isbn, pos]) => ({
+          isbn,
+          x: pos.x,
+          y: pos.y,
+        }));
+
+        // UI（localLayout）は即座に反映して快適な操作感を維持
+        setLocalLayout(nextLayout);
+
+        // アニメーション実行
+        const finalPos = positionMap.get(d.isbn);
+        const finalPhys = getPhysPos(finalPos.x, finalPos.y);
         me.transition()
           .duration(500)
           .ease(d3.easeElasticOut.amplitude(0.8))
@@ -305,18 +489,19 @@ function ShelfView() {
 
         guide.style("visibility", "hidden");
 
-        // ここで唯一の保存処理
-        try {
-          await fetch("http://localhost:8000/bookshelf/sync-layout", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(finalPositions),
-          });
-          fetchBookshelf();
-        } catch (err) {
-          console.error(err);
-          fetchBookshelf();
+        // ─────────────────────────────────────────────
+        // 【修正】10秒間のデバウンス処理
+        // ─────────────────────────────────────────────
+        // 1. 既存のタイマーがあれば破棄（操作が続く限り保存を先延ばしする）
+        if (syncTimerRef.current) {
+          clearTimeout(syncTimerRef.current);
         }
+
+        // 2. 10秒（10000ms）後に保存を実行する予約
+        syncTimerRef.current = setTimeout(() => {
+          handleSyncLayout(nextLayout);
+        }, 10000); 
+        // ─────────────────────────────────────────────
       });
 
     // 本の初期配置
@@ -333,6 +518,9 @@ function ShelfView() {
       .attr("preserveAspectRatio", "xMidYMid slice")
       .style("cursor", "grab")
       .call(dragHandler);
+
+    // 再描画時（モーダルclose後など）に選択状態を復元
+    updateHighlights(selectedIsbns);
   }, [
     booksWithPosition,
     WIDTH,
@@ -342,8 +530,9 @@ function ShelfView() {
     getPhysPos,
     isModalOpen,
     currentBooksPerShelf,
-    books,
     fetchBookshelf,
+    localLayout,
+    selectedIsbns, // ラバーバンド選択・モーダルclose時にハイライトを再描画
   ]);
 
   return (

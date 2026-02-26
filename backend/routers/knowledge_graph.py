@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from neo4j_driver import get_session
+from admin_neo4j.neo4j_driver import get_session
 
 router = APIRouter(prefix="/knowledge_graph")
 

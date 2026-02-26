@@ -3,15 +3,13 @@ from schemas import AddFromHandRequest
 from sqlalchemy.orm import Session
 from database import get_db
 from models import MyHand
-from neo4j_crud import add_book_with_meaning
+from admin_neo4j.neo4j_crud import add_book_with_meaning
 from routers.book_data import fetch_book_metadata
-from utils.layout_engine import rebuild_shelf_layout
+from routers.bookshelf import add_to_shelf
 
 # from routers.knowledge_graph import rebuild_knowledge_graph
 
 router = APIRouter(prefix="/books", tags=["books"])
-
-GOOGLE_BOOKS_API = "https://www.googleapis.com/books/v1/volumes"
 
 @router.get("/myhand")
 def get_myhand(db: Session = Depends(get_db)):
@@ -83,18 +81,19 @@ async def add_from_hand(req: AddFromHandRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="No books selected")
 
     for isbn in req.isbns:
-        # ① メタデータ取得
+        # メタデータ取得
         book = await fetch_book_metadata(isbn)
         
         if book:
-            # ② Neo4j に保存（意味・概念）
+            # Neo4j に保存（意味・概念）
             add_book_with_meaning(book)
 
             # SQLite (MyHand) から削除
             db.query(MyHand).filter(MyHand.isbn == isbn).delete()
 
-    # レイアウト再構築
-    rebuild_shelf_layout(db)
+            # 本棚へ追加
+            add_to_shelf(db, isbn)
+
     db.commit()
 
     return {"message": "Success"}
@@ -110,36 +109,3 @@ def remove_from_hand(isbn: str, db: Session = Depends(get_db)):
     db.delete(book)
     db.commit()
     return {"status": "success", "deleted_book_id": isbn}
-
-# @router.post("/add_from_hand")
-# def add_from_hand(data: dict = Body(...), db: Session = Depends(get_db)):
-#     book_ids = data.get("book_ids", [])
-
-#     if not book_ids:
-#         raise HTTPException(status_code=400, detail="book_ids is empty")
-
-#     hand_books = (
-#         db.query(MyHand)
-#         .filter(MyHand.book_id.in_(book_ids))
-#         .all()
-#     )
-
-#     for h in hand_books:
-#         # すでに本棚にあるか確認
-#         exists = db.query(MyBookshelf).filter(MyBookshelf.book_id == h.book_id).first()
-#         if not exists:
-#             db.add(MyBookshelf(
-#                 book_id=h.book_id,
-#                 title=h.title,
-#                 author=h.author,
-#                 cover=h.cover,
-#             ))
-
-#         # 手元から削除
-#         db.delete(h)
-
-#     db.commit()
-#     rebuild_knowledge_graph(db)
-#     db.commit()
-
-#     return {"message": "added", "count": len(hand_books)}

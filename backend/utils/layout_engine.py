@@ -1,103 +1,116 @@
 from sqlalchemy.orm import Session
 from models import ShelfLayout, ShelfDesign
-from neo4j_crud import groups_from_neo4j
+from admin_neo4j.neo4j_crud import groups_from_neo4j
 import logging
+import random
 
 logger = logging.getLogger(__name__)
 
-# レイアウト計算関数
-def calc_shelf_position(groups, books_per_shelf: int):
-    """
-    groups: [{"ndc": "913", "books": [...]}, ...] のリスト
-    books_per_shelf: 1段に収める最大冊数
-    """
+def first_position(groups, books_per_shelf: int):
+
     positioned_books = []
     seen_isbns = set()
     current_row = 0
     current_col = 0
 
     for group in groups:
-        # group["books"] リストを取り出す
         books = group.get("books", [])
-        
-        # --- ここがポイント：入らない場合だけ段を増やすロジック ---
-        # 1. 重複を除いた「このグループで実際に配置する本」の数を確認
-        new_books_in_group = [b for b in books if b["isbn"] not in seen_isbns]
-        count = len(new_books_in_group)
 
-        if count == 0:
+        new_books = [b for b in books if b["isbn"] not in seen_isbns]
+        if not new_books:
             continue
 
-        # 2. 「今の段の残りスペース」より「グループの冊数」が多いかチェック
-        # 残りスペース = books_per_shelf - current_col
-        if count > (books_per_shelf - current_col):
-            # 今の段に1冊でも本がある場合のみ、次の段へ（空の段ならそのまま使う）
-            if current_col > 0:
-                current_row += 1
-                current_col = 0
-        
-        for book in new_books_in_group:
-            isbn = book["isbn"]
-            
-            # 配置情報を追加
+        for book in new_books:
+
             positioned_books.append({
-                "isbn": isbn,  # SQLiteのShelfLayoutと合わせる
+                "isbn": book["isbn"],
                 "row": current_row,
-                "col": current_col,
-                "books_per_shelf": books_per_shelf
+                "col": current_col
             })
 
-            seen_isbns.add(isbn)
+            seen_isbns.add(book["isbn"])
             current_col += 1
 
-            # 1段がいっぱいになったら次の段へ
             if current_col >= books_per_shelf:
                 current_row += 1
                 current_col = 0
 
     return positioned_books
 
-# 本棚再構築関数
-def rebuild_shelf_layout(db: Session, books_per_shelf: int = 5, total_shelves: int = 3):
-    print(f"DEBUG: 再構築を開始します。1段あたりの冊数: {books_per_shelf}")
-    try:
-        # 1. Neo4j からグループ化された書籍データを取得
-        # groups は { "NDC_913": [isbn1, isbn2...], "NDC_400": [...] } のような形式を想定
-        groups = groups_from_neo4j()
-        if not groups:
-            logger.warning("Neo4jから書籍グループを取得できませんでした。")
-            return
-        
-        design = db.query(ShelfDesign).first()
+def rebuild_shelf_layout(db: Session):
 
-        # 2. 座標計算
-        new_positions = calc_shelf_position(groups, design.books_per_shelf)
-        # 重複排除（book_idをキーにして最新の座標を保持）
-        unique_map = {pos["isbn"]: pos for pos in new_positions}
-        
-        # 3. SQLiteへの反映（トランザクション内で実行）
-        # delete() と insert をセットで行う
-        db.query(ShelfLayout).delete()
+    design = db.query(ShelfDesign).first()
+    if not design:
+        raise Exception("ShelfDesign が存在しません")
 
-        # バルクインサート用のデータ準備
-        bulk_data = [
-            {
-                "isbn": pos['isbn'],
-                "x": pos['row'],  # 座標計算の結果をマッピング
-                "y": pos['col'],
-                "books_per_shelf": books_per_shelf,
-                "total_shelves": total_shelves
-            }
-            for pos in unique_map.values()
-        ]
+    groups = groups_from_neo4j()
+    if not groups:
+        return
 
-        if bulk_data:
-            db.bulk_insert_mappings(ShelfLayout, bulk_data)
-        
-        db.commit()
-        logger.info(f"本棚レイアウトを再構築しました: {len(bulk_data)} 冊")
+    new_positions = first_position(groups, design.books_per_shelf)
 
-    except Exception as e:
-        db.rollback()
-        logger.error(f"本棚再構築中にエラーが発生しました: {e}")
-        raise e
+    max_row = max((pos["row"] for pos in new_positions), default=0)
+    design.total_shelves = max_row + 1
+
+    db.query(ShelfLayout).delete()
+
+    bulk_data = [
+        {
+            "isbn": pos["isbn"],
+            "x": pos["row"],
+            "y": pos["col"]
+        }
+        for pos in new_positions
+    ]
+
+    if bulk_data:
+        db.bulk_insert_mappings(ShelfLayout, bulk_data)
+
+    db.commit()
+
+
+def place_randomly(db: Session, isbn: str):
+
+    design = db.query(ShelfDesign).first()
+    if not design:
+        raise Exception("ShelfDesign が存在しません")
+
+    # 既にあるなら何もしない
+    exists = db.query(ShelfLayout).filter(ShelfLayout.isbn == isbn).first()
+    if exists:
+        return
+
+    # total_shelves が 0 の保険
+    if design.total_shelves == 0:
+        design.total_shelves = 1
+
+    books_per_shelf = design.books_per_shelf
+    total_shelves = design.total_shelves
+
+    used_positions = db.query(ShelfLayout.x, ShelfLayout.y).all()
+    used_set = {(pos.x, pos.y) for pos in used_positions}
+
+    all_positions = [
+        (row, col)
+        for row in range(total_shelves)
+        for col in range(books_per_shelf)
+    ]
+
+    free_positions = [pos for pos in all_positions if pos not in used_set]
+
+    # 空きなし → 段追加
+    if not free_positions:
+        row = total_shelves
+        col = 0
+        design.total_shelves += 1
+    else:
+        row, col = random.choice(free_positions)
+
+    new_layout = ShelfLayout(
+        isbn=isbn,
+        x=row,
+        y=col
+    )
+
+    db.add(new_layout)
+    db.commit()

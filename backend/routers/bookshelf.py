@@ -4,9 +4,9 @@ from typing import List
 from models import ShelfLayout, ShelfDesign
 from sqlalchemy.orm import Session
 from database import get_db
-from neo4j_driver import get_session
-from neo4j_crud import update_shelf_layout_chain  # Neo4j更新ロジック
-from routers.myhand import rebuild_shelf_layout
+from admin_neo4j.neo4j_driver import get_session
+from admin_neo4j.neo4j_crud import update_shelf_layout_chain  # Neo4j更新ロジック
+from utils.layout_engine import rebuild_shelf_layout, place_randomly
 
 router = APIRouter(prefix="/bookshelf", tags=["bookshelf"])
 
@@ -24,6 +24,22 @@ SHELF_MARGIN_X = 40
 SHELF_MARGIN_Y = 30
 SHELF_HEIGHT = 150
 SHELF_GAP = 30
+
+def add_to_shelf(db: Session, isbn: str):
+
+    existing_count = db.query(ShelfLayout).count()
+
+    if existing_count == 0:
+        print("初回配置")
+        rebuild_shelf_layout(db)
+    else:
+        print("追加配置")
+        place_randomly(db, isbn)
+    
+    # ← ここで必ず再構築
+    layouts = db.query(ShelfLayout).all()
+    neo4j_payload = [{"isbn": l.isbn, "x": l.x, "y": l.y} for l in layouts]
+    update_shelf_layout_chain(neo4j_payload)
 
 def get_shelf_books(db: Session):
     layouts = db.query(ShelfLayout).all()

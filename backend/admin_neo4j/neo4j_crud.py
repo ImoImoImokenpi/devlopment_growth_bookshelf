@@ -1,5 +1,5 @@
 # neo4j_crud.py
-from neo4j_driver import get_session
+from admin_neo4j.neo4j_driver import get_session
 
 def add_book_with_meaning(book: dict, meaning_text: str = None):
     ndc_data = book.get("ndc") or {}
@@ -154,56 +154,45 @@ def get_shelf_books():
             ]
         }
 
-def update_shelf_layout_chain(layout_data: list):
-    """
-    本棚の物理的な並び順を Neo4j の [:NEXT] 関係として構築する
-    layout_data: [{"isbn": "...", "x": 0, "y": 0}, ...] のリスト
-    """
+from collections import defaultdict
+
+def update_shelf_layout_chain(layout_data):
+    rows = defaultdict(list)
+
+    for book in layout_data:
+        rows[book["x"]].append(book)
+
+    relations = []
+
+    # --- 2. 各段でy順に並べて隣接ペア生成 ---
+    for row_index, row_books in rows.items():
+        row_books.sort(key=lambda b: b["y"])
+
+        for i in range(len(row_books) - 1):
+            relations.append({
+                "from": row_books[i]["isbn"],
+                "to": row_books[i+1]["isbn"],
+                "row": row_index
+            })
+        print(relations)
+
+    # --- 3. Neo4j更新 ---
     with get_session() as session:
-        # 1. まずは既存の [:NEXT] リレーションをすべて削除（再構築のため）
-        # ※ 蔵書そのものを消すわけではなく、隣接関係だけをリセットします
         session.run(
             """
-            MATCH (:Book)-[r:NEXT]->(:Book)
+            // 既存チェーン削除
+            MATCH ()-[r:SHELF_NEXT]-()
             DELETE r
             """
         )
 
-        # 2. 段（x）ごとにグループ化して、列（y）の昇順にソート
-        shelves = {}
-        for item in layout_data:
-            x = item['x']
-            if x not in shelves:
-                shelves[x] = []
-            shelves[x].append(item)
-        
-        for x in shelves:
-            # y座標（左から右）でソート
-            sorted_books = sorted(shelves[x], key=lambda b: b['y'])
-            
-            # 隣り合う本を繋ぐ
-            for i in range(len(sorted_books) - 1):
-                book_a = sorted_books[i]
-                book_b = sorted_books[i+1]
-                
-                session.run(
-                    """
-                    MATCH (a:Book {isbn: $isbn_a})
-                    MATCH (b:Book {isbn: $isbn_b})
-                    MERGE (a)-[:NEXT]->(b)
-                    """,
-                    isbn_a=book_a['isbn'],
-                    isbn_b=book_b['isbn']
-                )
-
-        # 3. 座標情報そのものも各ノードに同期させておく（念のため）
-        for item in layout_data:
+        if relations:
             session.run(
                 """
-                MATCH (b:Book {isbn: $isbn})
-                SET b.shelfRow = $x, b.shelfCol = $y
+                UNWIND $relations AS rel
+                MATCH (a:Book {isbn: rel.from})
+                MATCH (b:Book {isbn: rel.to})
+                MERGE (a)-[:SHELF_NEXT {row: rel.row}]->(b)
                 """,
-                isbn=item['isbn'],
-                x=item['x'],
-                y=item['y']
+                relations=relations
             )

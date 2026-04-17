@@ -1,0 +1,109 @@
+2026-03-12 12:37:10 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハイキュー' page=1 per_page=20
+2026-03-12 12:37:10 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-12 12:37:10 [INFO] search_api - [NDL] リクエスト開始 query='ハイキュー' start=1 max=60
+2026-03-12 12:37:10 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-12 12:37:18 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=8.64s
+2026-03-12 12:37:18 [INFO] search_api - [NDL] 検索完了 query='ハイキュー' total=251 取得件数=60
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイラヴユー'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='嘘吐きジョーカーと王様の疑惑 : ハイキュー及川×影山 + 烏野all'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='嘘吐きジョーカーと王様のハート : ハイキュー及川×影山 + 鴉野all'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='演劇時評(最終回)劇評 青い瞳 桜の園 スポケーンの左手 才原警部の終わらない明日 バグダッド動物園のベンガルタイガー ひょっこりひょうたん島 道玄坂綺譚 TRUMP 死刑執行中脱獄進行中 ダンス オブ ヴァンパイア 新源氏物語/Melodia : 熱く美しき旋律 12月文楽公演 十二月大歌舞伎 通し狂言 東海道四谷怪談 七年ぶりの恋人 橙色の中古車 オレアナ ハイキュー!! 水仙の花 narcissus 薔薇の花束の秘密 ツインズ 熱海殺人事件 悲しみを聴く石 痕跡 消失 ただいま 地を渡る舟 悪魔はいる ミー・アンド・マイガール リボンの騎士 犀 Battlefield『マハーバーラタ』より 二人の死刑執行人/ファンドとリス 明治の柩 朗読新派 大つごもり かたき同志 MORSE : モールス くさまくら/三の酉 HEADS UP! 吉例顔見世大歌舞伎 通し狂言 神霊矢口渡 書を捨てよ町へ出よう ライチ☆光クラブ REPAIR : アナタの人生、修理しませんか? 口笛は誰でも吹ける 白鯨 毛皮のマリー ドッグファイト 根岸庵律女 シカゴ ガーデン : 空の海、風の国 ジャニーズ・ワールド 妖精の女王'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='オレンジ = Orange'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='火山礫を用いた生物排水処理の性能向上--高濃度有機排水処理に適した「ハイキューブシステム」'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='クライマー'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='決戦スピリット Kessen spirit'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='決戦スピリット Kessen spirit'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='劇場版ハイキュー！！\u3000ゴミ捨て場の決戦（非売品） : 音駒番外編！！ ３３．５'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='『劇場版ハイキュー!!ゴミ捨て場の決戦』オリジナル・サウンドトラック = Haikyu!! the dumpster battle original soundtrack'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='劇場版ハイキュー!!ゴミ捨て場の決戦'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='劇場版ハイキュー!!ゴミ捨て場の決戦 = The dumpster battle : Blu-ray豪華版'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='高濃度有機物排水処理に適したハイキューブシステムの性能向上'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='これだけは見ておきたいアニメのうたベスト。'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='食品工場の排水処理が抱える課題とその解決に適した「ハイキユーブシステム」'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='食品工場向け排水処理システム「分離膜型ハイキューブシステム」'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='スピード・アニメトランス・ベスト エグジット・トランス・プレゼンツ. 22'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='声優インタビュー 影山飛雄役 石川界人'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='声優インタビュー 日向翔陽(ひなたしょうよう)役 村瀬歩'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='TV ANIMATIONハイキュー!!\u3000：\u3000オリジナルサウンドトラック Vol.1'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='天地ガエシ'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='突破口・自慢になりたい'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='突破口・自慢になりたい'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!"終わりと始まり" Haikyu!! the end and the beginning : 劇場版総集編前編'
+2026-03-12 12:37:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!烏野高校vs白鳥沢学園高校 1'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!烏野高校vs白鳥沢学園高校 2'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!烏野高校vs白鳥沢学園高校 3'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!烏野高校vs白鳥沢学園高校 4'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!烏野高校vs白鳥沢学園高校 5'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキューが好きだ--(いろいろなことを教えてくれた作品)'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー！！が好きだ2022'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!クロスチームマッチ!'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!"コンセプトの戦い" Haikyu!! the battle of concepts : 劇場版総集編白鳥沢学園高校戦編'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!"才能とセンス" Haikyu!! the talent and the sense : 劇場版総集編青葉城西高校戦編'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='HAIKYU!!THE DUMPSTER BATTLE'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!"勝者と敗者" Haikyu!! the winner and the loser : 劇場版総集編後編'
+2026-03-12 12:37:19 [INFO] search_api - [NDL] スキップ 37件
+2026-03-12 12:37:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784864256063
+2026-03-12 12:37:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784865115185
+2026-03-12 12:37:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4835215435
+2026-03-12 12:37:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575456356
+2026-03-12 12:37:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863882331
+2026-03-12 12:37:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784048982719
+2026-03-12 12:37:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784864257978
+2026-03-12 12:37:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784285154030
+2026-03-12 12:37:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784864147798
+2026-03-12 12:37:24 [INFO] search_api - [API] 書影取得 round=1 hit=14/23 elapsed=5.37s
+2026-03-12 12:37:24 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=14/20
+2026-03-12 12:37:24 [INFO] search_api - [NDL] リクエスト開始 query='ハイキュー' start=61 max=60
+2026-03-12 12:37:27 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.53s
+2026-03-12 12:37:27 [INFO] search_api - [NDL] 検索完了 query='ハイキュー' total=251 取得件数=60
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!ショーセツバン!! 1 烏野強化合宿'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 1'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 2'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 3'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 4'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 5'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 6'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 7'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 8'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!! セカンドシーズン vol. 9'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!繋げ!頂の景色!!'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] ISBNなしでスキップ title='ハイキュー!!陸vs空 Haikyu!! land vs. air'
+2026-03-12 12:37:27 [INFO] search_api - [NDL] スキップ 12件
+2026-03-12 12:37:31 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087925951
+2026-03-12 12:37:31 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784802302265
+2026-03-12 12:37:31 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784781701783
+2026-03-12 12:37:32 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088802435
+2026-03-12 12:37:32 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088805337
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088821573
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088834634
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088836966
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088840314
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088843254
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088845234
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088823157
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088823164
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088828657
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088805320
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088832302
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088833477
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784081024216
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784081024377
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784083220111
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784083220241
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088810928
+2026-03-12 12:37:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784862841339
+2026-03-12 12:37:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088825045
+2026-03-12 12:37:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088828664
+2026-03-12 12:37:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087033854
+2026-03-12 12:37:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784086197953
+2026-03-12 12:37:36 [INFO] search_api - [API] 書影取得 round=2 hit=21/48 elapsed=8.65s
+2026-03-12 12:37:36 [INFO] search_api - [API] レスポンス返却 q='ハイキュー' books=20 total=251 elapsed=26.47s
+2026-03-12 20:47:12 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='赤と青とエスキース' page=1 per_page=20
+2026-03-12 20:47:12 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-12 20:47:12 [INFO] search_api - [NDL] リクエスト開始 query='赤と青とエスキース' start=1 max=60
+2026-03-12 20:47:12 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-12 20:47:16 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.11s
+2026-03-12 20:47:16 [INFO] search_api - [NDL] 検索完了 query='赤と青とエスキース' total=2 取得件数=2
+2026-03-12 20:47:17 [INFO] search_api - [API] 書影取得 round=1 hit=2/2 elapsed=1.13s
+2026-03-12 20:47:17 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-12 20:47:17 [INFO] search_api - [API] レスポンス返却 q='赤と青とエスキース' books=2 total=2 elapsed=5.38s

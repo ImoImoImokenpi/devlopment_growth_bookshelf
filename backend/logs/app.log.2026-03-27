@@ -1,0 +1,245 @@
+2026-03-27 13:31:54 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='真犯人' page=1 per_page=20
+2026-03-27 13:31:54 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-27 13:31:54 [INFO] search_api - [NDL] リクエスト開始 query='真犯人' start=1 max=60
+2026-03-27 13:31:54 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-27 13:32:00 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=5.79s
+2026-03-27 13:32:00 [INFO] search_api - [NDL] 検索完了 query='真犯人' total=662 取得件数=60
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='相棒シリーズX dayオリジナル・サウンドトラック Aibou series X day original soundtrack'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='相棒 season 3 disc 6'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='赤い激流'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='「秋田潟上事件」の真犯人にせまる! 怒号渦巻くデタラメ裁判!'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田小1殺害のタブー 報道陣が取り囲む捜査線上の「近隣住民」--狭い山村に飛び交う「真犯人」情報 1分間のスキを衝いた「白い車」「土地勘」「顔見知り」 子供二人が親友同士「両家の日常」 「カップ麺」生活だった彩香ちゃんの悲劇'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='足利事件 今もどこかで笑っている真犯人は、結局ナニ者なのか? DNA「18-24」型のナゾに迫る'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='足利事件キャンペーン ついに国会へ 検察が隠蔽する「真犯人のDNA」'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='足利事件キャンペーン(4)菅谷利和氏の告白 なぜ真犯人が野放しなのか'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='足利事件キャンペーン(5)真犯人のDNA型が二つあった!'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='足利事件キャンペーン(6)決定的新事実 これが真犯人の根拠だ!'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='足利事件で新たな「疑惑」浮上! 警察と検察はなぜ真犯人を追及しないのか'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='足利幼女殺人事件=「私はやってない」と被告は叫んだ 控訴棄却--DNA「1/185の確率」は真犯人を明かしたか'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='「麻生クーデター説」を流した真犯人--総裁選完全ドキュメント'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='頭のない女性焼死体事件 「警視庁元捜査一課長」述懐の記(2)真犯人は「冤罪のヒーロー」 : 一気に逮捕へと導いた情念'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='熱海の捜査官'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='新しいガス噴出モデル:ガス災害と湖水爆発--10年前のガス災害の真犯人は見つかったのか'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='ある編集者のオデッセイ--文藝春秋とともに(第117回・番外編)「想定外の津波」真犯人説を排す'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='アンタッチャブル disc-5'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='「飯塚事件」再審請求審で新たな目撃証言 「真犯人らしき男」の風貌は久間氏と別人'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='言い遺しておきたいこと-4-"五〇年問題"を混乱させた真犯人'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='移植心に存在する間葉系幹細胞--再生医学への希望か 隠れた真犯人か'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='いじめ超大国アメリカ--米社会 10代のいじめ自殺が続いているが「真犯人」は加害者ではない'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='異常気象の真犯人'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊藤博文暗殺事件の謎に迫る。杉山茂丸は真犯人か?'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='「今市女児殺害事件」不可解な2度目の有罪判決 別の真犯人の存在を示す証拠も浮上'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='イラク戦争開戦1年<検証> 侵略の真犯人(1)姿を現した「影の政府」'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='イラン爆殺とサイバー攻撃の真犯人--秘密工作 核開発計画に打撃を与えたコンピューターウイルス作戦の黒幕とは'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='インプラントが真犯人を指名! 警視庁の超執念-死体なき殺人を暴いた : 犯人グループの"完全犯罪"を突き崩した背景には青木樹哉新捜査一課長の就任が'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='植草一秀(野村総合研究所上席エコノミスト)--常軌を逸した逆噴射'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='ウォンテッド-彼らの願い Wanted. disc 5-6'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='うつの真犯人を追って'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='ウナギ激減の真犯人は日本人 漁業に求められる資源管理'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='英国人講師殺害事件 市橋容疑者の母「連絡してもらいたい」'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='エコーは推理だ! 読影のポイントと描出のコツ(File 55)真犯人はどこに'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='恵庭OL殺人事件 伊東秀子「真犯人はほかにいる!」'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='恵庭OL殺人事件 再審請求審で続々開示される新証拠 隠された「アリバイ」と「真犯人」が明るみに!'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='エネテク太陽光相談所(File26)太陽光イチの困りごと。真犯人はパネル!?'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='円急落の真犯人は誰か 米国の出口戦略を後押しした日米欧の為替"密約説"'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='冤罪の陰には真犯人が逃げている! 徳島ラジオ商事件、真犯人が消えた「迷路」の闇は誰が作ったのか? 執念の取材で割り出した嘱託殺人疑惑。近藤昭二氏に聞く'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='「円デフレ」は繰り返す'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='鉛筆は書けるだけでよい / 真犯人は警察だ / 鋭意をもち実践'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='「円安敗戦」を招いた真犯人の正体 東電子会社が再び債務超過へ'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='欧州 「EU殺人事件」の真犯人は'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='大阪・校内児童殺傷事件 戦後社会こそ"真犯人"だ'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='大伴家--『伴大納言絵巻』から読み解く応天門放火の真犯人'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] ISBNなしでスキップ title='大前研一(経営コンサルタント)--かつてスペインが辿った道'
+2026-03-27 13:32:00 [INFO] search_api - [NDL] スキップ 46件
+2026-03-27 13:32:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784048741019
+2026-03-27 13:32:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4047850063
+2026-03-27 13:32:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4041913039
+2026-03-27 13:32:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4887242824
+2026-03-27 13:32:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784777117765
+2026-03-27 13:32:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784819111973
+2026-03-27 13:32:01 [INFO] search_api - [API] 書影取得 round=1 hit=8/14 elapsed=1.37s
+2026-03-27 13:32:01 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=8/20
+2026-03-27 13:32:01 [INFO] search_api - [NDL] リクエスト開始 query='真犯人' start=61 max=60
+2026-03-27 13:32:02 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.31s
+2026-03-27 13:32:02 [INFO] search_api - [NDL] 検索完了 query='真犯人' total=662 取得件数=60
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='大森勧銀強盗殺人事件上告審決定--被告人と犯行とを結びつけるべき客観的証拠等及び被告人の捜査段階における自白の信憑性に疑問がある旨の詳細な職権判断が示され、被告人を真犯人と断定するについては合理的な疑いを容れる余地があるとして一審の有罪判決を破棄し無罪の言渡をした控訴審判決が維持された事例(最決昭和57.3.16)'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='臆せぬ闘い\u3000：\u3000謀略事件の真犯人は\u3000：\u3000米軍占領下の労働運動'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='汚水の告発横手市の集団赤痢４ 4||真犯人||減菌機放置のまま : 秋田魁新報'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='男!あばれはっちゃく DVD-box. 3 2'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='男!あばれはっちゃく DVD-box. 3 3'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='おはよう!スパンク DVD-box. 下巻 disc 11'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='小渕前首相「病床写真」犯人捜しで「院長」の面子'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='おぼっちゃまくん おはヨーグルトbox. disc 7-12'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='オリジナル・サウンドトラックザ・サスペンス金田一耕助シリーズミイラの花嫁獄門岩の首'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='快傑ズバット v.3'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='回顧ドキュメント 「松川事件」とは何だったのか(終)真犯人の追及を放棄した法治国家日本の恥部'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='開示された録音テープは、請求人の真犯人性を表しているのか、それとも請求人の無実性を表しているのか'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='かい人21面相「真犯人」騒動で初代「キツネ目の男」宮崎学氏に感想を聞いてみたが…'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='改善していなかった企業収益'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='怪盗スパンコール-真犯人を追え'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='解明されるアレルギー 石坂夫妻発見のE型グロブリン真犯人とわかる'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='帰ってきた時効警察'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='科学 内戦の「真犯人」はエルニーニョ?'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='輝いてスングム Kagayaite Soon-Geum. disc 23-26'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='輝いてスングム Kagayaite Soon-Geum. disc 27-30'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='影の真犯人のご吟味を－与兵衛耳切り事件－'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='加古川・女児殺害事件 女児が絶命前、言い残した"おっちゃん"を追え!'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='加治将一×黒鉄ヒロシ 坂本龍馬の黒幕、殺した真犯人'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='過剰流動性の真犯人は誰か--カジ取り誤った財政金融当局'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='稼げないサービス産業が真犯人 東京の経済成長マイナスの衝撃'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='勝手にしやがれヘイ!ブラザーDVDコレクション : 隔週刊. 第3号'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='加藤紘一が暴く「テロルの真犯人」--終戦記念日に起きた事件は何だったのか'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='加藤紘一議員に「アキバ事件の真犯人」と名指された「経済学者」'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='株価急落の真犯人は「営業特金の禁止」だ--不安材料いっぱいの市場が注目する7兆円の行方'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='株式時価総額で世界第2位 上海株急騰の意外な"真犯人"'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='甲山事件 証言 殺人犯として生きた二十四年--「真犯人を捜しに行く夢を何度も見ました」'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='甲山事件真相究明のために--別所元検事正の"真犯人"発言(「法学セミナー」三四六号)に抗議する(投稿)'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='鎌倉市・財政破綻の真犯人'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='仮面ライダーディケイド v.2'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='仮面ライダードライブ Kamen Rider Drive : Blu-ray collection. 3'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='カリフォルニア山火事の真犯人--アメリカ 森林火災の一部は自然災害でなく「病的放火魔」による犯行が疑われている'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='河合潤・京都大学教授に聞く 和歌山カレー事件"鑑定の闇"(下)真犯人は別にいて、野放しになっている'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='為替を安定させてはならない'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='河本大作犯行説を吹っ飛ばす! 張作霖爆殺の真犯人'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='「環境イエローページ」徹底活用術--知って得する「環境情報」公開します'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='環境問題読み・書き・ソロバン--「すべてほどほど」に優る対策はない'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='(巻末異見帖)東海村「臨界事故」の真犯人'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='がってん太助 江戸っ子ボーイ. v.1'
+2026-03-27 13:32:02 [INFO] search_api - [NDL] ISBNなしでスキップ title='がんばれ!!ロボコンDVD-collection 1974-1977. v.3'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='企業再編リストラのなかでの親会社の使用者責任'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='企業 三洋電機をダメにした真犯人'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='「企業犯罪」序説--真犯人は高みの見物をしている--「贈与行列」の行方を追え〔「ロッキードに至る『企業犯罪』の戦後の軌跡」序説〕'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='紀州のドンファン事件の無罪判決は検察の作戦負け 「疑わしきは罰せず」が取り逃がす真犯人へのモヤモヤ'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='起訴後真犯人の現れた事件の検討'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='「北」真犯人説・これだけの証拠'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='北朝鮮拉致事件 逃亡中の"実行犯"、よど号メンバーと語り合った"炎の行者"'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='気分は名探偵 第3巻'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='虚報の真犯人はエドガー・スノーだ--私が『新"南京大虐殺"のまぼろし』を書いた理由'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='規律欠如が過剰規制を生む 自縄自縛に苦しむ証券業界 五味廣文 元金融庁長官'
+2026-03-27 13:32:03 [INFO] search_api - [NDL] スキップ 54件
+2026-03-27 13:32:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784286220802
+2026-03-27 13:32:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065129173
+2026-03-27 13:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863679733
+2026-03-27 13:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061484125
+2026-03-27 13:32:04 [INFO] search_api - [API] 書影取得 round=2 hit=2/6 elapsed=1.06s
+2026-03-27 13:32:04 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=10/20
+2026-03-27 13:32:04 [INFO] search_api - [NDL] リクエスト開始 query='真犯人' start=121 max=60
+2026-03-27 13:32:05 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.40s
+2026-03-27 13:32:05 [INFO] search_api - [NDL] 検索完了 query='真犯人' total=662 取得件数=60
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='「金田一少年の事件簿」オリジナル・サウンドトラック'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='金正男暗殺「謎の真犯人」を追う!'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='「金融仲介機能」の低下は景気低迷の真犯人ではない'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='金融庁の銀行バーゲンセール'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='金融庁「ミスター規制」こそ、景気失墜の"真犯人"だ'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆説の日本史(第735回)第七十四話 徳川幕閣の展開と改革4 「田沼意次、その虚像と実像」編(その14)将軍家斉の田沼意正登用が裏付ける「意次鎮魂」と「家基暗殺」の真犯人'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='仰天結末!被告のDNA型は真犯人と一致しなかった! 小石川強盗殺人事件'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='ギリシャ山火事の真犯人は誰だ--災害 64人の命を奪った森林火災は何者かの陰謀か地球温暖化の影響か'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='銀行は強盗だった--国民の資産一四〇兆円はどこへ消えたか--本分を忘れた金融機関こそデフレ不況の真犯人だ!'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='国松前長官狙撃事件「小杉元巡査長はシロ」で浮上した真犯人像'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='国松長官狙撃事件 公安部が年内に銃の再捜索に着手へ'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='「国松長官狙撃の真犯人は…」今こそ明かす「オウム捜査」の闇 刑事&公安捜査関係者スッパ抜き座談会'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='暗いところで待ち合わせ オリジナル・サウンドトラック'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='グリコ・森永事件2.13時効 キツネ目男宮崎学はやっぱり怪しい--大谷昭宏 真犯人推理'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='「グルテンで体調悪化」の真犯人は別にいる!?'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='慶應大池尾教授が特別講義 デフレの"真犯人"は何か'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='警察庁長官狙撃真犯人「捜査秘録」 : 元警視庁刑事が明かす七年間の取調べの全貌'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='警察はなぜ真犯人を取り逃がしたのか 袴田事件当時の捜査に対するこれだけの疑問'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='経済・政治…3分でわかる大人ニュース(15)牛肉輸入停止の"真犯人"は?'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='〔刑訴判例研究一一〕有罪判決確定後に真犯人として名乗り出た者の供述が刑訴法四三五条六号にいわゆる「明らかな証拠」に該当するとして再審開始決定がされた事例(仙台高等裁判所昭和五一年七月一三日決定)'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='検察当局は真犯人を知っている?!'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='検証 サイバー(ハイテク)犯罪の捜査(第86回)遠隔操作真犯人事件の判決(その1)'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='検証 サイバー(ハイテク)犯罪の捜査(第87回)遠隔操作真犯人事件の判決(その2)'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='検証 サイバー(ハイテク)犯罪の捜査(第88回)遠隔操作真犯人事件の判決(その3)'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='検証 サイバー(ハイテク)犯罪の捜査(第89回)遠隔操作真犯人事件の判決(その4)'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='検証 サイバー(ハイテク)犯罪の捜査(第90回)遠隔操作真犯人事件の判決(その5)'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='拳銃無宿 DVD-box 1 宮部昭夫篇'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='拳銃無宿 = Wanted dead or alive. Vol. 13'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='激流レポート 減反見直し論議を「大山鳴動鼠一匹」に終わらせた真犯人'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='原因は人手不足だけではない! 物流クライシスの真犯人'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='現地ルポ 「秘境ツアー殺人」 グアテマラ 意外な真犯人--日本人観光客「撲殺事件」の裏に驚くべき真相が'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='現場を見た人\u3000松川事件の真犯人はだれか'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='現場をみた人 : 松川事件の真犯人はだれか'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='原油開発拡大に動き出した日本企業'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='原油超値上がりの「真犯人」 第3次オイルショックが襲来!--価格転嫁できない企業は給料カット? ガソリンはリッター150円も…'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='言論の覚悟 百人の真犯人を逃がしても…'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='恋の特効薬3-love connection : DVD-box'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='"航空殺人"の真犯人はだれか'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='高血圧の"真犯人"は「塩分」ではなく「脂肪」だった'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='皇室を衰退させた「真犯人」 コミンテルンが歪めた憲法の天皇条項'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='皇帝と私の秘密-櫃中美人 disc 7-9'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='荒野の少年イサム DVD box. disc 6'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='高齢者がお金を使えない'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='コールドケース2-真実の扉 連続ドラマW : コンプリート・ボックス'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='国際経済 原油相場高騰、「真犯人」はどこに--商品市場に流入する投資資金'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='国税通則法改悪の真犯人は誰だ'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='国民英雄-X ノーカット版. DVD-box 1'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='国立公園を蝕むコンクリート遊歩道--環境整備で喜ぶのは土建業者だけだ'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='国立大「定員割れ続出」真犯人'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='「こころの時代」解体新書 「黒バス事件」の真犯人は「虐待といじめ」'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='個人消費の足踏みの真犯人 : 2%インフレ目標達成への固執がマクロ経済を不安定化'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] ISBNなしでスキップ title='この一冊 「医療崩壊の真犯人」村上正泰著'
+2026-03-27 13:32:05 [INFO] search_api - [NDL] スキップ 52件
+2026-03-27 13:32:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063758108
+2026-03-27 13:32:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784488024604
+2026-03-27 13:32:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784895955720
+2026-03-27 13:32:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784774772967
+2026-03-27 13:32:06 [INFO] search_api - [API] 書影取得 round=3 hit=4/8 elapsed=0.99s
+2026-03-27 13:32:06 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=14/20
+2026-03-27 13:32:06 [INFO] search_api - [NDL] リクエスト開始 query='真犯人' start=181 max=60
+2026-03-27 13:32:07 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.35s
+2026-03-27 13:32:07 [INFO] search_api - [NDL] 検索完了 query='真犯人' total=662 取得件数=60
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='コメ輸出にこそ活路あり'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='「コラテラル・ダメージ」オリジナル・サウンドトラック/グレアム・レヴェル'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='これは仕組まれたテロだ 安倍暗殺 山上被告の背後に真犯人が?!'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='今週の一冊 『日本の競争戦略』マイケル・E・ポーター,竹内弘高共著--日本経済を闇に引き込んだ真犯人を精緻に炙り出す'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='こんなことは許せません||監督者が真犯人とは||カモシカ射殺事件自覚のなさに批判 : 秋田魁新報'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='強盗事件は真犯人の出現で一転無罪に 宇都宮誤認逮捕元被告は重度知的障害者だった!'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='ごくせん 2 episode 4-6'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='ゴンゾウ 伝説の刑事'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='最強のビジネスマン講座(56)中国反日暴動を引き起こした真犯人は日本の外務省だ'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='最新衝撃情報追う 安倍晋三「暗殺」 3発目真犯人がいる! : 元首相が凶弾に倒れ込んだとき謎の男が高圧ガス銃を首から心臓目掛けて'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='斎藤精一郎(立教大学教授)--瓦礫の山を片付けよ'
+2026-03-27 13:32:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='サイン-法医学者柚木貴志の事件'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='榊原英資(慶應義塾大学教授)--社会主義システムは限界に達した'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='殺人を無罪にする方法 How to get away with murder. シーズン 1 Part 2 vol. 5-8'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='狭山事件権力犯人と真犯人 : 権力犯罪の告発'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='狭山事件 権力犯人と真犯人'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='三陸ミステリー「疑惑の指名手配」(最終回)恐喝事件のキーマンを直撃! 被害届取り下げのナゾと「真犯人」'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='財務省主税局不況'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='ザ・クライム・ノンフィクション 世田谷一家殺人事件「最後の真実」(2)真犯人は祖師谷の町を歩いている'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='ザ・クライム・ノンフィクション 世田谷一家殺人事件「最後の真実」(最終回)家族に匿われ、今も近所に潜伏する真犯人を炙り出せ!'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='ザ・ゲーム-午前0時:愛の鎮魂歌. DVD-set 1'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='塩崎恭久(衆議院議員)--マーケットが答えを出す日'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='しおんの王 the flowers of hard blood. 8'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='志木市妻子放火殺人事件 アリバイ成立、真犯人アリの無罪から一転! 逆転有罪裁判の理不尽な実相!'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='市場縮小が招くダンピングの嵐 戦国時代に突入した信託業界'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='静岡 老婦人殺害事件と、「目撃証言」の不可解! 目撃者なのか? 真犯人なのか?'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='死人に口ナシ 謎の死を遂げた警部補は真犯人ではなかった!? 広島中央署内8500万円盗難事件の深い闇にせまる! 横領は警察内部の犯行か'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='下関市彦島女児殺害事件 真犯人がほくそ笑む!? 裁判員裁判で懲役30年の不当判決!'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='社会保険庁-素人長官と労組「悪魔の連携」--スクープ不正免除事件の「真犯人」 「納付率アップ達成」でトップ・幹部・現場の利害一致'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='週刊ノンフィクション劇場 グリコ・森永事件23年目の「真犯人」(2)青酸入り菓子ばらまき事件直前、「おもしろいこと起こるで」と男は語った'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='週刊ノンフィクション劇場 グリコ・森永事件 23年目の「真犯人」(3)「かい人21面相」の正体--頓挫した「キツネ目」捜査 大阪府警幹部を直撃!'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='週刊ノンフィクション劇場 グリコ・森永事件 23年目の「真犯人」(4・完)浮上する「事件」の全貌--極秘捜査資料が裏づけた「グリコ」と「5億円」の接点'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='週刊ノンフィクション劇場 時効寸前! 国松警察庁長官狙撃事件(第1回)極秘報告書が示唆する「真犯人」の実名'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='週刊ノンフィクション劇場(1)スクープ! グリコ・森永事件23年目の「真犯人」'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='シュタイナー教育に騙されるな--教育を歪める真犯人'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='主役を演じる銀行の過剰融資--情報不足が思惑買いに拍車'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='首里城焼失と沖縄の「病」 なぜか沖縄二紙も報じない 首里城焼失の「真犯人」'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='商工ローン悪玉論に異議あり!--中小企業を苦しめる"真犯人"は誰なのか'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='使用者責任(親会社)を問う!--純粋持株会社NTTの場合'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] ISBNなしでスキップ title='昭和最大の未解決事件「50年目の真実」!? 「五百円札」「発煙筒」「警察手帳」「アタッシュケース」「ヘルメット」「白バイ」「自殺した少年」 : 妙にリアルな"秘密の暴露"に話題沸騰! 三億円事件「実行したのは私です」 : "真犯人"告白インターネット小説の信憑性'
+2026-03-27 13:32:08 [INFO] search_api - [NDL] スキップ 40件
+2026-03-27 13:32:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784488421083
+2026-03-27 13:32:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=415171054X
+2026-03-27 13:32:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784903351759
+2026-03-27 13:32:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=4257032049
+2026-03-27 13:32:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784796666336
+2026-03-27 13:32:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=4434057782
+2026-03-27 13:32:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=4434057782
+2026-03-27 13:32:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784888500517
+2026-03-27 13:32:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063777482
+2026-03-27 13:32:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434121838
+2026-03-27 13:32:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=4872448480
+2026-03-27 13:32:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784813046790
+2026-03-27 13:32:09 [INFO] search_api - [API] 書影取得 round=4 hit=8/20 elapsed=1.80s
+2026-03-27 13:32:09 [INFO] search_api - [API] レスポンス返却 q='真犯人' books=20 total=662 elapsed=15.61s

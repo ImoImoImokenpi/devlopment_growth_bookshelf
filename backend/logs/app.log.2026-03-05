@@ -1,0 +1,696 @@
+2026-03-05 14:30:03 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-05 14:30:03 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:30:03 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-05 14:30:03 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-05 14:30:07 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.98s
+2026-03-05 14:30:07 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-05 14:30:07 [INFO] search_api - [NDL] スキップ 9件
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-05 14:30:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:30:08 [INFO] search_api - [API] 書影取得 round=1 hit=7/24 elapsed=1.18s
+2026-03-05 14:30:08 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 14:30:08 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=7 total=33 elapsed=5.21s
+2026-03-05 14:30:27 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=2 per_page=20
+2026-03-05 14:30:27 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:30:27 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-05 14:30:31 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.42s
+2026-03-05 14:30:31 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-05 14:30:31 [INFO] search_api - [NDL] スキップ 9件
+2026-03-05 14:30:31 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:30:31 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-05 14:30:31 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-05 14:30:31 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-05 14:30:31 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.00s
+2026-03-05 14:30:31 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 14:30:31 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=0 total=33 elapsed=3.45s
+2026-03-05 14:30:36 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-05 14:30:36 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:30:36 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-05 14:30:41 [ERROR] search_api - [NDL] タイムアウト query='十角館の殺人' elapsed=5.11s
+2026-03-05 14:32:02 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-05 14:32:02 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:32:02 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-05 14:32:03 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.38s
+2026-03-05 14:32:03 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-05 14:32:03 [INFO] search_api - [NDL] スキップ 9件
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-05 14:32:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-05 14:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-05 14:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-05 14:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-05 14:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:32:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-05 14:32:04 [INFO] search_api - [API] 書影取得 round=1 hit=7/24 elapsed=1.14s
+2026-03-05 14:32:04 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 14:32:04 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=7 total=33 elapsed=2.70s
+2026-03-05 14:32:14 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=2 per_page=20
+2026-03-05 14:32:14 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:32:14 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-05 14:32:15 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.11s
+2026-03-05 14:32:15 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-05 14:32:15 [INFO] search_api - [NDL] スキップ 9件
+2026-03-05 14:32:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:32:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-05 14:32:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-05 14:32:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-05 14:32:15 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.00s
+2026-03-05 14:32:15 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 14:32:15 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=0 total=33 elapsed=1.14s
+2026-03-05 14:32:20 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-05 14:32:20 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:32:20 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-05 14:32:24 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.62s
+2026-03-05 14:32:24 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-05 14:32:24 [INFO] search_api - [NDL] スキップ 9件
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-05 14:32:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-05 14:32:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:32:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-05 14:32:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-05 14:32:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-05 14:32:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:32:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-05 14:32:25 [INFO] search_api - [API] 書影取得 round=1 hit=7/24 elapsed=1.05s
+2026-03-05 14:32:25 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 14:32:25 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=7 total=33 elapsed=5.70s
+2026-03-05 14:43:51 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-05 14:43:51 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:43:51 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-05 14:43:53 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.71s
+2026-03-05 14:43:53 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-05 14:43:53 [INFO] search_api - [NDL] スキップ 9件
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-05 14:43:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-05 14:43:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-05 14:43:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-05 14:43:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-05 14:43:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:43:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-05 14:43:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 14:43:55 [INFO] search_api - [API] 書影取得 round=1 hit=7/24 elapsed=1.66s
+2026-03-05 14:43:55 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 14:43:55 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=7 total=33 elapsed=3.43s
+2026-03-05 14:44:50 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='Python' page=1 per_page=20
+2026-03-05 14:44:50 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 14:44:50 [INFO] search_api - [NDL] リクエスト開始 query='Python' start=1 max=60
+2026-03-05 14:44:53 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.67s
+2026-03-05 14:44:53 [INFO] search_api - [NDL] 検索完了 query='Python' total=4705 取得件数=60
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='アクセス回数をカウントするサーバ作りを例に PythonとRustで比較するマルチスレッド処理'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='アダマール行列を使った識別符号の生成から復元,画像化まで 2次元レーダにおける符号化処理'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='アット・ラスト・ザ・1948・ショウ'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='アミメ錦蛇Python reticulatusに寄生していた舌虫Pentastomaについて'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='アライアンスの相互補完・加算・相乗に関する数理モデルの提案とPython言語による実証 : 152社の企業データをもとに'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='荒木雅弘（著）「フリーソフトではじめる機械学習入門（第2版）Python/Wekaで実践する理論とアルゴリズム」'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='荒木雅弘（著）\u3000「Pythonではじめる機械学習」\u3000\u3000出版社：森北出版株式会社\u3000\u3000発行日：2025年11月28日\u3000\u3000ISBN：978-4-627-85861-9'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='アルゴリズム検証や組み込み後の動作検証にも 未知のモジュールをインタプリタ型言語Pythonで試しながら動かす'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='アルゴリズムの解読と実装 : Python+共通テスト用プログラム表記'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='医学研究・教育における データサイエンスの実践'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='医学研究・教育におけるデータサイエンスの実践'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='遺伝的アルゴリズムによる2次元倒立振子の制御ゲインの同定(汎用FEMコードとPython+DEAPの連成解析)'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='遺伝的アルゴリズムによる3次元倒立振子の制御ゲインの同定(汎用FEMコードとPython+DEAPの連成解析)'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='移動平均も画像のエッジ検出もニューラル・ネットワークも原理は同じ 畳み込み演算'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='いまどきのツールを使って半自動的にプログラム改善 Pythonでリファクタリング…VSCodeのお勧め機能'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='今までの通信規格との違いから,その役割やメリットまで スマート・ホームの標準規格「Matter」の基礎知識'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='医療系学部におけるpythonを使った基礎統計学の実践'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='色変換'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='インサイト Python開発事始め : 定番ライブラリーと開発環境'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='インターネット上の大規模データを利用した統計教材の開発 : pythonによるプログラム開発での青空文庫の利用'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] ISBNなしでスキップ title='インダストリアルマテリアルズ Pythonとオペレーションズ・リサーチ : データ分析,機械学習,数理最適化について'
+2026-03-05 14:44:53 [INFO] search_api - [NDL] スキップ 21件
+2026-03-05 14:44:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784295601050
+2026-03-05 14:44:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784295006411
+2026-03-05 14:44:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784775972205
+2026-03-05 14:44:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784844369592
+2026-03-05 14:44:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784800711595
+2026-03-05 14:44:55 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784764904330
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784297105082
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784295009856
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784295022862
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784295008538
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784800711595
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784802611381
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784295002086
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784800713216
+2026-03-05 14:44:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784877835415
+2026-03-05 14:44:57 [INFO] search_api - [API] 書影取得 round=1 hit=24/39 elapsed=4.11s
+2026-03-05 14:44:57 [INFO] search_api - [API] レスポンス返却 q='Python' books=20 total=4705 elapsed=6.92s
+2026-03-05 16:39:35 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='プロジェクション' page=1 per_page=20
+2026-03-05 16:39:35 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 16:39:35 [INFO] search_api - [NDL] リクエスト開始 query='プロジェクション' start=1 max=60
+2026-03-05 16:39:35 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-05 16:39:40 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.56s
+2026-03-05 16:39:40 [INFO] search_api - [NDL] 検索完了 query='プロジェクション' total=1619 取得件数=60
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アークベルによる宮城県気仙沼市で実施したプロジェクションマッピング制作記 : アークベル株式会社'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アート＋プロジェクションマッピングの地域連携活動への展開 〜雪舟生誕地公園でのプロジェクションマッピングを例として〜'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイディア次第で使える度UP! 色や模様のついた面にちゃんと映す! 色補正のメカニズム'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='ジャニュアリー/アイ・ハード・マイセルフ・イン・ユー'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='ジミー・ヴォーン/アウト・ゼア'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='赤色立体模型を用いた富士山プロジェクションマッピング'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='明るい室内環境におけるプロジェクションマッピングの実現に関する検討'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アクトランド龍馬歴史館での3D プロジェクションマッピング'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アストル・ピアソラ・リミックスド'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='新しい自動車用ヘッドアップディスプレイ(HUDs)とドライバの視覚情報 : 迅速な視覚情報が必要なAugment Realty技術を応用した新しいHUDsの設計の鍵'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='圧入プロジェクション接合の開発'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='厚物のプロジェクション溶接の溶接条件と強さの研究'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アナモルフォーズとプロジェクションマッピングを用いたMR組立作業支援システム'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アナログ地形模型を対象としたプロジェクション・マッピング技術の開発と博物館展示への導入'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アミッドスクリーンを用いたプロジェクションマッピングによる宣伝広告の提案'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アミッドスクリーンを用いたプロジェクションマッピングによる宣伝広告の提案'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='新たなる砂場への提言(2)プロジェクションマッピングの可能性'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='新たなる砂場への提言(3)プロジェクションマッピングの可能性'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アルミニウム合金材のプロジェクション溶接技術'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アルミニウム合金のプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アルミニウム合金のプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='粟ヶ崎遊園遺構を活用したプロジェクションマッピングの制作'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='安価な深度センサによる高精度プロジェクションマッピングの実現'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='アンドロイド観音：アンドロイドとプロジェクションマッピングを統合することによる形而上的な内容の情報伝達'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='イオンプロジェクション方式電気泳動ディスプレイ'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='異種金属の抵抗溶接法の検討\u3000ＩＩ\u3000\u3000炭素鋼とチタン，鋳鉄のプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='異種金属の抵抗溶接法の検討\u3000Ｉ\u3000\u3000炭素鋼とアルミニウム合金鋳物のプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='異種金属の抵抗溶接法の検討-1-炭素鋼とアルミニウム合金鋳物のプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='異種金属の抵抗溶接法の検討-2-炭素鋼とチタン,鋳鉄のプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='椅子の様々な並び方に対応するインタラクティブプロジェクションマッピング'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='位置情報を考慮した移動する自動運転車からのプロジェクションマッピング'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='位置情報を考慮した移動する自動運転車からのプロジェクションマッピング'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='異投射・虚投射の発生と共有 : 腐女子の妄想と二次創作を通じて'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='移動プロジェクションを利用したアドバルーンの研究と制作'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='イノベーション創出過程におけるプロジェクション'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='イノベーションにおける「実験行動」の効果 －プロジェクション（投射）と対話視点による考察'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='イノベーションにおけるプロトタイピングの効果―対Pivot chain to create the pairing in Needs solutions pairs" : G-Shock 1st model development by design thinking approach話とプロジェクション（投射）による考察―'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='イノベーションにおけるプロトタイピングの効果―対話とプロジェクション（投射）による考察―'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='祈i-no-riと願ne-ga-i : プロジェクションマッピングで迫る富貴寺と熊野摩崖仏の時代'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='歪み矯正治具を用いたギアのプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='歪み矯正治具を用いたギアのプロジェクション溶接'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='色順次駆動プロジェクション ディスプレイに関するカラーブレイクアップの解析'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='色の調味料瓶：料理を彩る食卓プロジェクションのためのインタフェース'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='色補正技術の応用 まるでイリュージョン! 光沢&透明感! 物体の見え方を変化させる照明'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インコンプリート・プロジェクション--青山真治監督作『エリ・エリ・レマ・サバクタニ』メーキング撮影日記'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インセル AppleがiPhone 5に採用 自社開発の技術で量産化を推進'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー : 酒井一吉さん 浦上天主堂を再現する : プロジェクション・マッピングの試み'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー モノ作りの足跡(1)プロジェクションテレビ/古畑睦弥 セイコーエプソン もっと大きく、もっと明るく、テレビの限界に挑戦したい'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 湯浅譲二に訊く--内触覚的宇宙のプロジェクション--<自己への問いかけ>と<存在の証>'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタラクティブなプロジェクションマッピングの実現'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='「インタラクティブプロジェクションマッピング」の可能性'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタラクティブプロジェクションマッピングを用いた伝統的茶会における“おもてなし”の演出'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタラクティブプロジェクションマッピングの実践事例報告'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタラクティブプロジェクションマッピングの実践事例報告'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] ISBNなしでスキップ title='インディヴィジュアル・プロジェクション'
+2026-03-05 16:39:40 [INFO] search_api - [NDL] スキップ 55件
+2026-03-05 16:39:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101377219
+2026-03-05 16:39:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784890261970
+2026-03-05 16:39:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=4887061420
+2026-03-05 16:39:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=4104180017
+2026-03-05 16:39:41 [INFO] search_api - [API] 書影取得 round=1 hit=1/5 elapsed=1.08s
+2026-03-05 16:39:41 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=1/20
+2026-03-05 16:39:41 [INFO] search_api - [NDL] リクエスト開始 query='プロジェクション' start=61 max=60
+2026-03-05 16:39:42 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.33s
+2026-03-05 16:39:42 [INFO] search_api - [NDL] 検索完了 query='プロジェクション' total=1619 取得件数=60
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='インドシアニングリーン蛍光画像のプロジェクションマッピングによるリアルタイムナビゲーション肝切除術:Medical Imaging Projection Systemの開発'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='「インフォテインメント教育」の実践事例1 （プロジェクション・マッピング）'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='「インフォテインメント教育」の実践事例(1)プロジェクション・マッピング'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='インフラづくりの未来(第3回)土木の広報 堤体を乱舞する映像に歓声 : プロジェクションマッピングでダムを観光資源化'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='ウォレス・ルーニー&ブランフォード・マルサリス/マンハッタン・プロジェクションズ'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='動く対象への動的プロジェクションマッピング技術'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='薄鋼板ソリッドプロジェクション溶接技術の開発(第2報)'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='薄鋼板ソリッドプロジェクション溶接技術の開発(第1報)'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='薄鋼板ソリッドプロジェクション溶接技術の開発(第3報)'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='薄鋼板ソリッドプロジェクション溶接技術の開発(第4報)'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='内視鏡保持ロボット制御のための色相に着目したバックプロジェクション法による手術器具の認識'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='内視鏡保持ロボット制御のための色相に着目したバックプロジェクション法による手術器具の認識'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='内視鏡用外付けユニットによる腹腔内への画像プロジェクションの実現'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='運動追従プロジェクションを利用する映像コンテンツとの動的インタラクション'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='運動追従プロジェクションを利用する映像コンテンツとの動的インタラクション'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画とプロジェクション'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画に要求される広い色再現範囲と明るい3D視聴とを両立する : Wire-grid偏光板を採用した高コントラストLCOSプロジェクター'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像音声通信とプロジェクション技術を利用した遠隔作業支援システム'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像空間における身体イメージのプロジェクションに関する研究'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像制作者のためのプロジェクションマッピングシステムの開発'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像のなかのスクリーン : リアプロジェクションをもちいた多層的映像をめぐって'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像表現を用いたプロトタイプ手法に関する研究'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像プロジェクションによる空間構築'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像プロジェクションによる空間構築'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像メディア表現教育向上の為の試み : プロジェクションマッピングの導入'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像メディア表現教育向上の為の試み(2)バーチャルリアリティ技術を用いたプロジェクションマッピングの導入'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像立体視プロジェクションシステムを用いた歩行者の回避行動に関する研究'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像立体視プロジェクションシステムによる歩行者の回避行動に関する研究 : 新しい実験手法の有効性の検討'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像立体視プロジェクションシステムを用いた歩行者の回避行動に関する研究'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='映像立体視プロジェクションシステムによる歩行者の回避行動に関する研究--新しい実験手法の有効性の検討'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクション画像における色域効果'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクション画像における色域効果'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクションシステム'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクションシステム'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクションディスプレイ'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクションディスプレイ : シンポジウム「ディスプレイの大型と要素技術の課題」'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクション用走査変換処理技術'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶データプロジェクタを用いた立体映像シアターシステム'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶パネル技術ロードマップ(2014年版)'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶パネルの製法を革新する配向印刷法'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクション映像機器の技術動向'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクション技術の最新動向'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクションテレビ用光源とその冷却技術'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクションテレビ用対角13cm(5型ワイド)TFT-LCDモジュール'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶プロジェクションテレビ用ICと回路'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶方式リアプロジェクタP401LC'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶モード 進化を続けるIPS液晶'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液晶リアプロジェクションの新しい技術動向'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液体アルゴン・タイムプロジェクションチェンバー'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='液体アルゴン・タイムプロジェクションチェンバー'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='エッジコンピュータを用いた分散協調マルチプロジェクションシステムにおける投影色補償'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='エッジコンピュータを用いた分散協調マルチプロジェクションシステムにおける投影色補償'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='エッジコンピュータを用いた分散協調マルチプロジェクションシステムにおける投影色補償'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='エプソン、テレビ市場に名乗り 第3の薄型テレビ、大画面液晶プロジェクションテレビ「LIVINGSTATION」'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='遠隔教育におけるプロジェクションマッピング提示型仮想学習空間構築の試み'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='円錐ミラーと円筒スクリーンを用いたプロジェクション式全周型ディスプレイ'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='エンタテインメントコンピューティング : 論文集. 2005'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='円筒型フォグスクリーンへのプロジェクションによる多視点表示'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='円筒形LIBとタブのマイクロプロジェクション溶接に及ぼすタブ材質の影響'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] ISBNなしでスキップ title='円筒型フォグスクリーンへのプロジェクションによる多視点表示'
+2026-03-05 16:39:42 [INFO] search_api - [NDL] スキップ 60件
+2026-03-05 16:39:42 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=1/20
+2026-03-05 16:39:42 [INFO] search_api - [NDL] リクエスト開始 query='プロジェクション' start=121 max=60
+2026-03-05 16:39:44 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.46s
+2026-03-05 16:39:44 [INFO] search_api - [NDL] 検索完了 query='プロジェクション' total=1619 取得件数=60
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='お絵描きとLINEをインタフェースとした車の立体模型に対するプロジェクションマッピング'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='お絵描きプロジェクションマッピングについての研究'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='大型化 大型タッチ・パネルを安価なCu配線で実現'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='大形基板用ミラープロジェクションマスクアライナ'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='大型プロジェクションマッピングの制作と表現 : 個人あるいは少人数制作でのプロセスの明示'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='大型床面プロジェクションマッピングで子どもたちの行動を支援する : ミライの体育館(筑波大学附属大塚特別支援学校内) 東京都文京区'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='大型リングプロジェクション溶接の検討'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='大型VRシステムのための能動型3次元位置センサA-MUSE'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='オーケストラの時の時・Ⅰ Time of orchestral time I'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='オートマチックトランスミッション部品用大型リングプロジェクション溶接装置'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='屋内環境におけるモバイルプロジェクション型AR案内システム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='屋内環境におけるモバイルプロジェクション型AR案内システム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='屋内環境におけるモバイルプロジェクション型AR案内システム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='屋内環境におけるモバイルプロジェクション型AR案内システム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='屋内環境におけるモバイルプロジェクション型AR案内システム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='オマージュ = Homage'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='おみずのつみき'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='おみずのつみき : プロジェクションマッピングを用いた形や色の変化を楽しむ遊具'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='オレンジ・コンピレーション'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='音楽を創る～子どもが演奏し,聴き,そしてつくるために'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='オン・ザ・キーボード ; プロジェクション・トポロジック ; 内触覚的宇宙 = On the keyboard ; Projection topologic ; Cosmos haptic'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='オン・ザ・キーボード ; プロジェクション・トポロジック ; 内触覚的宇宙 = On the keyboard, Projection topologic, Cosmos haptic'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='音声操作による映像投影を交えた札幌市時計台模型へのプロジェクション・マッピング'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='海岸段丘レーザースキャン計測データの3Dプリンタによる立体造形と,国立歴史民俗博物館でのプロジェクションマッピング展示について'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='回折格子を利用したプロジェクションシステムに関する研究'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='回折格子を利用したプロジェクションシステムに関する研究'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='回折格子を利用したプロジェクションシステム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='階層的プロジェクションマッピングによる大規模バルーンアート制作支援'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='階層的プロジェクションマッピングによる大規模バルーンアート制作支援'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='階層的プロジェクションマッピングによる大規模バルーンアート制作支援'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='回転型ストリップLEDアレイを用いた体積走査型ディスプレイによるプロジェクションマッピング'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='顔へのプロジェクションマッピングによる化粧体験'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='顔へのプロジェクションマッピングによる化粧体験'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='科学と仏教思想 (2022) : 宮澤正順先生頌寿記念論集'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='科学万博-つくば′85大画面マルチビデオプロジェクション装置'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='角速度センサ補正によるプロジェクション型強化現実表示安定化'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='角速度センサ補正によるプロジェクション型強化現実表示安定化'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='拡張現実感展示のためのプロジェクションマッピング手法の検討'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='拡張現実感展示のためのプロジェクションマッピング手法の検討'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='拡張現実のためのヘッドマウントディスプレイ技術'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='影を映像メディアにするマルチプロジェクションシステム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='影を映像メディアにするマルチプロジェクションシステム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='重ねプロジェクション溶接・突合せプロジェクション溶接・アプセット溶接'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='可視光プロジェクショントモグラフィの実現のための屈折現象の補正'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='可視光プロジェクショントモグラフィの実現のための屈折現象の補正'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='「過剰性」とプロジェクション'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='春日部市「ゆかたでナイト」での体験型プロジェクションマッピング : インタラクティブアートを地域活性化に活用する'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='仮想現実VR, 拡張現実AR, プロジェクションマッピング, ホログラフィーによる人間中心設計HCDに基づく肝胆膵手術支援'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='仮想現実VR,拡張現実AR,プロジェクションマッピング,ホログラフィーによる人間中心設計HCDに基づく空間的手術支援'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='家庭用40型液晶プロジェクションテレビシステム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='家庭用40型液晶プロジェクションテレビ用光学系'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='可動フェイス・スクリーンを用いた顔情報のプロジェクション表示システム'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='金沢駅「鼓門」における鑑賞型プロジェクションマッピングの実践'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='金沢駅「鼓門」プロジェクションマッピング\u3000 ICTを活用し人と場をつなぐ付加価値創出'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='金沢駅「鼓門」プロジェクションマッピングの実践'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='金沢駅「鼓門」プロジェクションマッピング'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='カナダのプロジェクション作戦'
+2026-03-05 16:39:44 [INFO] search_api - [NDL] スキップ 57件
+2026-03-05 16:39:44 [INFO] search_api - [API] 書影取得 round=3 hit=3/3 elapsed=0.26s
+2026-03-05 16:39:44 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=4/20
+2026-03-05 16:39:44 [INFO] search_api - [NDL] リクエスト開始 query='プロジェクション' start=181 max=60
+2026-03-05 16:39:46 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.26s
+2026-03-05 16:39:46 [INFO] search_api - [NDL] 検索完了 query='プロジェクション' total=1619 取得件数=60
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='過不足のない非剛体物体への動的プロジェクションマッピング'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='過不足のない非剛体物体への動的プロジェクションマッピング'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='㈱アシュラスコープインスタレーション 代表取締役社長 秋葉哲也 空間演出の視点で映像を使用する、話題のプロジェクションマッピング'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='兜プロジェクションマッピング －全周投影を用いた文化財展示の提案－'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='兜プロジェクションマッピング；全周投影を用いた文化財展示の提案'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='兜プロジェクションマッピング : 全周投影を用いた文化財展示の提案'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='可変成形ビーム/キャラクタープロジェクション電子線描画を用いた凹面構造によるナノギャップ形成'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='カメラアングル\u3000名古屋港にプロジェクションマッピング～名古屋港\u3000ＦＩＲＥＷＯＲＫＳ\u3000ｂｙ\u3000ＮＡＫＥＤ-雪花火-'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='カラー動画 酸化物半導体TFT駆動による10.2型高精細フレキシブル有機ELディスプレイ'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='カラービデオプロジェクションシステム'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='カラービデオプロジェクションシステム'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='軽井沢白糸の滝プロジェクションマッピング : 白糸ハイランドウェイにおける取組み'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='看護基礎教育におけるフィジカルアセスメント教育へのプロジェクションマッピング導入に関する研究 : 胸部のフィジカルアセスメントに焦点をあてて'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='看護基礎教育における呼吸器系のフィジカルアセスメント教育へのプロジェクションマッピングの有効性'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='完全没入型6面ディスプレイCOSMOSの開発と空間ナビゲーションにおける効果'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='観覧車ゴンドラ天井におけるプロジェクションマッピング'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='観覧車ゴンドラ天井におけるプロジェクションマッピング'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='外光を抑制した高コントラストフロントプロジェクションディスプレイ'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='外光を抑制した高コントラストフロントプロジェクションディスプレイ'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='学位記授与式のための情報大の花道プロジェクションの制作'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='学生プロジェクト活動報告(5)プロジェクションマッピングプロジェクト'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='学生プロジェクト活動報告（５）プロジェクションマッピングプロジェクト'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画素一致プロジェクタ-カメラシステムによる動的プロジェクションマッピング'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像コーナ プロジェクタ/カメラ/スクリーンの関係式から台形ひずみを一発変換! 研究! プロジェクション・マッピングの幾何学'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像生成AIによるプロジェクションマッピング動画制作 : Stable Diffusion Deforumの活用と制作成果'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像生成AI によるプロジェクションマッピング動画制作 : Stable Diffusion Deforum の活用と制作成果'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像ベースのカメラキャリブレーションに基づくバックプロジェクションを用いた物体の立体モデル化(バイオメディカル・画像処理その4)'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像誘導手術のためのマルチプロジェクションIntegral Videography表示システムの開発'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像誘導手術のためのマルチプロジェクション Integral Videography 表示システムの開発'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像誘導手術のためのマルチプロジェクション Integral Videography 表示システムの開発'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='画像誘導手術のためのマルチプロジェクション Integral Videography表示システムの開発'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='学校教室でのプロジェクションマッピングの活用'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='ガラスに挑む樹脂 : スマホのディスプレイまわりで進む部材の多様化'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='奇岩遊仙境プロジェクションマッピングのモチーフ選定工程'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='機器操作理解の支援を目的としたプロジェクションマッピングシステムの開発と評価'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='菊池桃子/南回帰線～トロピック・オブ・カプリコーン'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='机上オブジェクトの配置操作によるマルチプロジェクション制御システム'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='着物へのプロジェクションマッピング・インスタレーション : IFFTI 2015[イタリア・フィレンツェ サンタクローチェ聖堂]での展示'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='着物へのプロジェクションマッピング・インスタレーション : IFFTI 2015［イタリア・フィレンツェ\u3000サンタクローチェ聖堂］での展示'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法における描画面積の最適化による描画時間の削減'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法における描画面積の最適化による描画時間の削減'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法における描画面積の最適化による描画時間の削減'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法のためのセルライブラリ開発手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法のためのセルライブラリ開発手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法のためのセルライブラリ開発手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法のためのセルライブラリ開発手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法のためのセルライブラリ開発手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='キャラクタプロジェクション法のためのセルライブラリ開発手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='旧函館区公会堂プロジェクションマッピングの実現'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='旧函館区公会堂プロジェクションマッピングの実現'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイのための映像生成手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイのための映像生成手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイのための映像生成手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイにおける任意視点での歪みのない映像提示手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面ディスプレイを用いたデジタル絵本システム(プロジェクションマッピング,映像表現・芸術科学フォーラム2016)'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='教材・シナリオ 生体反応を呈する看護シミュレータのためのプロジェクションマッピング/拡張現実による視覚提示'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='響層 1'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='局所分散を考慮したバイラテラルバックプロジェクションと逆フィルタを用いた一枚超解像手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイのための映像生成手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイのための映像生成手法'
+2026-03-05 16:39:46 [INFO] search_api - [NDL] スキップ 60件
+2026-03-05 16:39:46 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=4/20
+2026-03-05 16:39:46 [INFO] search_api - [NDL] リクエスト開始 query='プロジェクション' start=241 max=60
+2026-03-05 16:39:50 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.84s
+2026-03-05 16:39:50 [INFO] search_api - [NDL] 検索完了 query='プロジェクション' total=1619 取得件数=60
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイのための映像生成手法'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='曲面スクリーンを用いたマルチプロジェクションディスプレイにおける任意視点での歪みのない映像提示手法'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='距離変化に着目したインタラクティブ・プロジェクションマッピングシステムの開発'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='近傍界領域における2次元バックプロジェクション法とEnvelope法を組み合わせた高速3次元レーダイメージング手法'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='技術と文化の融合からみたプロジェクションマッピングの調査'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='技術解説 CGS・TFT液晶プロジェクション光学エンジン'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='技術探索 プロジェクションマッピングの基盤技術'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='技術フォーラム 大容量直流インバータ式プロジェクション溶接機'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='《擬声語によるプロジェクション》覚書'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='擬声語によるプロジェクション : 混声合唱のための = Projection onomatopoetic : for mixed chorus'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆遠近錯視を用いたインラタクティブプロジェクションマッピングシステムの構築'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆遠近錯視を利用した立体サイネージの研究 : プロジェクションマッピングによる錯視オブジェクトの開発'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆輝度マッピングにより接合するマルチプロジェクション自由曲面ディスプレイ'
+2026-03-05 16:39:50 [INFO] search_api - [NDL] ISBNなしでスキップ title='業務用液晶データプロジェクタTLP411'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='業務用プロジェクタの現状と将来展望'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='空間演出 照明と映像が融合したプロジェクションライティング「Space Player」'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='クォークをとらえたタイム・プロジェクション・チェンバー'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='クシシュトフ・ヴォディチコの《パブリック・プロジェクション》の変容とその意味について'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='クシシュトフ・ヴォディチコ《ヒロシマ・プロジェクション》再考(第六十六回美学会全国大会発表要旨)'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='屈折プロジェクションマッピングのためのオプティカル フローに基づく深層学習による投影パターン補正'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='掘削具合の可視化技術「SP-MAPS」をトンネル切羽に適用 : 掘削すべき"アタリ"箇所がプロジェクションマッピングで一目瞭然'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='グラフィックプロジェクションシステムGP-3000/SI-5320'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='グループワークの振り返り支援に向けた付箋の分類履歴のプロジェクション'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='計測物体上へ評価結果を表示できる3次元計測プロジェクションマッピングシステムの開発'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='計測物体上へ評価結果を表示できる3次元計測プロジェクションマッピングシステムの開発'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='携帯電話向けプロジェクションシステムの開発'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='研究ハイライト(第53回)プロジェクションマッピングにおける動き予測を用いた変形する非剛体への実時間光学的補正'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='検査者不在の相互主体的な関係上での投影法'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='建築の時間的奥行きを引き出すプロジェクションマッピング(プロジェクションマッピング,<特集>メディア・コンテンツ化する建築)'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='弦楽四重奏のためのプロジェクション'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代日本チェロ名曲集/岩崎洸'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='限定的な空間を演出するプロジェクションマッピング作品の制作 : マッピングを使用したサラウンド空間の創出'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='幻燈展 : プロジェクション・メディアの考古学'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='現場のミスから生れた溶接技術 プロジェクション溶接とその応用'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高圧キセノンガスタイムプロジェクションチェンバーの開発および¹³⁶Xeの二重ベータ崩壊Q値付近におけるその性能評価'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高解像度リア型液晶プロジェクションディスプレイ'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高解像度リア型液晶プロジェクションディスプレイ'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='光学系設計技術部会講演要旨 プロジェクションレンズの変遷と今後の動向'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='光学透過型へッドマウントディスプレイを組み合わせた高ダイナミックレンジなプロジェクションマッピング'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高画質化を図ったプロジェクション・テレビ「PLV-55WR1」'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高画質ビデオプロジェクションテレビ"45P-Z1"'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高画質プロジェクションテレビPJ-43G1'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高画質リアプロジェクション・スクリーン'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高画素密度プロジェクションマッピングによる微細な質感編集'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高輝度プロジェクションディスプレイ用Poly-Si TFT液晶パネル'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高輝度プロジェクション用ブラウン管'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高輝度プロジェクターを支える要素技術とプロジェクションマッピングの最新事例'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高輝度プロジェクターを支える要素技術とプロジェクションマッピングの最新事例'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='講義における指差しの視線誘導効果を強化するARプロジェクション手法の提案'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='航空機搭載用ビデオプロジェクションシステム'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='航空機用V.P.S.(ビデオ・プロジェクション・システム)'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高指向性LED照明装置を用いたパターン形成とその応用'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='広視野角リアプロジェクションスクリーンの開発'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高自由度照明技術としてのプロジェクションマッピング'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高精細高輝度大画面表示は液晶プロジェクションで!!--4.2インチ・131万画素,投写型CRTをしのぐWSレベル'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] ISBNなしでスキップ title='高精細プロジェクションシステム<産業応用〜特集>'
+2026-03-05 16:39:51 [INFO] search_api - [NDL] スキップ 56件
+2026-03-05 16:39:51 [DEBUG] search_api - [Cover] 書影取得できず isbn=4890664270
+2026-03-05 16:39:51 [DEBUG] search_api - [Cover] 書影取得できず isbn=4118990652
+2026-03-05 16:39:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=4890664270
+2026-03-05 16:39:52 [INFO] search_api - [API] 書影取得 round=5 hit=1/4 elapsed=1.15s
+2026-03-05 16:39:52 [INFO] search_api - [API] レスポンス返却 q='プロジェクション' books=5 total=1619 elapsed=16.45s
+2026-03-05 16:40:34 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館' page=1 per_page=20
+2026-03-05 16:40:34 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 16:40:34 [INFO] search_api - [NDL] リクエスト開始 query='十角館' start=1 max=60
+2026-03-05 16:40:36 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.33s
+2026-03-05 16:40:36 [INFO] search_api - [NDL] 検索完了 query='十角館' total=36 取得件数=36
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画と小説のビミョーな距離 十角館はいかに改装されたか?'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] ISBNなしでスキップ title='80年代生まれ(ジ・エイティーズボーン)とミステリーを読む(9)綾辻行人『十角館(じゅっかくかん)の殺人』'
+2026-03-05 16:40:36 [INFO] search_api - [NDL] スキップ 11件
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7513321213
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-05 16:40:36 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-05 16:40:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 16:40:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-05 16:40:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-05 16:40:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-05 16:40:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-05 16:40:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-05 16:40:37 [INFO] search_api - [API] 書影取得 round=1 hit=7/25 elapsed=1.52s
+2026-03-05 16:40:37 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 16:40:37 [INFO] search_api - [API] レスポンス返却 q='十角館' books=7 total=36 elapsed=2.93s
+2026-03-05 17:22:41 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='嫌われる勇気' page=1 per_page=20
+2026-03-05 17:22:41 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-05 17:22:41 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=1 max=60
+2026-03-05 17:22:43 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.47s
+2026-03-05 17:22:43 [INFO] search_api - [NDL] 検索完了 query='嫌われる勇気' total=86 取得件数=60
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='アドラー心理学からのヒント 嫌われる勇気より、「好きになる勇気」がカギ!'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='アドラー流 上司と部下のコミュニケーション術'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='あなたは"一億総攻撃社会"をどう生き抜くか 陰口、仲間はずれ、ネット炎上、集中砲火― 実践 ロングセラー 『嫌われる勇気』で悩みは消えるか?'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』読者レビューから考察する心理課題'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』読者レビューから考察する心理課題'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』(私の一冊)'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気, 幸せになる勇気'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='ウロロジカルな世界の歩き方(8)嫌われる勇気・幸せになる勇気 : How you feel is up to you'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='岸見 一郎，古賀 史健 共著『嫌われる勇気』，岸見 一郎，古賀 史健 共著『幸せになる勇気』'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』が大ヒット 韓国アドラーブームの深層'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』共著者 岸見一郎氏&働く女性座談会 なぜアドラー心理学は女性に響くのか'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』『幸せになる勇気』で一躍脚光 お店で共有したい「アドラーの教え」 チームメンバー一人一人が能力を発揮できる活力のあるお店をつくろう'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気 : 自己啓発の源流「アドラー」の教え ここでしか読めない!! 書き下ろし特別編'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』のアドラー心理学者が説く 「定年後」の心がまえ'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気も必要です 「その手術、やっぱりやめます」と言ったら、医者はどう思うか'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='"ぎすぎす"を"生き生き"に 職場も変えるアドラー流対話術'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='建築家の流儀(23)嫌われる勇気,あるいは蛮勇'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='講演録 嫌われる勇気 : よりよい人間関係の築き方'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='「紅白が花道かぁ」NHK籾井会長が後任人事に一言'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='壊さないから再生しない日本。足りないのはリーダーの嫌われる勇気'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='叱らない、褒めない アドラー流子育て術'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='仕事で、家庭で実践! みんなのアドラー心理学'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='仕事ですぐに使える! アドラー流コミュニケーション術'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='社会 住めば都の偉大なる田舎 : 嫌われる勇気をもってわが道を行く'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='修羅場のケーススタディ(第3回)リスクを取る覚悟と「嫌われる勇気」'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='書評\u3000岸見一郎・古賀健『嫌われる勇気』'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場が変わる､家庭が変わる 5分で分かるアドラー心理学'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場の場面別 3倍成果が上がる言い方テクニック 嫌われる勇気を持て!'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場の雰囲気も激変! 組織を活性化する｢勇気づけ｣'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='シリコンバレーの流儀(070)嫌われる勇気でイノベーションを'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='心理学 フロイト、ユングと並ぶ「心理学の3大巨頭」アドラーに学ぶ 『嫌われる勇気』のヒットで脚光浴びる"悩みに厳しい"アドラーのアドバイス'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='人生のパターンが一目瞭然 ライフスタイルをチェック'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='人生の目標・計画を立てる'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='戦後70年代の証言者たち(No.31)「嫌われる勇気」を持って「最上」を追究する人生観'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='センターだより 十五年間賠償事故ゼロを継続 原点は「嫌われる勇気」'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='対人関係 「いい人」をやめなさい。「嫌われる勇気」を持ちなさい'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='大ベストセラー『嫌われる勇気』の岸見一郎先生が、実体験を語る 「不完全な介護でもいい」と割り切る勇気'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='特集 ベストセラー『嫌われる勇気』で注目 「アドラー心理学」を経営に生かす'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='特別対談 『嫌われる勇気』誕生秘話 僕たちがつくったのは、心理学ではなく哲学の本'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='ドラッカーに学ぶメンタルヘルス : 実践編(第5回)「嫌われる勇気」を持つ アドラー心理学の示唆 : 「好かれる」ことにとらわれないための発想'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='必読! 悩める読者に金言! 岸見先生の公開カウンセリング'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='ビジネス書ベストセラーの"5賢人"が提言! 今年中/来年初にやるべき「10のこと」'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='フジテレビ系ドラマ嫌われる勇気original soundtrack'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='ベストセラー解剖 『嫌われる勇気』100万部突破『幸せになる勇気』話題沸騰 「アドラー心理学」の秘密'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='ミドルリーダー発! 「働き方改革」のマインドセット&実践事例(最終回)働き方改革に満場一致はない : 嫌われる勇気をもとう'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='名門スタンフォード大学特別講義 自分を「変えられる人」と「変えられない人」は、どう違うのか?'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='「横の関係」が組織を変える アドラーの教え サラリーマンよ「嫌われる勇気」を持て'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='来年の目標設定 エクセルで簡単にできる!見える化の技術'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='老親介護と「嫌われる勇気」 : アドラー心理学が親子関係の悩みを解決する'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='私の広告観 岸見一郎さん 哲学者 企業にも嫌われる勇気は必要か'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='私'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='私'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='20分で分かる! 初めてのアドラー心理学'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] ISBNなしでスキップ title='65歳からの「嫌われる勇気」'
+2026-03-05 17:22:43 [INFO] search_api - [NDL] スキップ 55件
+2026-03-05 17:22:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8996991341
+2026-03-05 17:22:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787111495482
+2026-03-05 17:22:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9782813216458
+2026-03-05 17:22:45 [INFO] search_api - [API] 書影取得 round=1 hit=2/5 elapsed=2.00s
+2026-03-05 17:22:45 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=2/20
+2026-03-05 17:22:45 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=61 max=60
+2026-03-05 17:22:46 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.65s
+2026-03-05 17:22:46 [INFO] search_api - [NDL] 検索完了 query='嫌われる勇気' total=86 取得件数=26
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Book Reviews 著者のホンネ 今、この瞬間から変わる! 未来を見るアドラーの教え[『嫌われる勇気』岸見一郎、古賀史健著]'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Emma'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Emma'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 過去をトラウマにするかは自分の心掛け次第'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 「課題の分離」や主観の捉え方 仏教とアドラー心理学の共通点'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 子どもとの接し方を学べば子育て下手は克服できる'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 全ては自分から始まる まず小さな一歩を踏み出そう'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview ビリギャルはアドラーの実践 成長を一緒に喜ぶことが大切'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Know-How 累計150万部突破『嫌われる勇気』『幸せになる勇気』の原案者が語る 「嫌な人」への接し方が変わる! アドラー7つの"ダメ出し"'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Prologue 『嫌われる勇気』ビジネス編 他者の期待に生きてはいけない'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='Prologue なぜいまアドラー心理学が脚光を浴びているのか'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] ISBNなしでスキップ title='W杯3勝を「必然」に変えた 緻密さと激情と嫌われる勇気'
+2026-03-05 17:22:46 [INFO] search_api - [NDL] スキップ 12件
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1668065969
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=6044012513
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789492754127
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788851169916
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788660357757
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788073069544
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788375796025
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5040987382
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630492
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781982100391
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630737
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788284371245
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786162871429
+2026-03-05 17:22:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788996991342
+2026-03-05 17:22:46 [INFO] search_api - [API] 書影取得 round=2 hit=0/14 elapsed=0.00s
+2026-03-05 17:22:46 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-05 17:22:46 [INFO] search_api - [API] レスポンス返却 q='嫌われる勇気' books=2 total=86 elapsed=5.33s

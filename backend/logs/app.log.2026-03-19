@@ -1,0 +1,16 @@
+2026-03-19 14:10:20 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='仮面山荘' page=1 per_page=20
+2026-03-19 14:10:20 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-19 14:10:20 [INFO] search_api - [NDL] リクエスト開始 query='仮面山荘' start=1 max=60
+2026-03-19 14:10:20 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-19 14:10:24 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.37s
+2026-03-19 14:10:24 [INFO] search_api - [NDL] 検索完了 query='仮面山荘' total=7 取得件数=7
+2026-03-19 14:10:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='仮面山荘殺人事件'
+2026-03-19 14:10:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='仮面山荘殺人事件'
+2026-03-19 14:10:24 [INFO] search_api - [NDL] スキップ 2件
+2026-03-19 14:10:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787530217559
+2026-03-19 14:10:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788990982575
+2026-03-19 14:10:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061859668
+2026-03-19 14:10:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=4191544071
+2026-03-19 14:10:25 [INFO] search_api - [API] 書影取得 round=1 hit=1/5 elapsed=0.93s
+2026-03-19 14:10:25 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-19 14:10:25 [INFO] search_api - [API] レスポンス返却 q='仮面山荘' books=1 total=7 elapsed=4.34s

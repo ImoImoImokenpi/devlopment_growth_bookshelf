@@ -1,0 +1,599 @@
+2026-03-28 17:08:06 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='広辞苑' page=1 per_page=20
+2026-03-28 17:08:06 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-28 17:08:06 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=1 max=60
+2026-03-28 17:08:06 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-28 17:08:15 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=9.20s
+2026-03-28 17:08:15 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='相も変わらず「広辞苑」の大嘘'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='アクセシブルデザインの世界(第43回)広辞苑に掲載された共用品'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='あさかすみ條'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波書店『広辞苑 第5版 CD-ROM版』生まれ変わった21世紀版『広辞苑』'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波書店に公開質問状 『広辞苑』朝鮮征伐・北鮮について'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波・富士通・ソニー・大日本印刷,「広辞苑」のCD-ROM'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='因果律'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='「ウトウ」アイヌ語説の誤り--虚説を広めた『広辞苑』'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='「うとう」はアイヌ語の突起か ―『広辞苑』第五版に疑義あり― : 北方風土'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='エートス : 民族や社会集団に行き渡っている道徳的な慣習 雰囲気'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ英語の原音を知る : 『広辞苑』不収録語を対象に'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ英語の原音を知る ―『広辞苑』不収録語を対象に―'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ3文字語及びカタカナ4文字語の正書法的類似語 音韻的類似語数表--Macintosh版岩波広辞苑第四版に基づく類似語数調査'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ3文字語及びカタカナ4文字語の正書法的類似語・音韻的類似語数表(2)--Macintosh版岩波広辞苑第四版に基づく音素単位類似語数調査'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='家庭の辞典セット'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='カナヘビの体色は「かな色」か ―『広辞苑』第五版に疑義あり― : 北方風土'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='「紙」のつく言葉-広辞苑の話'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='川端康成全集. 第19巻 (文学時評 4)'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(1)一一月、紅葉に深まりゆく秋'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(10)八月、命みなぎる植物たち'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(11)九月、秋は気が付けばそこにある'
+2026-03-28 17:08:15 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(12)一〇月、澄み渡る青空の美しさ'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(2)一二月、寒さの中の楽しみ'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(3)一月、お正月の伝統風俗'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(4)二月、寒さの中に芽生える春'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(5)三月、春の訪れを告げる花々'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(6)四月、乱れ咲く花たちの中から'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(7)五月、新緑がまぶしい季節に'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(8)六月、梅雨のそぼ降る雨の中で'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(9)七月、夏空、そして台風'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(最終回)十二月、お鍋に入れたい魚介類'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(1)一月、おせちの海鮮に舌鼓'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(10)十月、海と陸とを股にかけ'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(11)十一月、深まる秋には堅い殻'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(2)二月、凍てつく水の中から'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(3)三月、海からやってくる春'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(4)四月、貝のうまみは春の味わい'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(5)五月、青葉と清流と爽やかな風'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(6)六月、磯を賑わす変わり者たち'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(7)七月、魚介を食して夏を乗り切れ'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(8)八月、波間に躍る巨大な影'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(9)九月、秋の澄んだ水の中で'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(1)一〇月、秋は空からやってくる'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(10)七月、網を片手に追いかけて'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(11)八月、密林、草原、そして砂漠'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(12・最終回)九月、心にしみる虫の声'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(2)一一月、実りの秋の動物たち'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(3)一二月、寒さの中の羽ばたき'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(4)一月、おめでたい動物たち'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(5)二月、活躍の場は銀世界'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(6)三月、春は翼に乗って'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(7)四月、花が咲けば心も浮き立つ'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(8)五月、新緑の中を翔け回る'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(9)六月、雨の匂いを感じつつ'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] ISBNなしでスキップ title='架構'
+2026-03-28 17:08:16 [INFO] search_api - [NDL] スキップ 55件
+2026-03-28 17:08:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163152903
+2026-03-28 17:08:17 [INFO] search_api - [API] 書影取得 round=1 hit=4/5 elapsed=1.15s
+2026-03-28 17:08:17 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=4/20
+2026-03-28 17:08:17 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=61 max=60
+2026-03-28 17:08:18 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.41s
+2026-03-28 17:08:18 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='外字の作成事例:「広辞苑」を中心に'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='外来語の変遷 : 『広辞苑』諸版を比較して'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='外来語の変遷 ―『広辞苑』諸版を比較して'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='がん[癌]'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='企業ルポ 中国で「広辞苑」を売る--カシオの電子辞書'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='「教育」と「保育」に関する一考察'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='教材, 教具'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆引き広辞苑\u3000机上版'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆引き広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='クローズアップニッポン(162)竹内結子--「理想の妻」の質問癖と広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='劇には、1 激しく強いこと、2 たわむれること、芝居、ドラマ、の意味がある'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代日本語をめぐる報道界の"権力"と辞書の"権威"(共同通信社『記者ハンドブック・新聞用字用語集』と『広辞苑』の狭間--正しさの拠り所)'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='「現代日本語をめぐる報道界の権力と辞書の権威」 （共同通信社『記者ハンドブック・新聞用字用語集』と『広辞苑』の狭間―正しさの拠り所） : 秋田法学'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代の語彙の変遷 : 『広辞苑』第三版と第四版を比較して'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代の語彙の変遷 ―『広辞苑』第三版と第四版を比較して―'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代用語のムイミダスぶっとい広辞苑 DVD-box'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='「工芸」工作にかかわる技芸'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第７版\u3000付録［普通版］'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000付録［普通版］'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000た－ん［机上版］'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000付録［机上版］'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000あ－そ［机上版］'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第３版'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑. あ-そ'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』「あさかやま‹朝香山›」の考察'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 あ－そ'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-28 17:08:18 [INFO] search_api - [NDL] スキップ 52件
+2026-03-28 17:08:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300028
+2026-03-28 17:08:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801074
+2026-03-28 17:08:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=400130015X
+2026-03-28 17:08:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801074
+2026-03-28 17:08:20 [INFO] search_api - [API] 書影取得 round=2 hit=4/8 elapsed=1.51s
+2026-03-28 17:08:20 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=8/20
+2026-03-28 17:08:20 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=121 max=60
+2026-03-28 17:08:21 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.39s
+2026-03-28 17:08:21 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑英和・和英研究社中辞典 : 電子辞書 : IC dictionary'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」への注文'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」への注文'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑を遊ぶ、「たほいや」'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑\u3000第七版\u3000Ｔｈｅ−７ｔｈ−ｅｄｉｔｉｏｎ'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと\u3000：\u3000広辞苑第七版刊行記念'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑\u3000第七版\u3000\u3000Ｔｈｅ-７ｔｈ-ｅｄｉｔｉｏｎ\u3000（表紙）'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑第七版'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」を読む'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑を読む』を読む'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」改版の歴史(徹底比較)'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 下'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」が何と言おうと、台湾は台湾です!'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』が載せた「朝鮮人強制連行」のウソ'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』後記'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』自序'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑じゃわからない 人生と仕事に役立つ 企業の名言・箴言(しんげん)・教訓・警句'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 上'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑. た-ん'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑「台湾は中国の一部」は大ウソ'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 : 机上版 : 総革装 た－ん'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 た－ん'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第七版<机上版>付録'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』(第七版)に見るポップカルチャーの台頭'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第七版\u3000付録'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 : 第二版'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 第2版補訂版/机上版'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑  第四版  電子ブック版'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版<机上版>付録'
+2026-03-28 17:08:21 [INFO] search_api - [NDL] スキップ 40件
+2026-03-28 17:08:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8961842785
+2026-03-28 17:08:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8961842792
+2026-03-28 17:08:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201963
+2026-03-28 17:08:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801058
+2026-03-28 17:08:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201802
+2026-03-28 17:08:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201963
+2026-03-28 17:08:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201802
+2026-03-28 17:08:23 [INFO] search_api - [API] 書影取得 round=3 hit=13/20 elapsed=1.46s
+2026-03-28 17:08:23 [INFO] search_api - [API] レスポンス返却 q='広辞苑' books=20 total=474 elapsed=16.51s
+2026-03-28 17:08:55 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='広辞苑' page=1 per_page=20
+2026-03-28 17:08:55 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-28 17:08:55 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=1 max=60
+2026-03-28 17:08:55 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.10s
+2026-03-28 17:08:55 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='相も変わらず「広辞苑」の大嘘'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='アクセシブルデザインの世界(第43回)広辞苑に掲載された共用品'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='あさかすみ條'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波書店『広辞苑 第5版 CD-ROM版』生まれ変わった21世紀版『広辞苑』'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波書店に公開質問状 『広辞苑』朝鮮征伐・北鮮について'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波・富士通・ソニー・大日本印刷,「広辞苑」のCD-ROM'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='因果律'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='「ウトウ」アイヌ語説の誤り--虚説を広めた『広辞苑』'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='「うとう」はアイヌ語の突起か ―『広辞苑』第五版に疑義あり― : 北方風土'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='エートス : 民族や社会集団に行き渡っている道徳的な慣習 雰囲気'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ英語の原音を知る : 『広辞苑』不収録語を対象に'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ英語の原音を知る ―『広辞苑』不収録語を対象に―'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ3文字語及びカタカナ4文字語の正書法的類似語 音韻的類似語数表--Macintosh版岩波広辞苑第四版に基づく類似語数調査'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ3文字語及びカタカナ4文字語の正書法的類似語・音韻的類似語数表(2)--Macintosh版岩波広辞苑第四版に基づく音素単位類似語数調査'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='家庭の辞典セット'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='カナヘビの体色は「かな色」か ―『広辞苑』第五版に疑義あり― : 北方風土'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='「紙」のつく言葉-広辞苑の話'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='川端康成全集. 第19巻 (文学時評 4)'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(1)一一月、紅葉に深まりゆく秋'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(10)八月、命みなぎる植物たち'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(11)九月、秋は気が付けばそこにある'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(12)一〇月、澄み渡る青空の美しさ'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(2)一二月、寒さの中の楽しみ'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(3)一月、お正月の伝統風俗'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(4)二月、寒さの中に芽生える春'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(5)三月、春の訪れを告げる花々'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(6)四月、乱れ咲く花たちの中から'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(7)五月、新緑がまぶしい季節に'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(8)六月、梅雨のそぼ降る雨の中で'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(9)七月、夏空、そして台風'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(最終回)十二月、お鍋に入れたい魚介類'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(1)一月、おせちの海鮮に舌鼓'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(10)十月、海と陸とを股にかけ'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(11)十一月、深まる秋には堅い殻'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(2)二月、凍てつく水の中から'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(3)三月、海からやってくる春'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(4)四月、貝のうまみは春の味わい'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(5)五月、青葉と清流と爽やかな風'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(6)六月、磯を賑わす変わり者たち'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(7)七月、魚介を食して夏を乗り切れ'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(8)八月、波間に躍る巨大な影'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(9)九月、秋の澄んだ水の中で'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(1)一〇月、秋は空からやってくる'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(10)七月、網を片手に追いかけて'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(11)八月、密林、草原、そして砂漠'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(12・最終回)九月、心にしみる虫の声'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(2)一一月、実りの秋の動物たち'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(3)一二月、寒さの中の羽ばたき'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(4)一月、おめでたい動物たち'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(5)二月、活躍の場は銀世界'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(6)三月、春は翼に乗って'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(7)四月、花が咲けば心も浮き立つ'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(8)五月、新緑の中を翔け回る'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(9)六月、雨の匂いを感じつつ'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='架構'
+2026-03-28 17:08:55 [INFO] search_api - [NDL] スキップ 55件
+2026-03-28 17:08:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163152903
+2026-03-28 17:08:56 [INFO] search_api - [API] 書影取得 round=1 hit=4/5 elapsed=0.70s
+2026-03-28 17:08:56 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=4/20
+2026-03-28 17:08:56 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=61 max=60
+2026-03-28 17:08:56 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.06s
+2026-03-28 17:08:56 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='外字の作成事例:「広辞苑」を中心に'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='外来語の変遷 : 『広辞苑』諸版を比較して'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='外来語の変遷 ―『広辞苑』諸版を比較して'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='がん[癌]'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='企業ルポ 中国で「広辞苑」を売る--カシオの電子辞書'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='「教育」と「保育」に関する一考察'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='教材, 教具'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆引き広辞苑\u3000机上版'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆引き広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='クローズアップニッポン(162)竹内結子--「理想の妻」の質問癖と広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='劇には、1 激しく強いこと、2 たわむれること、芝居、ドラマ、の意味がある'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代日本語をめぐる報道界の"権力"と辞書の"権威"(共同通信社『記者ハンドブック・新聞用字用語集』と『広辞苑』の狭間--正しさの拠り所)'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='「現代日本語をめぐる報道界の権力と辞書の権威」 （共同通信社『記者ハンドブック・新聞用字用語集』と『広辞苑』の狭間―正しさの拠り所） : 秋田法学'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代の語彙の変遷 : 『広辞苑』第三版と第四版を比較して'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代の語彙の変遷 ―『広辞苑』第三版と第四版を比較して―'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代用語のムイミダスぶっとい広辞苑 DVD-box'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='「工芸」工作にかかわる技芸'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第７版\u3000付録［普通版］'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000付録［普通版］'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000た－ん［机上版］'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000付録［机上版］'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000あ－そ［机上版］'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第３版'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑. あ-そ'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』「あさかやま‹朝香山›」の考察'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 あ－そ'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-28 17:08:56 [INFO] search_api - [NDL] スキップ 52件
+2026-03-28 17:08:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300028
+2026-03-28 17:08:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801074
+2026-03-28 17:08:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801074
+2026-03-28 17:08:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=400130015X
+2026-03-28 17:08:57 [INFO] search_api - [API] 書影取得 round=2 hit=4/8 elapsed=1.23s
+2026-03-28 17:08:57 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=8/20
+2026-03-28 17:08:57 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=121 max=60
+2026-03-28 17:08:57 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.07s
+2026-03-28 17:08:57 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑英和・和英研究社中辞典 : 電子辞書 : IC dictionary'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」への注文'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」への注文'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑を遊ぶ、「たほいや」'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑\u3000第七版\u3000Ｔｈｅ−７ｔｈ−ｅｄｉｔｉｏｎ'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと\u3000：\u3000広辞苑第七版刊行記念'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑\u3000第七版\u3000\u3000Ｔｈｅ-７ｔｈ-ｅｄｉｔｉｏｎ\u3000（表紙）'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑第七版'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」を読む'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑を読む』を読む'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」改版の歴史(徹底比較)'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 下'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」が何と言おうと、台湾は台湾です!'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』が載せた「朝鮮人強制連行」のウソ'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』後記'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』自序'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑じゃわからない 人生と仕事に役立つ 企業の名言・箴言(しんげん)・教訓・警句'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 上'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑. た-ん'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑「台湾は中国の一部」は大ウソ'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 : 机上版 : 総革装 た－ん'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 た－ん'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第七版<机上版>付録'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』(第七版)に見るポップカルチャーの台頭'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第七版\u3000付録'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 : 第二版'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 第2版補訂版/机上版'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑  第四版  電子ブック版'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版<机上版>付録'
+2026-03-28 17:08:57 [INFO] search_api - [NDL] スキップ 40件
+2026-03-28 17:08:57 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8961842785
+2026-03-28 17:08:57 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8961842792
+2026-03-28 17:08:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201963
+2026-03-28 17:08:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201802
+2026-03-28 17:08:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801058
+2026-03-28 17:08:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201802
+2026-03-28 17:08:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201963
+2026-03-28 17:08:59 [INFO] search_api - [API] 書影取得 round=3 hit=13/20 elapsed=1.51s
+2026-03-28 17:08:59 [INFO] search_api - [API] レスポンス返却 q='広辞苑' books=20 total=474 elapsed=3.87s
+2026-03-28 17:09:16 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-28 17:09:16 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-28 17:09:16 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-28 17:09:18 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.60s
+2026-03-28 17:09:18 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-28 17:09:18 [INFO] search_api - [NDL] スキップ 9件
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-28 17:09:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-28 17:09:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-28 17:09:19 [INFO] search_api - [API] 書影取得 round=1 hit=10/24 elapsed=1.42s
+2026-03-28 17:09:19 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-28 17:09:19 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=10 total=33 elapsed=3.05s
+2026-03-28 17:09:42 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='そしてバトンは渡された' page=1 per_page=20
+2026-03-28 17:09:42 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-28 17:09:42 [INFO] search_api - [NDL] リクエスト開始 query='そしてバトンは渡された' start=1 max=60
+2026-03-28 17:09:44 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.37s
+2026-03-28 17:09:44 [INFO] search_api - [NDL] 検索完了 query='そしてバトンは渡された' total=18 取得件数=18
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画そして、バトンは渡されたオリジナル・サウンドトラック'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された : ブルーレイプレミアム・エディション'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された 第1分冊'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された 第5分冊'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された 第3分冊'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された 第2分冊'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='そして、バトンは渡された 第4分冊'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='本好き司法書士の「司書さんじゃありません!」 そして、バトンは渡された'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='本屋大賞大絶賛 『そして、バトンは渡された』に込めた想い'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] ISBNなしでスキップ title='前田哲[監督] インタビュー 悲観的にならず笑い飛ばして心の澱を涙で洗い流してもらえたら'
+2026-03-28 17:09:44 [INFO] search_api - [NDL] スキップ 12件
+2026-03-28 17:09:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781000810929
+2026-03-28 17:09:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161403416
+2026-03-28 17:09:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788967442088
+2026-03-28 17:09:45 [INFO] search_api - [API] 書影取得 round=1 hit=3/6 elapsed=1.44s
+2026-03-28 17:09:45 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-28 17:09:45 [INFO] search_api - [API] レスポンス返却 q='そしてバトンは渡された' books=3 total=18 elapsed=2.83s
+2026-03-28 17:21:28 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='辞書' page=1 per_page=20
+2026-03-28 17:21:28 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-28 17:21:28 [INFO] search_api - [NDL] リクエスト開始 query='辞書' start=1 max=60
+2026-03-28 17:21:28 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-28 17:21:33 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.52s
+2026-03-28 17:21:33 [INFO] search_api - [NDL] 検索完了 query='辞書' total=15422 取得件数=60
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アーデルングの『高地ドイツ語辞典』-18世紀における言語的日常の意味論'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アーデルングの『高地ドイツ語辞典』-18世紀における言語的日常の意味論'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='合言葉はドラッカー! 京都町工場集団 「生き残る」発想は、我々の辞書にない'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイスランド語研究と辞書編集の歴史'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイスランド語研究と辞書編集の歴史'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイヌ語旭川方言コーパスに基づく辞書編纂のための基礎研究'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイヌ語旭川方言コーパスに基づく辞書編纂のための基礎研究'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイヌ語簡易辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイヌ語辞書編集のための予備的研究'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイヌ語地名構成要素解析のための辞書と解析ツールの構成'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイヌ語地名構成要素解析のための辞書と解析ツールの構成'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='壒嚢抄解説'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='壒嚢抄'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='□嚢抄 第1'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='□嚢抄 第2'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='〔アイ〕嚢抄 第２'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='□嚢抄 第3'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='〔アイ〕嚢抄 第３'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='□嚢抄 第4'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='〔アイ〕嚢抄 第４'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='□嚢抄 第5'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='〔アイ〕嚢抄 第５'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='□嚢抄 第6'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='〔アイ〕嚢抄 第６'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='□嚢抄 第7'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='〔アイ〕嚢抄 第７'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='〓嚢鈔 第1〜第7'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='相反しない噓と真実[『噓つきのための辞書』エリー・ウィリアムズ(三辺律子訳)]'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='相棒 17 1'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイルランド語辞書編纂史の諸問題(訳註)'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイルランド語辞書編纂史の諸問題(訳註)'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='あふぎうちはの覚え書私と辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='赤いリュックと中国語辞典'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アカデミーフランセーズの辞書によるフランス語の標準化と語彙の近代化―フランス語の標準化への歩み'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アカデミーフランセーズの辞書によるフランス語の標準化と語彙の近代化'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='茜色の辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='明るく陽気にいきましょう2 自虐的不幸自慢話'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='あがつま語★辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='あがつま語★辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田県方言オノマトペの形態的特徴 : 昔話資料・方言辞書を用いて'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田人名辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田人名辭書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田人名辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田人名辞書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田人名辞書索引'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田人名辭書'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田方言辞書の疑義を質す ―ネイティブ・スピーカーからの異議申し立て― : 北方風土'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='秋田方言辞書の疑義を質す--ネイティブ・スピーカーからの異義申し立て'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='明清俗语辞书集成. 1'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='明清俗语辞书集成. 2'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='明清俗语辞书集成. 3'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アクセント'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アクセント辞書および自発発話音声における複合名詞のアクセント'
+2026-03-28 17:21:33 [INFO] search_api - [NDL] スキップ 53件
+2026-03-28 17:21:33 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532659869
+2026-03-28 17:21:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4891779276
+2026-03-28 17:21:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784336051820
+2026-03-28 17:21:34 [INFO] search_api - [API] 書影取得 round=1 hit=4/7 elapsed=1.20s
+2026-03-28 17:21:34 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=4/20
+2026-03-28 17:21:34 [INFO] search_api - [NDL] リクエスト開始 query='辞書' start=61 max=60
+2026-03-28 17:21:39 [ERROR] search_api - [NDL] タイムアウト query='辞書' elapsed=5.01s
+2026-03-28 17:21:50 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='辞典' page=1 per_page=20
+2026-03-28 17:21:50 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-28 17:21:50 [INFO] search_api - [NDL] リクエスト開始 query='辞典' start=1 max=60
+2026-03-28 17:21:55 [ERROR] search_api - [NDL] タイムアウト query='辞典' elapsed=5.08s
+2026-03-28 17:22:16 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='国語辞典' page=1 per_page=20
+2026-03-28 17:22:16 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-28 17:22:16 [INFO] search_api - [NDL] リクエスト開始 query='国語辞典' start=1 max=60
+2026-03-28 17:22:18 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.31s
+2026-03-28 17:22:18 [INFO] search_api - [NDL] 検索完了 query='国語辞典' total=2930 取得件数=60
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='赤いリュックと中国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='安土城へ,ユリシーズー12-国語辞典の天守閣'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='新しい国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='『新らしい言葉の字引』と『大日本国語辞典』'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='あの辞書の影にこの人あり 国語辞典の歴史を彩った偉人たち'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='新潮国語辞典 現代語・古語'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='歩く中国語辞典 : あなたとともに'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='生きている国語辞典『デジタル大辞泉』の挑戦'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='イチオシ!!(第21回)言葉をつかう職業人の必携の書[『類語国語辞典』大野晋=浜西正人]'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='今どきの4大国語辞典--新刊辞典は改悪辞典?プロの使い手の一家言'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='意味記述の諸問題'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波\u3000国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典\u3000第２版'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典\u3000第４版'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波\u3000国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典を利用した語義タグ付きテキストデータベースの作成'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典\u3000第３版'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典（第５版）'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典'
+2026-03-28 17:22:18 [INFO] search_api - [NDL] スキップ 45件
+2026-03-28 17:22:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4816900985
+2026-03-28 17:22:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800418
+2026-03-28 17:22:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800418
+2026-03-28 17:22:20 [INFO] search_api - [API] 書影取得 round=1 hit=12/15 elapsed=1.70s
+2026-03-28 17:22:20 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=12/20
+2026-03-28 17:22:20 [INFO] search_api - [NDL] リクエスト開始 query='国語辞典' start=61 max=60
+2026-03-28 17:22:21 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.43s
+2026-03-28 17:22:22 [INFO] search_api - [NDL] 検索完了 query='国語辞典' total=2930 取得件数=60
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典 [点字資料]'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典を利用した語義タグ付きテキストデータベースの作成'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波国語辞典を利用した語義タグ付きテキストデータベースの作成'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波 中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波\u3000中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波中国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='いわゆる常用漢字の字種選定に関して--国語辞典類の場合'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='インターナショナル\u3000Ｍｏёｔ－Ｈａｃｈｅｔｔｅ\u3000ワイン辞典 : ワインに関する１５００語\u3000６か国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 国語辞典編纂者 飯間浩明さんに聞いてみました! ことばをいかにして捉え、そして、いかに伝えるか : 国語辞典編纂者の想い'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='宇津保物語の用例と国語辞典--「な」行の用例を中心としての検討'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='移りゆく日本語と「国語」辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='英語一カ国語辞典の編纂起源とその目的 : 人文主義教育における英語への眼差しと市民の啓蒙'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='江戸の国語辞典あれこれ'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='『延世韓国語辞典』延世大学校言語情報開発研究院編'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='遠東國語辭典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文彩色國語辭典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='（旺文社）国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社 国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] ISBNなしでスキップ title='旺文社国語辞典'
+2026-03-28 17:22:22 [INFO] search_api - [NDL] スキップ 35件
+2026-03-28 17:22:22 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9575081226
+2026-03-28 17:22:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001301423
+2026-03-28 17:22:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4384003021
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784000800754
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010775432
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010775068
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4896846222
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800752
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010777060
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4828804463
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010775432
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010775068
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001301423
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010775394
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010750456
+2026-03-28 17:22:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4010775394
+2026-03-28 17:22:24 [INFO] search_api - [API] 書影取得 round=2 hit=9/25 elapsed=1.95s
+2026-03-28 17:22:24 [INFO] search_api - [API] レスポンス返却 q='国語辞典' books=20 total=2930 elapsed=7.86s

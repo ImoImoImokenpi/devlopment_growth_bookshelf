@@ -1,0 +1,897 @@
+2026-03-13 13:57:06 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='嫌われる勇気' page=1 per_page=20
+2026-03-13 13:57:06 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 13:57:06 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=1 max=60
+2026-03-13 13:57:06 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-13 13:57:12 [ERROR] search_api - [NDL] タイムアウト query='嫌われる勇気' elapsed=6.26s
+2026-03-13 13:58:23 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='嫌われる勇気' page=1 per_page=20
+2026-03-13 13:58:23 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 13:58:23 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=1 max=60
+2026-03-13 13:58:23 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-13 13:58:27 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.49s
+2026-03-13 13:58:29 [INFO] search_api - [NDL] 検索完了 query='嫌われる勇気' total=88 取得件数=60
+2026-03-13 13:58:29 [INFO] search_api - [NDL] ISBNなしでスキップ title='アドラー心理学からのヒント 嫌われる勇気より、「好きになる勇気」がカギ!'
+2026-03-13 13:58:29 [INFO] search_api - [NDL] ISBNなしでスキップ title='アドラー流 上司と部下のコミュニケーション術'
+2026-03-13 13:58:29 [INFO] search_api - [NDL] ISBNなしでスキップ title='あなたは"一億総攻撃社会"をどう生き抜くか 陰口、仲間はずれ、ネット炎上、集中砲火― 実践 ロングセラー 『嫌われる勇気』で悩みは消えるか?'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』読者レビューから考察する心理課題'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』読者レビューから考察する心理課題'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』はどのように読まれたか'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』(私の一冊)'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気, 幸せになる勇気'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='ウロロジカルな世界の歩き方(8)嫌われる勇気・幸せになる勇気 : How you feel is up to you'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='岸見 一郎，古賀 史健 共著『嫌われる勇気』，岸見 一郎，古賀 史健 共著『幸せになる勇気』'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』が大ヒット 韓国アドラーブームの深層'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』共著者 岸見一郎氏&働く女性座談会 なぜアドラー心理学は女性に響くのか'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』『幸せになる勇気』で一躍脚光 お店で共有したい「アドラーの教え」 チームメンバー一人一人が能力を発揮できる活力のあるお店をつくろう'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気 : 自己啓発の源流「アドラー」の教え ここでしか読めない!! 書き下ろし特別編'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』のアドラー心理学者が説く 「定年後」の心がまえ'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気も必要です 「その手術、やっぱりやめます」と言ったら、医者はどう思うか'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='"ぎすぎす"を"生き生き"に 職場も変えるアドラー流対話術'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='建築家の流儀(23)嫌われる勇気,あるいは蛮勇'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='講演録 嫌われる勇気 : よりよい人間関係の築き方'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='「紅白が花道かぁ」NHK籾井会長が後任人事に一言'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='壊さないから再生しない日本。足りないのはリーダーの嫌われる勇気'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='叱らない、褒めない アドラー流子育て術'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='仕事で、家庭で実践! みんなのアドラー心理学'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='仕事ですぐに使える! アドラー流コミュニケーション術'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='社会 住めば都の偉大なる田舎 : 嫌われる勇気をもってわが道を行く'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='修羅場のケーススタディ(第3回)リスクを取る覚悟と「嫌われる勇気」'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='書評\u3000岸見一郎・古賀健『嫌われる勇気』'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場が変わる､家庭が変わる 5分で分かるアドラー心理学'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場の場面別 3倍成果が上がる言い方テクニック 嫌われる勇気を持て!'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場の雰囲気も激変! 組織を活性化する｢勇気づけ｣'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='シリコンバレーの流儀(070)嫌われる勇気でイノベーションを'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='心理学 フロイト、ユングと並ぶ「心理学の3大巨頭」アドラーに学ぶ 『嫌われる勇気』のヒットで脚光浴びる"悩みに厳しい"アドラーのアドバイス'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='人生のパターンが一目瞭然 ライフスタイルをチェック'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='人生の目標・計画を立てる'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='戦後70年代の証言者たち(No.31)「嫌われる勇気」を持って「最上」を追究する人生観'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='センターだより 十五年間賠償事故ゼロを継続 原点は「嫌われる勇気」'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='対人関係 「いい人」をやめなさい。「嫌われる勇気」を持ちなさい'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='大ベストセラー『嫌われる勇気』の岸見一郎先生が、実体験を語る 「不完全な介護でもいい」と割り切る勇気'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='特集 ベストセラー『嫌われる勇気』で注目 「アドラー心理学」を経営に生かす'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='特別対談 『嫌われる勇気』誕生秘話 僕たちがつくったのは、心理学ではなく哲学の本'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='ドラッカーに学ぶメンタルヘルス : 実践編(第5回)「嫌われる勇気」を持つ アドラー心理学の示唆 : 「好かれる」ことにとらわれないための発想'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='必読! 悩める読者に金言! 岸見先生の公開カウンセリング'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='ビジネス書ベストセラーの"5賢人"が提言! 今年中/来年初にやるべき「10のこと」'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='フジテレビ系ドラマ嫌われる勇気original soundtrack'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='ベストセラー解剖 『嫌われる勇気』100万部突破『幸せになる勇気』話題沸騰 「アドラー心理学」の秘密'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='ミドルリーダー発! 「働き方改革」のマインドセット&実践事例(最終回)働き方改革に満場一致はない : 嫌われる勇気をもとう'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='名門スタンフォード大学特別講義 自分を「変えられる人」と「変えられない人」は、どう違うのか?'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='「横の関係」が組織を変える アドラーの教え サラリーマンよ「嫌われる勇気」を持て'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='来年の目標設定 エクセルで簡単にできる!見える化の技術'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='老親介護と「嫌われる勇気」 : アドラー心理学が親子関係の悩みを解決する'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='私の広告観 岸見一郎さん 哲学者 企業にも嫌われる勇気は必要か'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='私'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='私'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='20分で分かる! 初めてのアドラー心理学'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] ISBNなしでスキップ title='65歳からの「嫌われる勇気」'
+2026-03-13 13:58:30 [INFO] search_api - [NDL] スキップ 56件
+2026-03-13 13:58:30 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8996991341
+2026-03-13 13:58:30 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787111495482
+2026-03-13 13:58:31 [INFO] search_api - [API] 書影取得 round=1 hit=2/4 elapsed=1.56s
+2026-03-13 13:58:31 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=2/20
+2026-03-13 13:58:31 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=61 max=60
+2026-03-13 13:58:32 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.64s
+2026-03-13 13:58:32 [INFO] search_api - [NDL] 検索完了 query='嫌われる勇気' total=88 取得件数=28
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Book Reviews 著者のホンネ 今、この瞬間から変わる! 未来を見るアドラーの教え[『嫌われる勇気』岸見一郎、古賀史健著]'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Emma'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Emma'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 過去をトラウマにするかは自分の心掛け次第'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 「課題の分離」や主観の捉え方 仏教とアドラー心理学の共通点'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 子どもとの接し方を学べば子育て下手は克服できる'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 全ては自分から始まる まず小さな一歩を踏み出そう'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview ビリギャルはアドラーの実践 成長を一緒に喜ぶことが大切'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Know-How 累計150万部突破『嫌われる勇気』『幸せになる勇気』の原案者が語る 「嫌な人」への接し方が変わる! アドラー7つの"ダメ出し"'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Prologue 『嫌われる勇気』ビジネス編 他者の期待に生きてはいけない'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='Prologue なぜいまアドラー心理学が脚光を浴びているのか'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] ISBNなしでスキップ title='W杯3勝を「必然」に変えた 緻密さと激情と嫌われる勇気'
+2026-03-13 13:58:32 [INFO] search_api - [NDL] スキップ 12件
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9782813216458
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1668065969
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=6044012513
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789492754127
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788851169916
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788660357757
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788073069544
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788375796025
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5041686017
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5040987382
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630492
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781982100391
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630737
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788284371245
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786162871429
+2026-03-13 13:58:32 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788996991342
+2026-03-13 13:58:32 [INFO] search_api - [API] 書影取得 round=2 hit=0/16 elapsed=0.00s
+2026-03-13 13:58:32 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-13 13:58:32 [INFO] search_api - [API] レスポンス返却 q='嫌われる勇気' books=2 total=88 elapsed=9.26s
+2026-03-13 14:05:31 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='嫌われる勇気' page=1 per_page=20
+2026-03-13 14:05:31 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 14:05:31 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=1 max=60
+2026-03-13 14:05:31 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-13 14:05:33 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.90s
+2026-03-13 14:05:33 [INFO] search_api - [NDL] 検索完了 query='嫌われる勇気' total=88 取得件数=60
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アドラー心理学からのヒント 嫌われる勇気より、「好きになる勇気」がカギ!'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='アドラー流 上司と部下のコミュニケーション術'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='あなたは"一億総攻撃社会"をどう生き抜くか 陰口、仲間はずれ、ネット炎上、集中砲火― 実践 ロングセラー 『嫌われる勇気』で悩みは消えるか?'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』読者レビューから考察する心理課題'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』読者レビューから考察する心理課題'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』はどのように読まれたか'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』(私の一冊)'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気, 幸せになる勇気'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='ウロロジカルな世界の歩き方(8)嫌われる勇気・幸せになる勇気 : How you feel is up to you'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='岸見 一郎，古賀 史健 共著『嫌われる勇気』，岸見 一郎，古賀 史健 共著『幸せになる勇気』'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』が大ヒット 韓国アドラーブームの深層'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』共著者 岸見一郎氏&働く女性座談会 なぜアドラー心理学は女性に響くのか'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』『幸せになる勇気』で一躍脚光 お店で共有したい「アドラーの教え」 チームメンバー一人一人が能力を発揮できる活力のあるお店をつくろう'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気 : 自己啓発の源流「アドラー」の教え ここでしか読めない!! 書き下ろし特別編'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='『嫌われる勇気』のアドラー心理学者が説く 「定年後」の心がまえ'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='嫌われる勇気も必要です 「その手術、やっぱりやめます」と言ったら、医者はどう思うか'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='"ぎすぎす"を"生き生き"に 職場も変えるアドラー流対話術'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='建築家の流儀(23)嫌われる勇気,あるいは蛮勇'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='講演録 嫌われる勇気 : よりよい人間関係の築き方'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='「紅白が花道かぁ」NHK籾井会長が後任人事に一言'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='壊さないから再生しない日本。足りないのはリーダーの嫌われる勇気'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='叱らない、褒めない アドラー流子育て術'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='仕事で、家庭で実践! みんなのアドラー心理学'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='仕事ですぐに使える! アドラー流コミュニケーション術'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='社会 住めば都の偉大なる田舎 : 嫌われる勇気をもってわが道を行く'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='修羅場のケーススタディ(第3回)リスクを取る覚悟と「嫌われる勇気」'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='書評\u3000岸見一郎・古賀健『嫌われる勇気』'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場が変わる､家庭が変わる 5分で分かるアドラー心理学'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場の場面別 3倍成果が上がる言い方テクニック 嫌われる勇気を持て!'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='職場の雰囲気も激変! 組織を活性化する｢勇気づけ｣'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='シリコンバレーの流儀(070)嫌われる勇気でイノベーションを'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='心理学 フロイト、ユングと並ぶ「心理学の3大巨頭」アドラーに学ぶ 『嫌われる勇気』のヒットで脚光浴びる"悩みに厳しい"アドラーのアドバイス'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='人生のパターンが一目瞭然 ライフスタイルをチェック'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='人生の目標・計画を立てる'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='戦後70年代の証言者たち(No.31)「嫌われる勇気」を持って「最上」を追究する人生観'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='センターだより 十五年間賠償事故ゼロを継続 原点は「嫌われる勇気」'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='対人関係 「いい人」をやめなさい。「嫌われる勇気」を持ちなさい'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='大ベストセラー『嫌われる勇気』の岸見一郎先生が、実体験を語る 「不完全な介護でもいい」と割り切る勇気'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='特集 ベストセラー『嫌われる勇気』で注目 「アドラー心理学」を経営に生かす'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='特別対談 『嫌われる勇気』誕生秘話 僕たちがつくったのは、心理学ではなく哲学の本'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='ドラッカーに学ぶメンタルヘルス : 実践編(第5回)「嫌われる勇気」を持つ アドラー心理学の示唆 : 「好かれる」ことにとらわれないための発想'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='必読! 悩める読者に金言! 岸見先生の公開カウンセリング'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='ビジネス書ベストセラーの"5賢人"が提言! 今年中/来年初にやるべき「10のこと」'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='フジテレビ系ドラマ嫌われる勇気original soundtrack'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='ベストセラー解剖 『嫌われる勇気』100万部突破『幸せになる勇気』話題沸騰 「アドラー心理学」の秘密'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='ミドルリーダー発! 「働き方改革」のマインドセット&実践事例(最終回)働き方改革に満場一致はない : 嫌われる勇気をもとう'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='名門スタンフォード大学特別講義 自分を「変えられる人」と「変えられない人」は、どう違うのか?'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='「横の関係」が組織を変える アドラーの教え サラリーマンよ「嫌われる勇気」を持て'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='来年の目標設定 エクセルで簡単にできる!見える化の技術'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='老親介護と「嫌われる勇気」 : アドラー心理学が親子関係の悩みを解決する'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='私の広告観 岸見一郎さん 哲学者 企業にも嫌われる勇気は必要か'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='私'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='私'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='20分で分かる! 初めてのアドラー心理学'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] ISBNなしでスキップ title='65歳からの「嫌われる勇気」'
+2026-03-13 14:05:33 [INFO] search_api - [NDL] スキップ 56件
+2026-03-13 14:05:33 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8996991341
+2026-03-13 14:05:33 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787111495482
+2026-03-13 14:05:34 [INFO] search_api - [API] 書影取得 round=1 hit=2/4 elapsed=0.33s
+2026-03-13 14:05:34 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=2/20
+2026-03-13 14:05:34 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=61 max=60
+2026-03-13 14:05:35 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.81s
+2026-03-13 14:05:35 [INFO] search_api - [NDL] 検索完了 query='嫌われる勇気' total=88 取得件数=28
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Book Reviews 著者のホンネ 今、この瞬間から変わる! 未来を見るアドラーの教え[『嫌われる勇気』岸見一郎、古賀史健著]'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Emma'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Emma'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 過去をトラウマにするかは自分の心掛け次第'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 「課題の分離」や主観の捉え方 仏教とアドラー心理学の共通点'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 子どもとの接し方を学べば子育て下手は克服できる'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview 全ては自分から始まる まず小さな一歩を踏み出そう'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Interview ビリギャルはアドラーの実践 成長を一緒に喜ぶことが大切'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Know-How 累計150万部突破『嫌われる勇気』『幸せになる勇気』の原案者が語る 「嫌な人」への接し方が変わる! アドラー7つの"ダメ出し"'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Prologue 『嫌われる勇気』ビジネス編 他者の期待に生きてはいけない'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='Prologue なぜいまアドラー心理学が脚光を浴びているのか'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] ISBNなしでスキップ title='W杯3勝を「必然」に変えた 緻密さと激情と嫌われる勇気'
+2026-03-13 14:05:35 [INFO] search_api - [NDL] スキップ 12件
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9782813216458
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1668065969
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=6044012513
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789492754127
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788851169916
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788660357757
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788073069544
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788375796025
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5041686017
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5040987382
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630492
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781982100391
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630737
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788284371245
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786162871429
+2026-03-13 14:05:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788996991342
+2026-03-13 14:05:35 [INFO] search_api - [API] 書影取得 round=2 hit=0/16 elapsed=0.00s
+2026-03-13 14:05:35 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-13 14:05:35 [INFO] search_api - [API] レスポンス返却 q='嫌われる勇気' books=2 total=88 elapsed=4.13s
+2026-03-13 14:47:51 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角' page=1 per_page=20
+2026-03-13 14:47:51 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 14:47:51 [INFO] search_api - [NDL] リクエスト開始 query='十角' start=1 max=60
+2026-03-13 14:47:51 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-03-13 14:47:55 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.25s
+2026-03-13 14:47:55 [INFO] search_api - [NDL] 検索完了 query='十角' total=61 取得件数=60
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画と小説のビミョーな距離 十角館はいかに改装されたか?'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='角術 : 自三角至十角'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='角術 : 自三角至十角'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='県立九州陶磁文化館ギャラリー/色絵唐獅子牡丹文十角皿\u3000色絵花鳥文六角壺'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='低平水田地帯の常時排水管理--新利根川沿岸十角ブロックの事例を中心として'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='点線の十角形'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='粉末X線回折図形における十角形準結晶を識別する深層学習モデルの開発'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='15a-A-12 正十角形準結晶の原子構造(II)'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='19pYK-4 磁気コンプトン散乱法によるAlMnFeGe正十角形相のスピン磁気異方性の測定(準結晶(構造,電子物性,表面,空孔),領域6(金属,超低温,超伝導・密度波))'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='22aCS-10 STEM像多変量解析によるAl-Cu-Rh正十角形相の構造解析'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='22aCS-7 Al-Ni-Co系正十角形準結晶の成長機構'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='24pXL-9 1.6nm周期を持つAl-Ni-Ru正十角形準結晶の構造モデル(24pXL 準結晶,領域6(金属,超低温超伝導・密度波))'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='25aYB-1 Zn-Mg-Dy正十角形準結晶の形成条件2(準結晶,領域6,金属,超低温,超伝導・密度波)'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='25pDE-8 AI-Ni-Co系正十角形準結晶の成長過程のHRTEMその場観察(準結晶(構造),領域6(金属,超低温,超伝導・密度波))'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='27pEG-7 Al-Ni-Ru正十角形準結晶の5次元構造と構造精密化(27pEG 準結晶,領域6(金属,超低温,超伝導・密度波))'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='28aYK-1 Zn-Mg-Dy正十角形準結晶の形成条件(28aYK 準結晶,領域6(金属,超低温,超伝導・密度波))'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='28p-ZE-7 AlCuCo正十角形相の構造'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='30a-YT-4 Al-Ni-Co正十角形準結晶の光電子回折による観測'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='30aCB-4 Al-Ni-Co系正十角形準結晶の成長過程HRTEMその場観察(30aCB 準結晶・金属間化合物(構造),領域6(金属(液体金属・準結晶)・低温(超低温・超伝導・密度波)))'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='31p-X-11 正十角形準結晶の原子構造'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='7p-R-4 Zn-Mg-RE系正十角形準結晶'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='80年代生まれ(ジ・エイティーズボーン)とミステリーを読む(9)綾辻行人『十角館(じゅっかくかん)の殺人』'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='Al_<70>Ni_<15>Co_<15>正十角形準結晶のX線構造解析'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] ISBNなしでスキップ title='Demonbane soundtrack-reverberation'
+2026-03-13 14:47:55 [INFO] search_api - [NDL] スキップ 33件
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7513321213
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-13 14:47:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-13 14:47:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-13 14:47:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-13 14:47:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-13 14:47:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-13 14:47:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-13 14:47:56 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-13 14:47:56 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 14:47:56 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-13 14:47:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=481633422X
+2026-03-13 14:47:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=4816331859
+2026-03-13 14:47:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-13 14:47:57 [INFO] search_api - [API] 書影取得 round=1 hit=8/27 elapsed=1.66s
+2026-03-13 14:47:57 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=8/20
+2026-03-13 14:47:57 [INFO] search_api - [NDL] リクエスト開始 query='十角' start=61 max=60
+2026-03-13 14:47:57 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.12s
+2026-03-13 14:47:57 [INFO] search_api - [NDL] 検索完了 query='十角' total=61 取得件数=1
+2026-03-13 14:47:57 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-13 14:47:57 [INFO] search_api - [API] 書影取得 round=2 hit=0/1 elapsed=0.00s
+2026-03-13 14:47:57 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-13 14:47:57 [INFO] search_api - [API] レスポンス返却 q='十角' books=8 total=61 elapsed=6.20s
+2026-03-13 14:47:58 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.16s
+2026-03-13 14:47:58 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-13 14:47:58 [INFO] search_api - [NDL] スキップ 9件
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-13 14:47:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-13 14:47:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-13 14:47:59 [INFO] search_api - [API] 書影取得 round=1 hit=7/24 elapsed=1.13s
+2026-03-13 14:47:59 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-13 14:47:59 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=7 total=33 elapsed=2.37s
+2026-03-13 14:48:02 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=2 per_page=20
+2026-03-13 14:48:02 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 14:48:02 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-13 14:48:03 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.01s
+2026-03-13 14:48:03 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-13 14:48:03 [INFO] search_api - [NDL] スキップ 9件
+2026-03-13 14:48:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-13 14:48:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-13 14:48:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-13 14:48:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-13 14:48:03 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.00s
+2026-03-13 14:48:03 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-13 14:48:03 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=0 total=33 elapsed=1.06s
+2026-03-13 14:48:18 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-03-13 14:48:18 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 14:48:18 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-03-13 14:48:19 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.21s
+2026-03-13 14:48:19 [INFO] search_api - [NDL] 検索完了 query='十角館の殺人' total=33 取得件数=33
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='綾辻行人インタビュー 『十角館の殺人』英訳版刊行とその反響'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='原作と映像の交叉光線(クロスライト)・出張版(23)孤島幻戯 : 十角館の殺人'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='『十角館の殺人』と記号的キャラ'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人ふたたび'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] ISBNなしでスキップ title='十角館の殺人（新装改訂版）'
+2026-03-13 14:48:19 [INFO] search_api - [NDL] スキップ 9件
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-13 14:48:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-03-13 14:48:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-03-13 14:48:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-03-13 14:48:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-03-13 14:48:20 [INFO] search_api - [API] 書影取得 round=1 hit=7/24 elapsed=1.21s
+2026-03-13 14:48:20 [INFO] search_api - [API] NDL レコード枯渇
+2026-03-13 14:48:20 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=7 total=33 elapsed=2.49s
+2026-03-13 14:48:46 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='伊坂幸太郎' page=1 per_page=20
+2026-03-13 14:48:46 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 14:48:46 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=1 max=60
+2026-03-13 14:48:48 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.31s
+2026-03-13 14:48:48 [INFO] search_api - [NDL] 検索完了 query='伊坂幸太郎' total=560 取得件数=60
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='アイネクライネナハトムジーク'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='『アイネクライネナハトムジーク』伊坂幸太郎 : 斉藤和義とのコラボから誕生した作品集8年の歳月をかけ，ついに完成!--(こんげつのブックマーク ; 2)'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='浅野いにおインタビュー'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='浅野いにお--『ソラニン』『おやすみプンプン』伊坂幸太郎も注目の次世代漫画家 いま、人気の秘密'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='あの名言は、かくして生まれた--伊坂ワールドの住人たちの「心に残るセリフ」11'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='アヒルと鴨のコインロッカー'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='アヒルと鴨のコインロッカー'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='阿部和重＋伊坂幸太郎'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='あるキング'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='あるキング : DAISY録音図書 : [録音資料]'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='あるキング DAISY図書'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='池田エライザ スペシャルインタビュー 伊坂さんが私に「世界」を教えてくれた。'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎×綾辻行人 : 特別対談 ミステリの"憲法"受け継がれる理'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎『オー!ファーザー』刊行記念'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎 : 作家--(りらくインタビュー)'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂 幸太郎 : 喋るデビュー作'
+2026-03-13 14:48:48 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎<小説家> : あと半年で五十歳になる。今は，新たな代表作を作ることしか考えていません。--(新家の履歴書)'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎<小説家> : あと半年で五十歳になる。今は，新たな代表作を作ることしか考えていません。--(新家の履歴書)'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎 : 「楽しい物語を書こう」震災1年を経て人気作家が再始動 --(本・今月の話題人)'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎大特集'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎大特集'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎著『仙台ぐらし』 : 愛すべき作家の実像--(本を読むナツイチスペシャル)'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎デビュー２０周年＆『逆ソクラテス』続々重版大ヒット記念特別小冊子'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎と中村義洋のクロストーク'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎×杜昆--(新春特別企画)'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎 直木賞を辞退させた執筆へのこだわり'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎デビュー２０周年＆『逆ソクラテス』続々重版\u3000大ヒット記念\u3000特別小冊子 : 無事故で終われ！'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎の現在 : ミステリー新時代の幕を開ける'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎不安時代のエンターテイナー'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='[伊坂幸太郎]『マリアビートル』刊行記念対談 伊坂幸太郎×冲方丁--小説にしか出来ないこと'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎論'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎 : Q&A執筆陣に訊いてみた!6つの質問--(特集, 螺旋プロジェクト始動)'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎『ゴールデンスランバー』論'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎‐初期‐論'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎が偶然と向き合う作法 : バトンを受け取るとも知らず受け取り、渡すとも知らず渡していることについて'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎『ゴールデンスランバー』論'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎 小説家'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎と中村義洋のクロストーク'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎『フィッシュストーリー』の方法'
+2026-03-13 14:48:49 [INFO] search_api - [NDL] スキップ 41件
+2026-03-13 14:48:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344426313
+2026-03-13 14:48:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784198627799
+2026-03-13 14:48:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=4488017002
+2026-03-13 14:48:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344844971
+2026-03-13 14:48:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784198935870
+2026-03-13 14:48:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=4488464017
+2026-03-13 14:48:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344844674
+2026-03-13 14:48:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087468304
+2026-03-13 14:48:50 [INFO] search_api - [API] 書影取得 round=1 hit=11/19 elapsed=1.59s
+2026-03-13 14:48:50 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=11/20
+2026-03-13 14:48:50 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=61 max=60
+2026-03-13 14:48:52 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.92s
+2026-03-13 14:48:52 [INFO] search_api - [NDL] 検索完了 query='伊坂幸太郎' total=560 取得件数=60
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='伊坂幸太郎『ホワイトラビット』刊行記念特集'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='違和"から感じられる「私」 : 伊坂幸太郎『マリアビートル』を読む時の感覚から'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎 : AX--(刊行記念特集)'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー伊坂幸太郎 : 一作ごとにトライを続けた結果，一つの世界をかたちづくった連作小説集 : 『残り全部バケーション』刊行記念'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎--(書いたのは私です)'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー,伊坂幸太郎 : "驚き"を探して25年'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎 : 恐妻家の殺し屋を描いた、1年3ヵ月ぶりの単行本'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 伊坂幸太郎--原作者としては嬉しい反面、寂しさも……。--「アヒルと鴨のコインロッカー」'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎 : 〈殺し屋〉シリーズ最新刊『AX』刊行'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー,伊坂幸太郎 : 『さよならジャバウォック』 作家デビュー二十五周年を飾る傑作ミステリ!--〈文春図書館 : 著者は語る〉'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー，伊坂幸太郎さん(作家) : 前向きになれる本を書きたい--(高校生記者インタビュー)'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎 : 「仙台ぐらし」で傑作を生む--(問答有用 ; 566)'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎 : 仙台ならではの作品を地元出版社とともに生み出す'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー/伊坂幸太郎 それでも人は生きていく'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎に訊いてみた : 「すべてのフィクションはファンタジーなのかもしれない」--(特集, ファンタジー小説，その先へ)'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 伊坂幸太郎 : 人気作家20周年の集大成は先入観を覆す、少年少女ストーリー'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー,伊坂幸太郎の流儀：５年の歳月がつくり上げた渾身作'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 伊坂幸太郎 ゆったりと、楽しんでください'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 伊坂幸太郎 思い切り「楽しい」フィクションのために : 『ガソリン生活』について語る'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 伊坂幸太郎さん 『チルドレン』の陣内&武藤が向き合う、少年たちの「罪と罰」の物語'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー, 立てこもり事件とミステリー : 『ホワイトラビット』刊行記念インタビュー'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 『残り全部バケーション』刊行記念 一作ごとにトライを続けた結果、一つの世界をかたちづくった連作小説集 伊坂幸太郎'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタヴュー篇 ゲスト 伊坂幸太郎'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='イントロダクション『キャプテンサンダーボルト』'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画「アヒルと鴨のコインロッカー」中村監督に聞く ： ミステリー 青春映画 恋の物語 : アヒルと鴨のコインロッカー'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画封切り! 「伊坂幸太郎」インタビュー 『オー!ファーザー』と『首折り男のための協奏曲』の間で'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='エール！ : お仕事小説アンソロジー ３'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='「ＳＯＳの猿」'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='SOSの猿'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='オー!ファーザー Oh! father'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='オー！ファーザー'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='オー!ファーザー DAISY図書'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='解放区 それぞれのディストピアの形 : 赤川次郎と伊坂幸太郎'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='書き出しで読者を掴め！ : 第4章ミステリーをより面白くする'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='『火星に住むつもりかい?』伊坂幸太郎 : 混迷の時代に新しいヒーロー小説が出現!'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='金城武VS伊坂幸太郎 映画「死神の精度」を語る'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] ISBNなしでスキップ title='刊行記念インタビュー 「単品で勝負!」だらけの贅沢連作集 : 『首折り男のための協奏曲』伊坂幸太郎'
+2026-03-13 14:48:52 [INFO] search_api - [NDL] スキップ 38件
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513319829
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715157
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715157
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715232
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544268585
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513320993
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544717168
+2026-03-13 14:48:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715317
+2026-03-13 14:48:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=4106027674
+2026-03-13 14:48:54 [INFO] search_api - [API] 書影取得 round=2 hit=13/22 elapsed=2.29s
+2026-03-13 14:48:54 [INFO] search_api - [API] レスポンス返却 q='伊坂幸太郎' books=20 total=560 elapsed=8.41s
+2026-03-13 14:49:19 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='TOEIC' page=1 per_page=20
+2026-03-13 14:49:19 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 14:49:19 [INFO] search_api - [NDL] リクエスト開始 query='TOEIC' start=1 max=60
+2026-03-13 14:49:21 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.33s
+2026-03-13 14:49:21 [INFO] search_api - [NDL] 検索完了 query='TOEIC' total=6055 取得件数=60
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='愛知淑徳大学文化創造学部における英語教育 : TOEIC ( R ) 導入によるカリキュラム考察'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='愛知淑徳大学文化創造学部における英語教育--TOEIC導入によるカリキュラム考察'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='愛知大学名古屋校舎2010年度入学生の英語力の推移--TOEICクラスの運営を中心に'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='愛知大学名古屋校舎2011年度Readingにおける選抜クラス編成の成果と課題 : TOEIC IPテストスコアおよびアンケートの分析'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='愛知大学名古屋校舎2010年度入学生の英語力の推移--TOEICクラスの運営を中心に'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='愛知大学名古屋校舎2011年度Readingにおける選抜クラス編成の成果と課題 : TOEIC IPテストスコアおよびアンケートの分析'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='The adventures of Tom Sawyer\u3000：\u3000トム・ソーヤーの冒険\u3000：\u3000TOEICテスト300点以上'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='あなたが使うべき教材、勉強法が一目でわかる レベル別図解「驚速学習法」完全マップ'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='アパレル企業から銀行まで、日本中がTOEIC教! TOElCスコアに振り回される日本人'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='有明高専専攻科生の英語能力の発達について--TOEIC IPのスコア分析を中心に'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='有明高専におけるTOEIC IPテスト--過去3年間の成績推移について'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='有明高専4年生の英語授業実践報告--TOEICスコアアップ対策を中心に'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='安河内哲也の白熱教室 完全攻略TOEICスピーキング・ライティングテスト : 音声講義付き!'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='暗記、努力、我慢ゼロ! 読むだけでTOEICスコアもなぜか上がる! 人生が変わる英語多読レッスン'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='（付録ＣＤ）アンデルセン・クラシックス〔１／２〕\u3000：\u3000ＴＯＥＩＣテスト３００点以上'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='（付録ＣＤ）アンデルセン・クラシックス〔２／２〕\u3000：\u3000ＴＯＥＩＣテスト３００点以上'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='いかに学生の英語リスニング能力を向上させるか: TOEICリスニング・セクションPart2および3による試み'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='いきなりハイスコア : 最短攻略600 : TOEICスコア600を目指す人へ'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] ISBNなしでスキップ title='いきなりハイスコア : 最短攻略730 : TOEICスコア730を目指す人へ'
+2026-03-13 14:49:21 [INFO] search_api - [NDL] スキップ 19件
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701627
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701600
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701791
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701619
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4385601798
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4894070278
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062563894
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062564041
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=406256419X
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434151897
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784877317201
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434151897
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4834840077
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4523263361
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795293430
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795293392
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4834840069
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4834840085
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795293406
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396316365
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701597
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396315788
+2026-03-13 14:49:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396316099
+2026-03-13 14:49:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396316396
+2026-03-13 14:49:24 [INFO] search_api - [API] 書影取得 round=1 hit=17/41 elapsed=2.64s
+2026-03-13 14:49:24 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=17/20
+2026-03-13 14:49:24 [INFO] search_api - [NDL] リクエスト開始 query='TOEIC' start=61 max=60
+2026-03-13 14:49:25 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.51s
+2026-03-13 14:49:25 [INFO] search_api - [NDL] 検索完了 query='TOEIC' total=6055 取得件数=60
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='一般化線形モデル（GLM）によるG-TELPスコアからTOEICスコアの推定モデルの構築：長崎大学学生の2011年から2016年のデータから'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='一般化線形モデル（GLM）によるG-TELPスコアからTOEICスコアの  推定モデルの構築：長崎大学学生の2011年から2016年のデータから'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='一般化線形モデル(GLM)によるG-TELPスコアからTOEICスコアの推定モデルの構築 : 長崎大学学生の2011年から2016年のデータから'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='異なる形式のTOEIC L&Rテストのスコアの非同等性について'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='いまどき日本人の英語力'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='いまや、TOEICを評価する企業は3割にも 1000人調査でわかった! 一番使える教材、裏切られた学習法'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='いわき明星大学英文科/言語文化学科英語英米文学専攻学生の英語能力に関する実態調査(1)TOEIC IP(団体受験)の結果を中心として'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='インタビュー 国際ビジネスコミュニケーション協会 大村哲明さんに聞く 「TOEIC」の活用とグローバル人材育成への取り組み'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画やTOEICテストにおける能格・非対格動詞のデータの観察'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='映画を利用したリスニング指導 : 総合的な英語力を目指して'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] ISBNなしでスキップ title='英検Can-doリストに対する大学1年生の自信度および重要度の認識 : TOEIC Bridgeスコアとの関連を通して'
+2026-03-13 14:49:25 [INFO] search_api - [NDL] スキップ 11件
+2026-03-13 14:49:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255156149
+2026-03-13 14:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255154886
+2026-03-13 14:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255155951
+2026-03-13 14:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569576036
+2026-03-13 14:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569576796
+2026-03-13 14:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255155968
+2026-03-13 14:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255155531
+2026-03-13 14:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784872179064
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569578039
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784872179057
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784761273378
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4872174984
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4269660058
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4408340456
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4528011182
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569616674
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=425515418X
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062564475
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784800281043
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4916171683
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4408340464
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4872174976
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255155951
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4528011182
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4528011166
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784791900541
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990408923
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255155968
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784876592289
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4269660066
+2026-03-13 14:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4902420007
+2026-03-13 14:49:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784872176865
+2026-03-13 14:49:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4408340464
+2026-03-13 14:49:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4408340456
+2026-03-13 14:49:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784255156149
+2026-03-13 14:49:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784902521009
+2026-03-13 14:49:29 [INFO] search_api - [API] 書影取得 round=2 hit=13/49 elapsed=3.52s
+2026-03-13 14:49:29 [INFO] search_api - [API] レスポンス返却 q='TOEIC' books=20 total=6055 elapsed=10.17s
+2026-03-13 15:24:15 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='広辞苑' page=1 per_page=20
+2026-03-13 15:24:15 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-03-13 15:24:15 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=1 max=60
+2026-03-13 15:24:17 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.98s
+2026-03-13 15:24:17 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='相も変わらず「広辞苑」の大嘘'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='アクセシブルデザインの世界(第43回)広辞苑に掲載された共用品'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='あさかすみ條'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波書店『広辞苑 第5版 CD-ROM版』生まれ変わった21世紀版『広辞苑』'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波書店に公開質問状 『広辞苑』朝鮮征伐・北鮮について'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='岩波・富士通・ソニー・大日本印刷,「広辞苑」のCD-ROM'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='因果律'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='「ウトウ」アイヌ語説の誤り--虚説を広めた『広辞苑』'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='「うとう」はアイヌ語の突起か ―『広辞苑』第五版に疑義あり― : 北方風土'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='エートス : 民族や社会集団に行き渡っている道徳的な慣習 雰囲気'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ英語の原音を知る : 『広辞苑』不収録語を対象に'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ英語の原音を知る ―『広辞苑』不収録語を対象に―'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ3文字語及びカタカナ4文字語の正書法的類似語 音韻的類似語数表--Macintosh版岩波広辞苑第四版に基づく類似語数調査'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='カタカナ3文字語及びカタカナ4文字語の正書法的類似語・音韻的類似語数表(2)--Macintosh版岩波広辞苑第四版に基づく音素単位類似語数調査'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='家庭の辞典セット'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='カナヘビの体色は「かな色」か ―『広辞苑』第五版に疑義あり― : 北方風土'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='「紙」のつく言葉-広辞苑の話'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='川端康成全集. 第19巻 (文学時評 4)'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(1)一一月、紅葉に深まりゆく秋'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(10)八月、命みなぎる植物たち'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(11)九月、秋は気が付けばそこにある'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(12)一〇月、澄み渡る青空の美しさ'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(2)一二月、寒さの中の楽しみ'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(3)一月、お正月の伝統風俗'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(4)二月、寒さの中に芽生える春'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(5)三月、春の訪れを告げる花々'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(6)四月、乱れ咲く花たちの中から'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(7)五月、新緑がまぶしい季節に'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(8)六月、梅雨のそぼ降る雨の中で'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の植物園 in 広辞苑(9)七月、夏空、そして台風'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(最終回)十二月、お鍋に入れたい魚介類'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(1)一月、おせちの海鮮に舌鼓'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(10)十月、海と陸とを股にかけ'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(11)十一月、深まる秋には堅い殻'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(2)二月、凍てつく水の中から'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(3)三月、海からやってくる春'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(4)四月、貝のうまみは春の味わい'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(5)五月、青葉と清流と爽やかな風'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(6)六月、磯を賑わす変わり者たち'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(7)七月、魚介を食して夏を乗り切れ'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(8)八月、波間に躍る巨大な影'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の水族園in広辞苑(9)九月、秋の澄んだ水の中で'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(1)一〇月、秋は空からやってくる'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(10)七月、網を片手に追いかけて'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(11)八月、密林、草原、そして砂漠'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(12・最終回)九月、心にしみる虫の声'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(2)一一月、実りの秋の動物たち'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(3)一二月、寒さの中の羽ばたき'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(4)一月、おめでたい動物たち'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(5)二月、活躍の場は銀世界'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(6)三月、春は翼に乗って'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(7)四月、花が咲けば心も浮き立つ'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(8)五月、新緑の中を翔け回る'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='漢字の動物園in広辞苑(9)六月、雨の匂いを感じつつ'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] ISBNなしでスキップ title='架構'
+2026-03-13 15:24:17 [INFO] search_api - [NDL] スキップ 55件
+2026-03-13 15:24:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163152903
+2026-03-13 15:24:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784862381927
+2026-03-13 15:24:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4860971515
+2026-03-13 15:24:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4860971515
+2026-03-13 15:24:18 [INFO] search_api - [API] 書影取得 round=1 hit=1/5 elapsed=1.22s
+2026-03-13 15:24:18 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=1/20
+2026-03-13 15:24:18 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=61 max=60
+2026-03-13 15:24:20 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.75s
+2026-03-13 15:24:20 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='外字の作成事例:「広辞苑」を中心に'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='外来語の変遷 : 『広辞苑』諸版を比較して'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='外来語の変遷 ―『広辞苑』諸版を比較して'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='がん[癌]'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='企業ルポ 中国で「広辞苑」を売る--カシオの電子辞書'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='「教育」と「保育」に関する一考察'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='教材, 教具'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆引き広辞苑\u3000机上版'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='逆引き広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='クローズアップニッポン(162)竹内結子--「理想の妻」の質問癖と広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='劇には、1 激しく強いこと、2 たわむれること、芝居、ドラマ、の意味がある'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代日本語をめぐる報道界の"権力"と辞書の"権威"(共同通信社『記者ハンドブック・新聞用字用語集』と『広辞苑』の狭間--正しさの拠り所)'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='「現代日本語をめぐる報道界の権力と辞書の権威」 （共同通信社『記者ハンドブック・新聞用字用語集』と『広辞苑』の狭間―正しさの拠り所） : 秋田法学'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代の語彙の変遷 : 『広辞苑』第三版と第四版を比較して'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代の語彙の変遷 ―『広辞苑』第三版と第四版を比較して―'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='現代用語のムイミダスぶっとい広辞苑 DVD-box'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='「工芸」工作にかかわる技芸'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第７版\u3000付録［普通版］'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000付録［普通版］'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000た－ん［机上版］'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000付録［机上版］'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第６版\u3000あ－そ［机上版］'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第３版'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版補訂版'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑. あ-そ'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』「あさかやま‹朝香山›」の考察'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 あ－そ'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-13 15:24:20 [INFO] search_api - [NDL] スキップ 52件
+2026-03-13 15:24:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801163
+2026-03-13 15:24:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801066
+2026-03-13 15:24:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=400130015X
+2026-03-13 15:24:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801074
+2026-03-13 15:24:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300028
+2026-03-13 15:24:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801074
+2026-03-13 15:24:22 [INFO] search_api - [API] 書影取得 round=2 hit=2/8 elapsed=1.91s
+2026-03-13 15:24:22 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=3/20
+2026-03-13 15:24:22 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=121 max=60
+2026-03-13 15:24:24 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.65s
+2026-03-13 15:24:24 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑一日一語 : 広辞苑第六版刊行記念'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑英和・和英研究社中辞典 : 電子辞書 : IC dictionary'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」への注文'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」への注文'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑を遊ぶ、「たほいや」'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑\u3000第七版\u3000Ｔｈｅ−７ｔｈ−ｅｄｉｔｉｏｎ'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと\u3000：\u3000広辞苑第七版刊行記念'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑\u3000第七版\u3000\u3000Ｔｈｅ-７ｔｈ-ｅｄｉｔｉｏｎ\u3000（表紙）'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑をつくるひと : 広辞苑第七版'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」を読む'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑を読む』を読む'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」改版の歴史(徹底比較)'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 下'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」が何と言おうと、台湾は台湾です!'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』が載せた「朝鮮人強制連行」のウソ'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』後記'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』自序'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑じゃわからない 人生と仕事に役立つ 企業の名言・箴言(しんげん)・教訓・警句'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 上'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑. た-ん'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑「台湾は中国の一部」は大ウソ'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 : 机上版 : 総革装 た－ん'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 た－ん'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第七版<机上版>付録'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』(第七版)に見るポップカルチャーの台頭'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第七版\u3000付録'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 : 第二版'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 第2版補訂版/机上版'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑  第四版  電子ブック版'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版<机上版>付録'
+2026-03-13 15:24:24 [INFO] search_api - [NDL] スキップ 40件
+2026-03-13 15:24:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8961842785
+2026-03-13 15:24:24 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8961842792
+2026-03-13 15:24:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=4166600818
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201802
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201963
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201963
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801058
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784896201802
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784000801232
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784000801324
+2026-03-13 15:24:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784000801232
+2026-03-13 15:24:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784000801324
+2026-03-13 15:24:26 [INFO] search_api - [API] 書影取得 round=3 hit=8/20 elapsed=2.44s
+2026-03-13 15:24:26 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=11/20
+2026-03-13 15:24:26 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=181 max=60
+2026-03-13 15:24:28 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.45s
+2026-03-13 15:24:28 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版日韓辞典 1 あ～せ'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版日韓辞典 = 고지엔 제6판 일한사전 = Kojien, 6th Japanese-Korean dictionary. 1 (あ-せ)'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版日韓辞典 2 せ～ん'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版日韓辞典 = 고지엔 제6판 일한사전 = Kojien, 6th Japanese-Korean dictionary. 2 (せ-ん)'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第七版 付録'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版 付録 2分冊版'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第２版'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 第2版'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 ［机上版］ 第2版補訂版'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 第２版'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑  第3版'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑\u3000第３版'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:28 [INFO] search_api - [NDL] スキップ 40件
+2026-03-13 15:24:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800574
+2026-03-13 15:24:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801023
+2026-03-13 15:24:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300338
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300516
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801120
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300303
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800027
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300168
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4002009726
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800027
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800027
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=400130015X
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801031
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801139
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300354
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801015
+2026-03-13 15:24:29 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801023
+2026-03-13 15:24:29 [INFO] search_api - [API] 書影取得 round=4 hit=3/20 elapsed=1.70s
+2026-03-13 15:24:29 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=14/20
+2026-03-13 15:24:29 [INFO] search_api - [NDL] リクエスト開始 query='広辞苑' start=241 max=60
+2026-03-13 15:24:31 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.66s
+2026-03-13 15:24:31 [INFO] search_api - [NDL] 検索完了 query='広辞苑' total=474 取得件数=60
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 付録 [普通版]'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 付録 [机上版]'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 第6版付録'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版DVD-ROM版+日本語大シソーラス'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑第六版付録'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 付録 [机上版]'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 第7版付録'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』と『岩波国語辞典』における社号の記述に関する一考察'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』と世界最長の川 (研究ノート)'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』と世界最長の川'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑と多摩のあゆみ'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 : [並装] : 総革装'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑 新村出編'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑に掲載された環境用語の移り変わり'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』に見られるマレー語・インドネシア語起源の語彙について'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』にみる軍法会議の記述'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」にみる性語あれこれ'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑に見る文字と図版のディジタル処理'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の「解説」に関する批判的考察--百科項目「ファウスト」の解説に対して(前編)'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の「解説」に関する批判的考察--百科項目「ファウスト」の解説に対して(中編)'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の「解説」に関する批判的考察--百科項目「ファウスト」の解説に対して(後編)'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の「搔き抱く」の「搔き」は接頭語として妥当か : 北方風土'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」の語源語史採録について-5-'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」の語源語史説採録について-1-'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」の語源語史説採録について-2-'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」の語源語史説採録について-4-'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」の語源語史説採録について-6完-'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」の語源説史説採録について-3-'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」の将来について--荒正人・戸板康二氏への答礼として'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='広辞苑の神話 : お言葉ですが…'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の助動詞・助詞一斑(下) : 執筆者の交替は何をもたらしたか'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の助動詞・助詞一斑(上) : 執筆者の交替は何をもたらしたか'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の助動詞･助詞一斑(上)執筆者の交替は何をもたらしたか'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の助動詞・助詞一斑(下)執筆者の交替は何をもたらしたか'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の中に息づく『辞林』'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='『広辞苑』の中に息づく『辞林』'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] ISBNなしでスキップ title='「広辞苑」のなかのお雇い外国人'
+2026-03-13 15:24:31 [INFO] search_api - [NDL] スキップ 45件
+2026-03-13 15:24:31 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788961842778
+2026-03-13 15:24:32 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784000801232
+2026-03-13 15:24:32 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000801015
+2026-03-13 15:24:32 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255000719
+2026-03-13 15:24:32 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784001301618
+2026-03-13 15:24:32 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800019
+2026-03-13 15:24:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255000719
+2026-03-13 15:24:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4334973183
+2026-03-13 15:24:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4001300125
+2026-03-13 15:24:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784001301618
+2026-03-13 15:24:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4000800019
+2026-03-13 15:24:33 [INFO] search_api - [API] 書影取得 round=5 hit=4/15 elapsed=2.00s
+2026-03-13 15:24:33 [INFO] search_api - [API] レスポンス返却 q='広辞苑' books=18 total=474 elapsed=18.40s

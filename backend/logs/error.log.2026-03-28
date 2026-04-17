@@ -1,0 +1,2 @@
+2026-03-28 17:21:39 [ERROR] search_api - [NDL] タイムアウト query='辞書' elapsed=5.01s
+2026-03-28 17:21:55 [ERROR] search_api - [NDL] タイムアウト query='辞典' elapsed=5.08s

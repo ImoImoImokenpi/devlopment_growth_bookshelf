@@ -8,12 +8,7 @@ const Layout = ({ children }) => {
     >
       <Navbar />
       {/* メインコンテンツ */}
-      <main 
-        style={{ 
-          ...mainContentStyle,
-          marginTop: "70px",
-        }}
-      >
+      <main style={mainContentStyle}>
         {children}
       </main>
     </div>
@@ -25,7 +20,7 @@ const mainContentStyle = {
   width: "100%",
   maxWidth: "1400px", // 少し広げることで本棚の並びをゆったりさせる
   margin: "0 auto",
-  padding: "20px 40px", // 左右の余白をしっかり取る
+  padding: "20px", // 左右の余白をしっかり取る
   boxSizing: "border-box",
 };
 

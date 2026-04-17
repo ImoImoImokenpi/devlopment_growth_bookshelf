@@ -314,9 +314,7 @@ function Search() {
   };
 
   return (
-      <div>
-        <h1>本を探す</h1>
-
+      <div style={{ paddingTop: "80px" }}>
         {/* 検索バー + 表示切替 */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
           <input

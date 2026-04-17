@@ -105,7 +105,7 @@ function SpineShelfView() {
     return Math.min(Math.max(rawWidth, 400), 1100);
   }
   
-  const WIDTH = 900; 
+  const WIDTH = 800; 
   // const WIDTH = useMemo(() => {
   //   return d3.max(
   //     shelves.map((s) => getShelfWidthByPixels(s.books))
@@ -113,26 +113,6 @@ function SpineShelfView() {
   // }, [shelves]);
 
   const HEIGHT = unitShelfHeight * shelfCount + FRAME * (shelfCount + 1);
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const resize = () => {
-      const containerWidth = containerRef.current.clientWidth;
-      const containerHeight = window.innerHeight - 200; // 余白
-
-      const scaleX = containerWidth / WIDTH;
-      const scaleY = containerHeight / HEIGHT;
-
-      const nextScale = Math.min(scaleX, scaleY, 1); // 最大1（拡大しない）
-      setScale(nextScale);
-    };
-
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, [WIDTH, HEIGHT]);
 
   const getShelfIndex = useCallback((pxY) => {
     return Math.max(0, Math.min(Math.floor((pxY - FRAME) / (unitShelfHeight + FRAME)), shelfCount - 1));
@@ -187,7 +167,11 @@ function SpineShelfView() {
   // ─────────────────────────────────────────────
   useEffect(() => {
     if (!svgRef.current) return;
-    const svg = d3.select(svgRef.current).attr("width", WIDTH).attr("height", HEIGHT);
+    const svg = d3.select(svgRef.current)
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("viewBox", `0 0 ${WIDTH} ${HEIGHT}`)
+      .attr("preserveAspectRatio", "xMidYMid meet")
     
     // 背景・構造の初期化
     let staticLayer = svg.select(".static-layer");
@@ -496,16 +480,18 @@ function SpineShelfView() {
           perspective: "1200px",
           display: "flex",
           justifyContent: "center",
-          alignItems: "flex-start"
+          alignItems: "flex-start",
+          width: "100%",
+          height: "80vh"  // ← ★ここが重要（画面の8割）
         }}
       >
         <svg 
           ref={svgRef} 
           style={{
-            ...s.svg,
-            transform: `translateX(${(1 - scale) * WIDTH / 2}px) scale(${scale})`,
-            transformOrigin: "top left"
-          }} 
+            width: "100%",
+            height: "100%",
+            display: "block"
+          }}
         />
       </div>
       <div style={s.fab} onClick={() => setIsToolbarOpen(v => !v)}>
@@ -568,6 +554,15 @@ const s = {
     cursor: "pointer",
     boxShadow: "0 6px 20px rgba(0,0,0,0.2)",
     zIndex: 1000
+  },
+
+  svg: {
+    width: "100%",
+    height: "auto",
+    display: "block",
+    boxShadow: "0 40px 80px rgba(0,0,0,0.15)",
+    borderRadius: "4px",
+    backgroundColor: "#333"
   },
 
   floatingPanel: {

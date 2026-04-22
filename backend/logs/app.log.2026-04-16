@@ -1,0 +1,101 @@
+2026-04-16 16:06:38 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイの森' page=1 per_page=20
+2026-04-16 16:06:38 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:06:38 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=1 max=60
+2026-04-16 16:06:38 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-16 16:06:44 [ERROR] search_api - [NDL] タイムアウト query='ノルウェイの森' elapsed=5.69s
+2026-04-16 16:06:50 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイ' page=1 per_page=20
+2026-04-16 16:06:50 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:06:50 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイ' start=1 max=60
+2026-04-16 16:06:55 [ERROR] search_api - [NDL] タイムアウト query='ノルウェイ' elapsed=5.09s
+2026-04-16 16:07:26 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハサミ男' page=1 per_page=20
+2026-04-16 16:07:26 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:07:26 [INFO] search_api - [NDL] リクエスト開始 query='ハサミ男' start=1 max=60
+2026-04-16 16:07:31 [ERROR] search_api - [NDL] タイムアウト query='ハサミ男' elapsed=5.10s
+2026-04-16 16:14:48 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハサミ男' page=1 per_page=20
+2026-04-16 16:14:48 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:14:48 [INFO] search_api - [NDL] リクエスト開始 query='ハサミ男' start=1 max=60
+2026-04-16 16:14:48 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-16 16:14:48 [ERROR] search_api - [NDL] HTTPエラー status=429 query='ハサミ男'
+2026-04-16 16:15:00 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハサミ男' page=1 per_page=20
+2026-04-16 16:15:00 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:15:00 [INFO] search_api - [NDL] リクエスト開始 query='ハサミ男' start=1 max=60
+2026-04-16 16:15:15 [ERROR] search_api - [NDL] タイムアウト query='ハサミ男' elapsed=15.06s
+2026-04-16 16:28:28 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハサミ男' page=1 per_page=20
+2026-04-16 16:28:28 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:28:28 [INFO] search_api - [NDL] リクエスト開始 query='ハサミ男' start=1 max=60
+2026-04-16 16:28:28 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-16 16:28:38 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=10.51s
+2026-04-16 16:28:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786048997021
+2026-04-16 16:28:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1196251770
+2026-04-16 16:28:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062187671
+2026-04-16 16:28:40 [INFO] search_api - [API] 書影取得 round=1 hit=4/7 elapsed=1.22s
+2026-04-16 16:28:40 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-16 16:28:40 [INFO] search_api - [API] レスポンス返却 q='ハサミ男' books=4 total=11 elapsed=11.75s
+2026-04-16 16:29:03 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイの森' page=1 per_page=20
+2026-04-16 16:29:03 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:29:03 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=1 max=60
+2026-04-16 16:29:14 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=11.93s
+2026-04-16 16:29:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-16 16:29:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990695620
+2026-04-16 16:29:15 [INFO] search_api - [API] 書影取得 round=1 hit=2/4 elapsed=0.92s
+2026-04-16 16:29:15 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=2/20
+2026-04-16 16:29:15 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=61 max=60
+2026-04-16 16:29:25 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=9.92s
+2026-04-16 16:29:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863330320
+2026-04-16 16:29:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292599
+2026-04-16 16:29:28 [INFO] search_api - [API] 書影取得 round=2 hit=4/6 elapsed=2.46s
+2026-04-16 16:29:28 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=6/20
+2026-04-16 16:29:28 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=121 max=60
+2026-04-16 16:29:34 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=6.16s
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532742929
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9621708958
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571340043
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532755387
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970123695
+2026-04-16 16:29:34 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-16 16:29:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784775516157
+2026-04-16 16:29:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-16 16:29:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784305707123
+2026-04-16 16:29:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784273037666
+2026-04-16 16:29:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=4796602089
+2026-04-16 16:29:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-16 16:29:36 [INFO] search_api - [API] 書影取得 round=3 hit=2/17 elapsed=1.65s
+2026-04-16 16:29:36 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=8/20
+2026-04-16 16:29:36 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=181 max=60
+2026-04-16 16:29:38 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.68s
+2026-04-16 16:29:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-16 16:29:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063486216
+2026-04-16 16:29:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-16 16:29:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=406274869X
+2026-04-16 16:29:40 [INFO] search_api - [API] 書影取得 round=4 hit=2/6 elapsed=1.33s
+2026-04-16 16:29:40 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=10/20
+2026-04-16 16:29:40 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=241 max=60
+2026-04-16 16:29:46 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=6.11s
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=569904664X
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532765546
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374680
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374673
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970631410
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970120157
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848933
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848925
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061879367
+2026-04-16 16:29:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-16 16:29:47 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061860526
+2026-04-16 16:29:48 [INFO] search_api - [API] 書影取得 round=5 hit=4/16 elapsed=1.61s
+2026-04-16 16:29:48 [INFO] search_api - [API] レスポンス返却 q='ノルウェイの森' books=14 total=527 elapsed=44.99s
+2026-04-16 16:50:32 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='五分後の世界' page=1 per_page=20
+2026-04-16 16:50:32 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-16 16:50:32 [INFO] search_api - [NDL] リクエスト開始 query='五分後の世界' start=1 max=60
+2026-04-16 16:50:32 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-16 16:50:35 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.03s
+2026-04-16 16:50:35 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8901012596
+2026-04-16 16:50:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=4877281088
+2026-04-16 16:50:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=4877280049
+2026-04-16 16:50:36 [INFO] search_api - [API] 書影取得 round=1 hit=4/7 elapsed=1.17s
+2026-04-16 16:50:36 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-16 16:50:36 [INFO] search_api - [API] レスポンス返却 q='五分後の世界' books=4 total=30 elapsed=4.24s

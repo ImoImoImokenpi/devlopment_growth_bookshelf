@@ -6,11 +6,12 @@ import routers.myhand as myhand_router
 import routers.knowledge_graph as knowledge_graph_router
 import routers.bookshelf as bookshelf_router
 import routers.search as search_router
+from routers.search import lifespan
 
 # DB初期化
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 # CORS設定
 app.add_middleware(

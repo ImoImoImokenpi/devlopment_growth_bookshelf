@@ -193,7 +193,7 @@ async def search_ndl_sru(query: str, start: int, max_records: int):
                 time.perf_counter() - t0,
             )
 
-            if attempt == retry - 1:
+            if attempt == RETRY_COUNT - 1:
                 raise HTTPException(
                     status_code=504,
                     detail="NDL API timeout"
@@ -487,15 +487,23 @@ async def search_books(
             time.perf_counter() - t_cover,
         )
 
+        with_cover = []
+        without_cover = []
+
         for book, cover in zip(candidates, covers):
-            if not cover:
-                continue
-
             book["cover"] = cover
-            books_with_cover.append(book)
+            if cover:
+                with_cover.append(book)
+            else:
+                without_cover.append(book)
 
-            if len(books_with_cover) >= per_page:
-                break
+        books_with_cover.extend(with_cover)
+
+        # 足りなければ補充
+        if len(books_with_cover) < per_page:
+            books_with_cover.extend(
+                without_cover[:per_page - len(books_with_cover)]
+            )
 
         if raw_count == 0 or ndl_start > total_records:
             logger.info("[API] NDL レコード枯渇")

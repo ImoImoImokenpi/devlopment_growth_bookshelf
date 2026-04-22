@@ -192,7 +192,7 @@ SPINE_GAP = 2
 class BookPosition(BaseModel):
     isbn:        str
     shelf_index: int
-    x_pos:       int
+    x_pos:       float | None = 0
     order_index: int = 0  # 互換性のため残す
 
 class SyncLayoutRequest(BaseModel):
@@ -224,9 +224,14 @@ def place_book(db: Session, book, design: "ShelfDesign") -> None:
     """
     SHELF_MAX_WIDTH = 800  # ShelfDesign に持たせてもよい
 
+    # ★ここで計算（超重要）
+    spine_width = calc_spine_width_px(book.pages)
+    spine_height = calc_spine_height_px(book.height_mm)
+
     for shelf_idx in range(design.total_shelves):
-        x = find_free_x(db, shelf_idx, book.spine_width_px)
-        if x + book.spine_width_px + FRAME <= SHELF_MAX_WIDTH:
+        x = find_free_x(db, shelf_idx, spine_width_px)
+
+        if x + spine_width_px + FRAME <= SHELF_MAX_WIDTH:
             # この棚に収まる
             order = db.query(ShelfLayout)\
                 .filter(ShelfLayout.shelf_index == shelf_idx)\
@@ -236,8 +241,8 @@ def place_book(db: Session, book, design: "ShelfDesign") -> None:
                 shelf_index     = shelf_idx,
                 x_pos           = x,
                 order_index     = order,
-                spine_width_px  = book.spine_width_px,
-                spine_height_px = book.spine_height_px,
+                spine_width_px  = spine_width_px,
+                spine_height_px = spine_height_px,
                 cover           = book.cover,
                 size_label      = book.size_label,
             )
@@ -252,8 +257,8 @@ def place_book(db: Session, book, design: "ShelfDesign") -> None:
         shelf_index     = new_shelf,
         x_pos           = FRAME,
         order_index     = 0,
-        spine_width_px  = book.spine_width_px,
-        spine_height_px = book.spine_height_px,
+        spine_width_px  = spine_width_px,
+        spine_height_px = spine_height_px,
         cover           = book.cover,
         size_label      = book.size_label,
     )
@@ -296,8 +301,8 @@ def fetch_bookshelf(db: Session = Depends(get_db)):
             "shelf_index":     l.shelf_index,
             "x_pos":           l.x_pos,           # ← 追加
             "order_index":     l.order_index,
-            "spine_width_px":  l.spine_width_px,
-            "spine_height_px": l.spine_height_px,
+            "pages": l.pages,
+            "height_mm": l.height_mm,
         })
 
     return {
@@ -309,17 +314,33 @@ def fetch_bookshelf(db: Session = Depends(get_db)):
 @router.post("/sync-layout")
 async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
     try:
+        # 変換係数 (1mm = 1.2px)
+        PX_TO_MM_SCALE = 1.2
+        FRAME_OFFSET = 20  # フロントエンドの FRAME 定数と合わせる
+
         for pos in body.layout:
+            # px 座標から実寸 mm 座標へ逆変換
+            # 公式: (px座標 - オフセット) / 1.2
+            x_pos_mm = (pos.x_pos - FRAME_OFFSET) / PX_TO_MM_SCALE
+
             db.query(ShelfLayout)\
                 .filter(ShelfLayout.isbn == pos.isbn)\
                 .update({
                     "shelf_index": pos.shelf_index,
-                    "x_pos":       pos.x_pos,
+                    "x_pos":       round(x_pos_mm, 2), # 小数点2桁程度で保存
                     "order_index": pos.order_index,
                 }, synchronize_session=False)
+        
         db.commit()
 
-        neo4j_payload = [item.model_dump() for item in body.layout]
+        # Neo4j側へ送るペイロードも mm 換算済みのものにする
+        # (body.layout をループ内で直接書き換えるか、新しいリストを作成)
+        neo4j_payload = []
+        for pos in body.layout:
+            dump = pos.model_dump()
+            dump["x_pos"] = round((pos.x_pos - FRAME_OFFSET) / PX_TO_MM_SCALE, 2)
+            neo4j_payload.append(dump)
+            
         update_shelf_layout_chain(neo4j_payload)
 
         return {"status": "success"}
@@ -328,7 +349,6 @@ async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
         traceback.print_exc()
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/migrate-x-pos")
 def migrate_x_pos(db: Session = Depends(get_db)):

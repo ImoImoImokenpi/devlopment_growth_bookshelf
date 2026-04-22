@@ -1,17 +1,8 @@
 import React, { useContext, useState } from "react";
 import axios from "axios";
 import { MyHandContext } from "../context/MyHandContext";
+import { getSpineDimensions } from "../utils/spineSize";
 import { MyBookshelfContext } from "../context/MyBookshelfContext";
-
-// ─── 背表紙サイズ計算 ───
-function getSpineDimensions(book) {
-  const heightPx = book.height_mm
-    ? Math.min(180, Math.max(120, book.height_mm * 0.8))
-    : 140;
-  const widthMm = book.pages ? book.pages * 0.065 : 15;
-  const widthPx = Math.min(45, Math.max(15, widthMm * 1.2));
-  return { heightPx, widthPx };
-}
 
 function HandPanel({ isOpen, onClose }) {
   const { myHand, setMyHand } = useContext(MyHandContext);

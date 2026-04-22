@@ -1,0 +1,1476 @@
+2026-04-21 01:44:56 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-04-21 01:44:56 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:44:56 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-04-21 01:44:56 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-21 01:44:58 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.51s
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065250358
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065278543
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-04-21 01:44:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-04-21 01:44:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-04-21 01:45:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 01:45:00 [INFO] search_api - [API] 書影取得 round=1 hit=5/24 elapsed=1.92s
+2026-04-21 01:45:00 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 01:45:00 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=5 total=33 elapsed=3.47s
+2026-04-21 01:45:22 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='夕木春央' page=1 per_page=20
+2026-04-21 01:45:22 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:45:22 [INFO] search_api - [NDL] リクエスト開始 query='夕木春央' start=1 max=60
+2026-04-21 01:45:23 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.01s
+2026-04-21 01:45:23 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7505758513
+2026-04-21 01:45:23 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1189571897
+2026-04-21 01:45:23 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1193149231
+2026-04-21 01:45:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065170878
+2026-04-21 01:45:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065307700
+2026-04-21 01:45:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784301004639
+2026-04-21 01:45:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065312414
+2026-04-21 01:45:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784301005841
+2026-04-21 01:45:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065348956
+2026-04-21 01:45:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065326879
+2026-04-21 01:45:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784757594739
+2026-04-21 01:45:25 [INFO] search_api - [API] 書影取得 round=1 hit=8/19 elapsed=1.24s
+2026-04-21 01:45:25 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 01:45:25 [INFO] search_api - [API] レスポンス返却 q='夕木春央' books=8 total=25 elapsed=2.26s
+2026-04-21 01:45:48 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='アヒルと鴨のコインロッカー' page=1 per_page=20
+2026-04-21 01:45:48 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:45:48 [INFO] search_api - [NDL] リクエスト開始 query='アヒルと鴨のコインロッカー' start=1 max=60
+2026-04-21 01:45:49 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.01s
+2026-04-21 01:45:49 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513320993
+2026-04-21 01:45:49 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544717168
+2026-04-21 01:45:49 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788991312531
+2026-04-21 01:45:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=4488017002
+2026-04-21 01:45:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=4488464017
+2026-04-21 01:45:50 [INFO] search_api - [API] 書影取得 round=1 hit=0/5 elapsed=0.85s
+2026-04-21 01:45:50 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 01:45:50 [INFO] search_api - [API] レスポンス返却 q='アヒルと鴨のコインロッカー' books=0 total=18 elapsed=1.88s
+2026-04-21 01:46:15 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='伊坂幸太郎' page=1 per_page=20
+2026-04-21 01:46:15 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:46:15 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=1 max=60
+2026-04-21 01:46:17 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.33s
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784041084427
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344844674
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344844971
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101250281
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4862484905
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784041059463
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784309977416
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784862487209
+2026-04-21 01:46:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784862484901
+2026-04-21 01:46:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784309977416
+2026-04-21 01:46:19 [INFO] search_api - [API] 書影取得 round=1 hit=9/19 elapsed=2.02s
+2026-04-21 01:46:19 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=9/20
+2026-04-21 01:46:19 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=61 max=60
+2026-04-21 01:46:21 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.44s
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513319829
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715157
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715157
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715232
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544268585
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513320993
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544717168
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715317
+2026-04-21 01:46:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784107714985
+2026-04-21 01:46:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784122057173
+2026-04-21 01:46:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784107714978
+2026-04-21 01:46:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334929893
+2026-04-21 01:46:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334776282
+2026-04-21 01:46:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101250219
+2026-04-21 01:46:23 [INFO] search_api - [API] 書影取得 round=2 hit=8/22 elapsed=2.14s
+2026-04-21 01:46:23 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=17/20
+2026-04-21 01:46:23 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=121 max=60
+2026-04-21 01:46:25 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.00s
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513320191
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7544713986
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544285025
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544713986
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788901222134
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544735384
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784047250635
+2026-04-21 01:46:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784047250666
+2026-04-21 01:46:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784047250499
+2026-04-21 01:46:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022648068
+2026-04-21 01:46:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784488017354
+2026-04-21 01:46:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4048735470
+2026-04-21 01:46:26 [INFO] search_api - [API] 書影取得 round=3 hit=19/31 elapsed=1.26s
+2026-04-21 01:46:26 [INFO] search_api - [API] レスポンス返却 q='伊坂幸太郎' books=20 total=563 elapsed=11.25s
+2026-04-21 01:46:43 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='伊坂幸太郎' page=2 per_page=20
+2026-04-21 01:46:43 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:46:43 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=1 max=60
+2026-04-21 01:46:43 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.09s
+2026-04-21 01:46:43 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:46:43 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=61 max=60
+2026-04-21 01:46:43 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:46:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715157
+2026-04-21 01:46:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715157
+2026-04-21 01:46:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715232
+2026-04-21 01:46:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544268585
+2026-04-21 01:46:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513320993
+2026-04-21 01:46:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544717168
+2026-04-21 01:46:43 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544715317
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784107714978
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784122057173
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101250219
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784104596041
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334929893
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062153768
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101250274
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334776282
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784107714985
+2026-04-21 01:46:44 [INFO] search_api - [API] 書影取得 round=2 hit=5/21 elapsed=1.16s
+2026-04-21 01:46:44 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=5/20
+2026-04-21 01:46:44 [INFO] search_api - [NDL] リクエスト開始 query='伊坂幸太郎' start=121 max=60
+2026-04-21 01:46:44 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.05s
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787513320191
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7544713986
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544285025
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544713986
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788901222134
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544735384
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062140898
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784167909536
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784140057063
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784104596034
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101332567
+2026-04-21 01:46:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784167909543
+2026-04-21 01:46:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784047250635
+2026-04-21 01:46:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784047250666
+2026-04-21 01:46:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101250311
+2026-04-21 01:46:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784047250499
+2026-04-21 01:46:46 [INFO] search_api - [API] 書影取得 round=3 hit=15/31 elapsed=1.46s
+2026-04-21 01:46:46 [INFO] search_api - [API] レスポンス返却 q='伊坂幸太郎' books=20 total=563 elapsed=2.86s
+2026-04-21 01:47:02 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイの' page=1 per_page=20
+2026-04-21 01:47:02 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:47:02 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの' start=1 max=60
+2026-04-21 01:47:04 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.21s
+2026-04-21 01:47:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 01:47:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990695620
+2026-04-21 01:47:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=4401771001
+2026-04-21 01:47:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784880654027
+2026-04-21 01:47:05 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.88s
+2026-04-21 01:47:05 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:47:05 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの' start=61 max=60
+2026-04-21 01:47:07 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.40s
+2026-04-21 01:47:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434153945
+2026-04-21 01:47:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863330320
+2026-04-21 01:47:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292599
+2026-04-21 01:47:08 [INFO] search_api - [API] 書影取得 round=2 hit=2/5 elapsed=1.29s
+2026-04-21 01:47:08 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=2/20
+2026-04-21 01:47:08 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの' start=121 max=60
+2026-04-21 01:47:08 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイの森' page=1 per_page=20
+2026-04-21 01:47:08 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:47:08 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=1 max=60
+2026-04-21 01:47:09 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.42s
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532742929
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9621708958
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571340043
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532755387
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1860168187
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970123695
+2026-04-21 01:47:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 01:47:10 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.43s
+2026-04-21 01:47:10 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 01:47:10 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784273037666
+2026-04-21 01:47:10 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784775516157
+2026-04-21 01:47:10 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:10 [DEBUG] search_api - [Cover] 書影取得できず isbn=4900416738
+2026-04-21 01:47:11 [INFO] search_api - [API] 書影取得 round=3 hit=3/17 elapsed=1.17s
+2026-04-21 01:47:11 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=5/20
+2026-04-21 01:47:11 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの' start=181 max=60
+2026-04-21 01:47:11 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990695620
+2026-04-21 01:47:11 [INFO] search_api - [API] 書影取得 round=1 hit=2/4 elapsed=1.27s
+2026-04-21 01:47:11 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=2/20
+2026-04-21 01:47:11 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=61 max=60
+2026-04-21 01:47:12 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.42s
+2026-04-21 01:47:12 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.20s
+2026-04-21 01:47:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292599
+2026-04-21 01:47:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=4779111722
+2026-04-21 01:47:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063486216
+2026-04-21 01:47:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=406274869X
+2026-04-21 01:47:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=4796602089
+2026-04-21 01:47:13 [INFO] search_api - [API] 書影取得 round=4 hit=2/8 elapsed=1.22s
+2026-04-21 01:47:13 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=7/20
+2026-04-21 01:47:13 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの' start=241 max=60
+2026-04-21 01:47:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863330320
+2026-04-21 01:47:13 [INFO] search_api - [API] 書影取得 round=2 hit=3/6 elapsed=1.19s
+2026-04-21 01:47:13 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=5/20
+2026-04-21 01:47:13 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=121 max=60
+2026-04-21 01:47:15 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.54s
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=569904664X
+2026-04-21 01:47:15 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.48s
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532742929
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9621708958
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571340043
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532755387
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970123695
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784305707123
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784775516157
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848933
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784806047421
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=4796602089
+2026-04-21 01:47:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4806047007
+2026-04-21 01:47:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848925
+2026-04-21 01:47:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061860526
+2026-04-21 01:47:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061879367
+2026-04-21 01:47:16 [INFO] search_api - [API] 書影取得 round=5 hit=2/9 elapsed=1.09s
+2026-04-21 01:47:16 [INFO] search_api - [API] レスポンス返却 q='ノルウェイの' books=9 total=563 elapsed=13.69s
+2026-04-21 01:47:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784273037666
+2026-04-21 01:47:16 [INFO] search_api - [API] 書影取得 round=3 hit=1/17 elapsed=1.35s
+2026-04-21 01:47:16 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=6/20
+2026-04-21 01:47:16 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=181 max=60
+2026-04-21 01:47:18 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.46s
+2026-04-21 01:47:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063486216
+2026-04-21 01:47:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=406274869X
+2026-04-21 01:47:19 [INFO] search_api - [API] 書影取得 round=4 hit=2/6 elapsed=1.12s
+2026-04-21 01:47:19 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=8/20
+2026-04-21 01:47:19 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=241 max=60
+2026-04-21 01:47:20 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.29s
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=569904664X
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532765546
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374680
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374673
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970631410
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970120157
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848925
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061860526
+2026-04-21 01:47:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 01:47:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035162
+2026-04-21 01:47:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061879367
+2026-04-21 01:47:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848933
+2026-04-21 01:47:21 [INFO] search_api - [API] 書影取得 round=5 hit=3/16 elapsed=1.15s
+2026-04-21 01:47:21 [INFO] search_api - [API] レスポンス返却 q='ノルウェイの森' books=11 total=527 elapsed=13.01s
+2026-04-21 01:47:55 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='博士の愛した' page=1 per_page=20
+2026-04-21 01:47:55 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:47:55 [INFO] search_api - [NDL] リクエスト開始 query='博士の愛した' start=1 max=60
+2026-04-21 01:47:57 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.73s
+2026-04-21 01:47:58 [INFO] search_api - [API] 書影取得 round=1 hit=4/4 elapsed=1.02s
+2026-04-21 01:47:58 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=4/20
+2026-04-21 01:47:58 [INFO] search_api - [NDL] リクエスト開始 query='博士の愛した' start=61 max=60
+2026-04-21 01:47:59 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.45s
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787020083237
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787533948641
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7020052479
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8957090258
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788574482798
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788574482798
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789725649558
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786094792960
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7020052479
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787020083237
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789610003991
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789610003991
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783935890885
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783746629445
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783746629445
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789100124250
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788494147593
+2026-04-21 01:47:59 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788496601376
+2026-04-21 01:48:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4063721302
+2026-04-21 01:48:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4108301838
+2026-04-21 01:48:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4860553160
+2026-04-21 01:48:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4860553179
+2026-04-21 01:48:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=4860553152
+2026-04-21 01:48:01 [INFO] search_api - [API] 書影取得 round=2 hit=6/29 elapsed=1.47s
+2026-04-21 01:48:01 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=10/20
+2026-04-21 01:48:01 [INFO] search_api - [NDL] リクエスト開始 query='博士の愛した' start=121 max=60
+2026-04-21 01:48:02 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.82s
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788411071260
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788494552694
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788411073271
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788496601376
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=2742756515
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9782742772230
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786190200505
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786190200505
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785604710463
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789985325810
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789603259091
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8987090258
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788681567692
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788076018792
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789532593051
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788056633007
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789736899379
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789513190422
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789935454065
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781568364148
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789674301163
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781846552502
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=0312427808
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9780099521341
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781784875442
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9780312427801
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788395243325
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788395243325
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789383660971
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9749261267
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788957090251
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788972757085
+2026-04-21 01:48:02 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8972757085
+2026-04-21 01:48:02 [INFO] search_api - [API] 書影取得 round=3 hit=0/33 elapsed=0.00s
+2026-04-21 01:48:02 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 01:48:02 [INFO] search_api - [API] レスポンス返却 q='博士の愛した' books=10 total=158 elapsed=6.53s
+2026-04-21 01:48:31 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='湊かなえ' page=1 per_page=20
+2026-04-21 01:48:31 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:48:31 [INFO] search_api - [NDL] リクエスト開始 query='湊かなえ' start=1 max=60
+2026-04-21 01:48:39 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=8.29s
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788990982476
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788994343624
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787508630885
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787540452537
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8994343808
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787541155659
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787122255181
+2026-04-21 01:48:39 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787548401087
+2026-04-21 01:48:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=4265402922
+2026-04-21 01:48:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784160086067
+2026-04-21 01:48:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344018839
+2026-04-21 01:48:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575236286
+2026-04-21 01:48:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575517040
+2026-04-21 01:48:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575237450
+2026-04-21 01:48:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575302257
+2026-04-21 01:48:41 [INFO] search_api - [API] 書影取得 round=1 hit=14/29 elapsed=2.18s
+2026-04-21 01:48:41 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=14/20
+2026-04-21 01:48:41 [INFO] search_api - [NDL] リクエスト開始 query='湊かなえ' start=61 max=60
+2026-04-21 01:48:44 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.32s
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787540494247
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787540473990
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787540473990
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787548407805
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787508669878
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544254885
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544251938
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8990982711
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787020119769
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784758411936
+2026-04-21 01:48:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784758445078
+2026-04-21 01:48:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087714593
+2026-04-21 01:48:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784860556068
+2026-04-21 01:48:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063930443
+2026-04-21 01:48:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063758788
+2026-04-21 01:48:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784834232127
+2026-04-21 01:48:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784152089953
+2026-04-21 01:48:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575515039
+2026-04-21 01:48:46 [INFO] search_api - [API] 書影取得 round=2 hit=18/36 elapsed=1.70s
+2026-04-21 01:48:46 [INFO] search_api - [API] レスポンス返却 q='湊かなえ' books=20 total=371 elapsed=14.55s
+2026-04-21 01:49:03 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='湊かなえ' page=2 per_page=20
+2026-04-21 01:49:03 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:49:03 [INFO] search_api - [NDL] リクエスト開始 query='湊かなえ' start=1 max=60
+2026-04-21 01:49:03 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.11s
+2026-04-21 01:49:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787541155659
+2026-04-21 01:49:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787122255181
+2026-04-21 01:49:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787548401087
+2026-04-21 01:49:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575302257
+2026-04-21 01:49:04 [INFO] search_api - [API] 書影取得 round=1 hit=5/9 elapsed=1.19s
+2026-04-21 01:49:04 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=5/20
+2026-04-21 01:49:04 [INFO] search_api - [NDL] リクエスト開始 query='湊かなえ' start=61 max=60
+2026-04-21 01:49:04 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.03s
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787540494247
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787540473990
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787540473990
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787548407805
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787508669878
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544254885
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787544251938
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8990982711
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787020119769
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575236286
+2026-04-21 01:49:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784309419176
+2026-04-21 01:49:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784834232127
+2026-04-21 01:49:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344038431
+2026-04-21 01:49:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784488017569
+2026-04-21 01:49:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062930758
+2026-04-21 01:49:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784152089953
+2026-04-21 01:49:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063758788
+2026-04-21 01:49:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063930443
+2026-04-21 01:49:06 [INFO] search_api - [API] 書影取得 round=2 hit=18/36 elapsed=1.69s
+2026-04-21 01:49:06 [INFO] search_api - [API] レスポンス返却 q='湊かなえ' books=20 total=371 elapsed=3.07s
+2026-04-21 01:49:18 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='国宝' page=1 per_page=20
+2026-04-21 01:49:18 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:49:18 [INFO] search_api - [NDL] リクエスト開始 query='国宝' start=1 max=60
+2026-04-21 01:49:21 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.77s
+2026-04-21 01:49:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4140085916
+2026-04-21 01:49:21 [INFO] search_api - [API] 書影取得 round=1 hit=0/1 elapsed=0.26s
+2026-04-21 01:49:21 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:49:21 [INFO] search_api - [NDL] リクエスト開始 query='国宝' start=61 max=60
+2026-04-21 01:49:24 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.29s
+2026-04-21 01:49:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=402330901X
+2026-04-21 01:49:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022782588
+2026-04-21 01:49:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=4023800147
+2026-04-21 01:49:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784816244841
+2026-04-21 01:49:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=4023309109
+2026-04-21 01:49:25 [INFO] search_api - [API] 書影取得 round=2 hit=1/6 elapsed=1.17s
+2026-04-21 01:49:25 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=1/20
+2026-04-21 01:49:25 [INFO] search_api - [NDL] リクエスト開始 query='国宝' start=121 max=60
+2026-04-21 01:49:27 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.74s
+2026-04-21 01:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784585222040
+2026-04-21 01:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=4901339036
+2026-04-21 01:49:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062728706
+2026-04-21 01:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4023309117
+2026-04-21 01:49:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=4022570377
+2026-04-21 01:49:28 [INFO] search_api - [API] 書影取得 round=3 hit=3/8 elapsed=1.23s
+2026-04-21 01:49:28 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=4/20
+2026-04-21 01:49:28 [INFO] search_api - [NDL] リクエスト開始 query='国宝' start=181 max=60
+2026-04-21 01:49:30 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.18s
+2026-04-21 01:49:30 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=780672849X
+2026-04-21 01:49:31 [INFO] search_api - [API] 書影取得 round=4 hit=1/2 elapsed=1.00s
+2026-04-21 01:49:31 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=5/20
+2026-04-21 01:49:31 [INFO] search_api - [NDL] リクエスト開始 query='国宝' start=241 max=60
+2026-04-21 01:49:33 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.96s
+2026-04-21 01:49:33 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7807230215
+2026-04-21 01:49:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061452150
+2026-04-21 01:49:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4055000189
+2026-04-21 01:49:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784299000705
+2026-04-21 01:49:34 [INFO] search_api - [API] 書影取得 round=5 hit=0/4 elapsed=1.04s
+2026-04-21 01:49:34 [INFO] search_api - [API] レスポンス返却 q='国宝' books=5 total=15666 elapsed=15.71s
+2026-04-21 01:49:49 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='吉田修一' page=1 per_page=20
+2026-04-21 01:49:49 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:49:49 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=1 max=60
+2026-04-21 01:49:52 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.53s
+2026-04-21 01:49:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787503941733
+2026-04-21 01:49:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787503941733
+2026-04-21 01:49:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9861739649
+2026-04-21 01:49:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022645241
+2026-04-21 01:49:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784104628063
+2026-04-21 01:49:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022648938
+2026-04-21 01:49:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087466973
+2026-04-21 01:49:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022502728
+2026-04-21 01:49:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022648938
+2026-04-21 01:49:53 [INFO] search_api - [API] 書影取得 round=1 hit=11/20 elapsed=1.73s
+2026-04-21 01:49:53 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=11/20
+2026-04-21 01:49:53 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=61 max=60
+2026-04-21 01:49:55 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.87s
+2026-04-21 01:49:55 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788956606613
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784865966107
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784167925154
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784620108643
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784120045868
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784122077508
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344430136
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784620108650
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784043912018
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=4048736825
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087443912
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087468434
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334747411
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334925307
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784585220978
+2026-04-21 01:49:56 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784167925161
+2026-04-21 01:49:57 [INFO] search_api - [API] 書影取得 round=2 hit=8/24 elapsed=1.38s
+2026-04-21 01:49:57 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=19/20
+2026-04-21 01:49:57 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=121 max=60
+2026-04-21 01:49:58 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.56s
+2026-04-21 01:49:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065373309
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784163911243
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784163911809
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022520883
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784104628056
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022515650
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098634200
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784163911595
+2026-04-21 01:49:59 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098638857
+2026-04-21 01:50:00 [INFO] search_api - [API] 書影取得 round=3 hit=9/18 elapsed=1.26s
+2026-04-21 01:50:00 [INFO] search_api - [API] レスポンス返却 q='吉田修一' books=20 total=964 elapsed=10.41s
+2026-04-21 01:50:06 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='吉田修一' page=2 per_page=20
+2026-04-21 01:50:06 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:50:06 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=1 max=60
+2026-04-21 01:50:06 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.09s
+2026-04-21 01:50:06 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:50:06 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=61 max=60
+2026-04-21 01:50:06 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.03s
+2026-04-21 01:50:06 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788956606613
+2026-04-21 01:50:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784120045875
+2026-04-21 01:50:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784120045868
+2026-04-21 01:50:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784344430136
+2026-04-21 01:50:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784167925161
+2026-04-21 01:50:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784865966107
+2026-04-21 01:50:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784122062146
+2026-04-21 01:50:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784122077508
+2026-04-21 01:50:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4048736825
+2026-04-21 01:50:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784167925154
+2026-04-21 01:50:07 [INFO] search_api - [API] 書影取得 round=2 hit=14/24 elapsed=1.41s
+2026-04-21 01:50:07 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=14/20
+2026-04-21 01:50:07 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=121 max=60
+2026-04-21 01:50:07 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.06s
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098636457
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098638857
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022515667
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098632213
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784163911595
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022520883
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022520876
+2026-04-21 01:50:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022650092
+2026-04-21 01:50:09 [INFO] search_api - [API] 書影取得 round=3 hit=10/18 elapsed=1.27s
+2026-04-21 01:50:09 [INFO] search_api - [API] レスポンス返却 q='吉田修一' books=20 total=964 elapsed=2.92s
+2026-04-21 01:50:19 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='吉田修一' page=3 per_page=20
+2026-04-21 01:50:19 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:50:19 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=1 max=60
+2026-04-21 01:50:19 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.12s
+2026-04-21 01:50:19 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:50:19 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=61 max=60
+2026-04-21 01:50:19 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:50:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784865966107
+2026-04-21 01:50:21 [INFO] search_api - [API] 書影取得 round=2 hit=3/4 elapsed=1.19s
+2026-04-21 01:50:21 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=3/20
+2026-04-21 01:50:21 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=121 max=60
+2026-04-21 01:50:21 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.56s
+2026-04-21 01:50:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101287553
+2026-04-21 01:50:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098632213
+2026-04-21 01:50:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784163911243
+2026-04-21 01:50:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098638857
+2026-04-21 01:50:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784098636457
+2026-04-21 01:50:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022650085
+2026-04-21 01:50:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022520883
+2026-04-21 01:50:22 [INFO] search_api - [API] 書影取得 round=3 hit=11/18 elapsed=1.24s
+2026-04-21 01:50:22 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=14/20
+2026-04-21 01:50:22 [INFO] search_api - [NDL] リクエスト開始 query='吉田修一' start=181 max=60
+2026-04-21 01:50:24 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.82s
+2026-04-21 01:50:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087458343
+2026-04-21 01:50:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863240926
+2026-04-21 01:50:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863241206
+2026-04-21 01:50:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087442113
+2026-04-21 01:50:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101287546
+2026-04-21 01:50:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=4873789060
+2026-04-21 01:50:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163185704
+2026-04-21 01:50:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784122054516
+2026-04-21 01:50:26 [INFO] search_api - [API] 書影取得 round=4 hit=8/16 elapsed=1.62s
+2026-04-21 01:50:26 [INFO] search_api - [API] レスポンス返却 q='吉田修一' books=20 total=964 elapsed=6.68s
+2026-04-21 01:50:43 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='心と現実' page=1 per_page=20
+2026-04-21 01:50:43 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:50:43 [INFO] search_api - [NDL] リクエスト開始 query='心と現実' start=1 max=60
+2026-04-21 01:50:44 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.47s
+2026-04-21 01:50:45 [INFO] search_api - [API] 書影取得 round=1 hit=3/3 elapsed=1.02s
+2026-04-21 01:50:45 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 01:50:45 [INFO] search_api - [API] レスポンス返却 q='心と現実' books=3 total=7 elapsed=2.50s
+2026-04-21 01:51:06 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='嫌われる勇気' page=1 per_page=20
+2026-04-21 01:51:06 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:51:06 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=1 max=60
+2026-04-21 01:51:08 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.03s
+2026-04-21 01:51:08 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8996991341
+2026-04-21 01:51:08 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787111495482
+2026-04-21 01:51:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784478025819
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784478025819
+2026-04-21 01:51:09 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.84s
+2026-04-21 01:51:09 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:51:09 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる勇気' start=61 max=60
+2026-04-21 01:51:09 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.66s
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9782813216458
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1668065969
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=6044012513
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789492754127
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788851169916
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788660357757
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788073069544
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788375796025
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5041686017
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5040987382
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630492
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781982100391
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630737
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788284371245
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786162871429
+2026-04-21 01:51:09 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788996991342
+2026-04-21 01:51:09 [INFO] search_api - [API] 書影取得 round=2 hit=0/16 elapsed=0.00s
+2026-04-21 01:51:09 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 01:51:09 [INFO] search_api - [API] レスポンス返却 q='嫌われる勇気' books=0 total=89 elapsed=3.56s
+2026-04-21 01:51:17 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='嫌われる' page=1 per_page=20
+2026-04-21 01:51:17 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:51:17 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=1 max=60
+2026-04-21 01:51:19 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.65s
+2026-04-21 01:51:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334978907
+2026-04-21 01:51:19 [DEBUG] search_api - [Cover] 書影取得できず isbn=4898141366
+2026-04-21 01:51:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784833450386
+2026-04-21 01:51:21 [DEBUG] search_api - [Cover] 書影取得できず isbn=4804750177
+2026-04-21 01:51:21 [INFO] search_api - [API] 書影取得 round=1 hit=12/16 elapsed=1.96s
+2026-04-21 01:51:21 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=12/20
+2026-04-21 01:51:21 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=61 max=60
+2026-04-21 01:51:22 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.54s
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062200714
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4531081307
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065230732
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784093897204
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4806109223
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=4341171534
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784833473415
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434377471
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784785940317
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784902089356
+2026-04-21 01:51:23 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784904209868
+2026-04-21 01:51:24 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784833483155
+2026-04-21 01:51:24 [INFO] search_api - [API] 書影取得 round=2 hit=6/18 elapsed=1.69s
+2026-04-21 01:51:24 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=18/20
+2026-04-21 01:51:24 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=121 max=60
+2026-04-21 01:51:26 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.38s
+2026-04-21 01:51:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784641144514
+2026-04-21 01:51:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4341012304
+2026-04-21 01:51:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4022731192
+2026-04-21 01:51:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784569881843
+2026-04-21 01:51:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4803500592
+2026-04-21 01:51:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569559077
+2026-04-21 01:51:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569559077
+2026-04-21 01:51:27 [INFO] search_api - [API] 書影取得 round=3 hit=5/12 elapsed=1.49s
+2026-04-21 01:51:27 [INFO] search_api - [API] レスポンス返却 q='嫌われる' books=20 total=1045 elapsed=9.74s
+2026-04-21 01:51:34 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='嫌われる' page=2 per_page=20
+2026-04-21 01:51:34 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:51:34 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=1 max=60
+2026-04-21 01:51:34 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.11s
+2026-04-21 01:51:34 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:51:34 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=61 max=60
+2026-04-21 01:51:34 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:51:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4531081307
+2026-04-21 01:51:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4883994015
+2026-04-21 01:51:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784087205947
+2026-04-21 01:51:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784904209868
+2026-04-21 01:51:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4341171534
+2026-04-21 01:51:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4806109223
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784093897204
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784902089356
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434377471
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784837977117
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784833473415
+2026-04-21 01:51:35 [INFO] search_api - [API] 書影取得 round=2 hit=3/14 elapsed=1.21s
+2026-04-21 01:51:35 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=3/20
+2026-04-21 01:51:35 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=121 max=60
+2026-04-21 01:51:35 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.04s
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=4341012304
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784774135175
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784569881843
+2026-04-21 01:51:35 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569559077
+2026-04-21 01:51:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=4569559077
+2026-04-21 01:51:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784641144514
+2026-04-21 01:51:37 [INFO] search_api - [API] 書影取得 round=3 hit=6/12 elapsed=1.64s
+2026-04-21 01:51:37 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=9/20
+2026-04-21 01:51:37 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=181 max=60
+2026-04-21 01:51:38 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.63s
+2026-04-21 01:51:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8996991341
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434352706
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=406212601X
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784776206385
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784478025819
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=4140801778
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=4900331716
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784569679778
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784804762333
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=4833490153
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784533170669
+2026-04-21 01:51:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784478025819
+2026-04-21 01:51:40 [INFO] search_api - [API] 書影取得 round=4 hit=9/21 elapsed=1.45s
+2026-04-21 01:51:40 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=18/20
+2026-04-21 01:51:40 [INFO] search_api - [NDL] リクエスト開始 query='嫌われる' start=241 max=60
+2026-04-21 01:51:41 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.48s
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=4478701229
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=4198621934
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784121504913
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=4413082273
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784088811871
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784331654224
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=4413013662
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=4776200198
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784903186993
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=4831491888
+2026-04-21 01:51:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=4831492914
+2026-04-21 01:51:43 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784903186993
+2026-04-21 01:51:43 [INFO] search_api - [API] 書影取得 round=5 hit=4/16 elapsed=1.74s
+2026-04-21 01:51:43 [INFO] search_api - [API] レスポンス返却 q='嫌われる' books=20 total=1045 elapsed=9.38s
+2026-04-21 01:51:53 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='アドラー' page=1 per_page=20
+2026-04-21 01:51:53 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:51:53 [INFO] search_api - [NDL] リクエスト開始 query='アドラー' start=1 max=60
+2026-04-21 01:51:57 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.77s
+2026-04-21 01:51:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434266775
+2026-04-21 01:51:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784845115341
+2026-04-21 01:51:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784797380439
+2026-04-21 01:51:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=4393360249
+2026-04-21 01:51:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784184096103
+2026-04-21 01:51:57 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784820719304
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990708009
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434302718
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434190650
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784413097802
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784759317237
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784121505866
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784778035389
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062729369
+2026-04-21 01:51:58 [DEBUG] search_api - [Cover] 書影取得できず isbn=4760821376
+2026-04-21 01:51:58 [INFO] search_api - [API] 書影取得 round=1 hit=9/24 elapsed=1.25s
+2026-04-21 01:51:58 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=9/20
+2026-04-21 01:51:58 [INFO] search_api - [NDL] リクエスト開始 query='アドラー' start=61 max=60
+2026-04-21 01:52:00 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.58s
+2026-04-21 01:52:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=4181440168
+2026-04-21 01:52:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784847070464
+2026-04-21 01:52:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784837930280
+2026-04-21 01:52:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784054062795
+2026-04-21 01:52:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784422116327
+2026-04-21 01:52:00 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784405120174
+2026-04-21 01:52:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784761923358
+2026-04-21 01:52:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784800261243
+2026-04-21 01:52:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784422116334
+2026-04-21 01:52:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784422116341
+2026-04-21 01:52:01 [INFO] search_api - [API] 書影取得 round=2 hit=5/15 elapsed=1.39s
+2026-04-21 01:52:01 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=14/20
+2026-04-21 01:52:01 [INFO] search_api - [NDL] リクエスト開始 query='アドラー' start=121 max=60
+2026-04-21 01:52:03 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.43s
+2026-04-21 01:52:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788998015121
+2026-04-21 01:52:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784422116419
+2026-04-21 01:52:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784802301954
+2026-04-21 01:52:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784837664635
+2026-04-21 01:52:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784837985075
+2026-04-21 01:52:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795234701
+2026-04-21 01:52:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434254703
+2026-04-21 01:52:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795235007
+2026-04-21 01:52:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784286273846
+2026-04-21 01:52:04 [INFO] search_api - [API] 書影取得 round=3 hit=7/16 elapsed=1.16s
+2026-04-21 01:52:04 [INFO] search_api - [API] レスポンス返却 q='アドラー' books=20 total=2629 elapsed=10.64s
+2026-04-21 01:52:15 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='われる勇気' page=1 per_page=20
+2026-04-21 01:52:15 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:52:15 [INFO] search_api - [NDL] リクエスト開始 query='われる勇気' start=1 max=60
+2026-04-21 01:52:17 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.20s
+2026-04-21 01:52:17 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8996991341
+2026-04-21 01:52:17 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787111495482
+2026-04-21 01:52:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784478025819
+2026-04-21 01:52:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784478025819
+2026-04-21 01:52:18 [INFO] search_api - [API] 書影取得 round=1 hit=1/5 elapsed=1.13s
+2026-04-21 01:52:18 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=1/20
+2026-04-21 01:52:18 [INFO] search_api - [NDL] リクエスト開始 query='われる勇気' start=61 max=60
+2026-04-21 01:52:19 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.87s
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9782813216458
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1668065969
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=6044012513
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789492754127
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788851169916
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788660357757
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788073069544
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788375796025
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5041686017
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=5040987382
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630492
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781982100391
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781760630737
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788284371245
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786162871429
+2026-04-21 01:52:19 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788996991342
+2026-04-21 01:52:20 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334979546
+2026-04-21 01:52:20 [INFO] search_api - [API] 書影取得 round=2 hit=0/17 elapsed=1.02s
+2026-04-21 01:52:20 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 01:52:20 [INFO] search_api - [API] レスポンス返却 q='われる勇気' books=1 total=92 elapsed=5.23s
+2026-04-21 01:52:34 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハムレット' page=1 per_page=20
+2026-04-21 01:52:34 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:52:34 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=1 max=60
+2026-04-21 01:52:54 [ERROR] search_api - [NDL] タイムアウト query='ハムレット' attempt=1 elapsed=20.07s
+2026-04-21 01:52:57 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハムレット' page=1 per_page=20
+2026-04-21 01:52:57 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:52:57 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=1 max=60
+2026-04-21 01:53:08 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=11.14s
+2026-04-21 01:53:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784791764099
+2026-04-21 01:53:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784488279066
+2026-04-21 01:53:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=4191236954
+2026-04-21 01:53:10 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784488279066
+2026-04-21 01:53:10 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=1.62s
+2026-04-21 01:53:10 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:10 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=61 max=60
+2026-04-21 01:53:11 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.59s
+2026-04-21 01:53:11 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784846024093
+2026-04-21 01:53:11 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784480436009
+2026-04-21 01:53:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=4575210331
+2026-04-21 01:53:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=4327385050
+2026-04-21 01:53:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784271210559
+2026-04-21 01:53:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=4271116726
+2026-04-21 01:53:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=4327385050
+2026-04-21 01:53:13 [INFO] search_api - [API] 書影取得 round=2 hit=3/10 elapsed=1.41s
+2026-04-21 01:53:13 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=3/20
+2026-04-21 01:53:13 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=121 max=60
+2026-04-21 01:53:14 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.37s
+2026-04-21 01:53:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=4900256919
+2026-04-21 01:53:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784309729213
+2026-04-21 01:53:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=4480702644
+2026-04-21 01:53:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784309729213
+2026-04-21 01:53:16 [INFO] search_api - [API] 書影取得 round=3 hit=0/4 elapsed=1.55s
+2026-04-21 01:53:16 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=3/20
+2026-04-21 01:53:16 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=181 max=60
+2026-04-21 01:53:17 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.54s
+2026-04-21 01:53:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=4575940100
+2026-04-21 01:53:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575942194
+2026-04-21 01:53:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575944921
+2026-04-21 01:53:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575942910
+2026-04-21 01:53:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4870410656
+2026-04-21 01:53:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163433600
+2026-04-21 01:53:18 [INFO] search_api - [API] 書影取得 round=4 hit=2/8 elapsed=1.23s
+2026-04-21 01:53:18 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=5/20
+2026-04-21 01:53:18 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=241 max=60
+2026-04-21 01:53:21 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.03s
+2026-04-21 01:53:21 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9622012205
+2026-04-21 01:53:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784862654168
+2026-04-21 01:53:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784838232895
+2026-04-21 01:53:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784309257822
+2026-04-21 01:53:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4309610528
+2026-04-21 01:53:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4391111578
+2026-04-21 01:53:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163144005
+2026-04-21 01:53:22 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784862654168
+2026-04-21 01:53:22 [INFO] search_api - [API] 書影取得 round=5 hit=2/10 elapsed=1.00s
+2026-04-21 01:53:22 [INFO] search_api - [API] レスポンス返却 q='ハムレット' books=7 total=2891 elapsed=25.53s
+2026-04-21 01:53:35 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハムレット' page=2 per_page=20
+2026-04-21 01:53:35 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:35 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=1 max=60
+2026-04-21 01:53:35 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.10s
+2026-04-21 01:53:35 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:35 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=61 max=60
+2026-04-21 01:53:36 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.03s
+2026-04-21 01:53:36 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:36 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=121 max=60
+2026-04-21 01:53:36 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:36 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:36 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=181 max=60
+2026-04-21 01:53:36 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163433600
+2026-04-21 01:53:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=4870410656
+2026-04-21 01:53:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575944921
+2026-04-21 01:53:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575942910
+2026-04-21 01:53:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784575942194
+2026-04-21 01:53:36 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784271210696
+2026-04-21 01:53:36 [INFO] search_api - [API] 書影取得 round=4 hit=0/6 elapsed=0.86s
+2026-04-21 01:53:36 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:36 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=241 max=60
+2026-04-21 01:53:36 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9622012205
+2026-04-21 01:53:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784875710691
+2026-04-21 01:53:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784783723745
+2026-04-21 01:53:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=4391111578
+2026-04-21 01:53:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163144005
+2026-04-21 01:53:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=4309610528
+2026-04-21 01:53:38 [INFO] search_api - [API] 書影取得 round=5 hit=4/10 elapsed=1.27s
+2026-04-21 01:53:38 [INFO] search_api - [API] レスポンス返却 q='ハムレット' books=4 total=2891 elapsed=2.39s
+2026-04-21 01:53:41 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハムレット' page=3 per_page=20
+2026-04-21 01:53:41 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:41 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=1 max=60
+2026-04-21 01:53:41 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:41 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:41 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=61 max=60
+2026-04-21 01:53:41 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:41 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:41 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=121 max=60
+2026-04-21 01:53:41 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:41 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:41 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=181 max=60
+2026-04-21 01:53:41 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:41 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=0/20
+2026-04-21 01:53:41 [INFO] search_api - [NDL] リクエスト開始 query='ハムレット' start=241 max=60
+2026-04-21 01:53:41 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 01:53:41 [INFO] search_api - [API] レスポンス返却 q='ハムレット' books=0 total=2891 elapsed=0.15s
+2026-04-21 11:01:49 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイの森' page=1 per_page=20
+2026-04-21 11:01:49 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:01:49 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=1 max=60
+2026-04-21 11:01:49 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-21 11:01:49 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.42s
+2026-04-21 11:01:49 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 11:01:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=4401771001
+2026-04-21 11:01:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784880654027
+2026-04-21 11:01:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990695620
+2026-04-21 11:01:50 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.94s
+2026-04-21 11:01:50 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 11:01:50 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=61 max=60
+2026-04-21 11:01:50 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:01:50 [DEBUG] search_api - [Cover] 書影取得できず isbn=4779111722
+2026-04-21 11:01:51 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292599
+2026-04-21 11:01:51 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434153945
+2026-04-21 11:01:51 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863330320
+2026-04-21 11:01:51 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784894766464
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434153945
+2026-04-21 11:01:52 [INFO] search_api - [API] 書影取得 round=2 hit=0/6 elapsed=1.55s
+2026-04-21 11:01:52 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=0/20
+2026-04-21 11:01:52 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=121 max=60
+2026-04-21 11:01:52 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.03s
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532742929
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9621708958
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571340043
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532755387
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970123695
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784273037666
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784305707123
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=4796602089
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784806047421
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784948755987
+2026-04-21 11:01:52 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784775516157
+2026-04-21 11:01:52 [INFO] search_api - [API] 書影取得 round=3 hit=0/17 elapsed=0.80s
+2026-04-21 11:01:52 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=0/20
+2026-04-21 11:01:52 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=181 max=60
+2026-04-21 11:01:52 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035162
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062748681
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=406274869X
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063486216
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:01:53 [INFO] search_api - [API] 書影取得 round=4 hit=0/6 elapsed=0.81s
+2026-04-21 11:01:53 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=0/20
+2026-04-21 11:01:53 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=241 max=60
+2026-04-21 11:01:53 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=569904664X
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532765546
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374680
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374673
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970631410
+2026-04-21 11:01:53 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970120157
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848933
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784846018283
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035162
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292513
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061879367
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848925
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061860526
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:01:54 [DEBUG] search_api - [Cover] 書影取得できず isbn=4806047007
+2026-04-21 11:01:54 [INFO] search_api - [API] 書影取得 round=5 hit=0/16 elapsed=0.81s
+2026-04-21 11:01:54 [INFO] search_api - [API] レスポンス返却 q='ノルウェイの森' books=0 total=527 elapsed=5.52s
+2026-04-21 11:02:01 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイ' page=1 per_page=20
+2026-04-21 11:02:01 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:02:01 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイ' start=1 max=60
+2026-04-21 11:02:05 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.48s
+2026-04-21 11:02:05 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 11:02:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990695620
+2026-04-21 11:02:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784880654027
+2026-04-21 11:02:06 [DEBUG] search_api - [Cover] 書影取得できず isbn=4401771001
+2026-04-21 11:02:06 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.85s
+2026-04-21 11:02:06 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 11:02:06 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイ' start=61 max=60
+2026-04-21 11:02:08 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.21s
+2026-04-21 11:02:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=4874602878
+2026-04-21 11:02:08 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434153945
+2026-04-21 11:02:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292599
+2026-04-21 11:02:09 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434153945
+2026-04-21 11:02:09 [INFO] search_api - [API] 書影取得 round=2 hit=0/4 elapsed=1.03s
+2026-04-21 11:02:09 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=0/20
+2026-04-21 11:02:09 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイ' start=121 max=60
+2026-04-21 11:02:12 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.00s
+2026-04-21 11:02:12 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=957090383X
+2026-04-21 11:02:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=481210131X
+2026-04-21 11:02:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784775516157
+2026-04-21 11:02:12 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863330320
+2026-04-21 11:02:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784894766464
+2026-04-21 11:02:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784273037666
+2026-04-21 11:02:13 [DEBUG] search_api - [Cover] 書影取得できず isbn=4779111722
+2026-04-21 11:02:13 [INFO] search_api - [API] 書影取得 round=3 hit=0/7 elapsed=0.85s
+2026-04-21 11:02:13 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=0/20
+2026-04-21 11:02:13 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイ' start=181 max=60
+2026-04-21 11:02:15 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.74s
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532742929
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9621708958
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571340043
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532755387
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7532725693
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1860168187
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970123695
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784305707123
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=4846005933
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=4796602089
+2026-04-21 11:02:15 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784806047421
+2026-04-21 11:02:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4900416738
+2026-04-21 11:02:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784948755987
+2026-04-21 11:02:16 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:02:16 [INFO] search_api - [API] 書影取得 round=4 hit=0/18 elapsed=0.88s
+2026-04-21 11:02:16 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=0/20
+2026-04-21 11:02:16 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイ' start=241 max=60
+2026-04-21 11:02:17 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=1.68s
+2026-04-21 11:02:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:02:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=406274869X
+2026-04-21 11:02:17 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:02:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063486216
+2026-04-21 11:02:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:02:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035162
+2026-04-21 11:02:18 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062748681
+2026-04-21 11:02:18 [INFO] search_api - [API] 書影取得 round=5 hit=0/7 elapsed=1.03s
+2026-04-21 11:02:18 [INFO] search_api - [API] レスポンス返却 q='ノルウェイ' books=0 total=643 elapsed=16.82s
+2026-04-21 11:02:37 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-04-21 11:02:37 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:02:37 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-04-21 11:02:37 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.08s
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065202258
+2026-04-21 11:02:37 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065250358
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065226612
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062694001
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065278543
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-04-21 11:02:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:02:38 [INFO] search_api - [API] 書影取得 round=1 hit=0/24 elapsed=1.08s
+2026-04-21 11:02:38 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:02:38 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=0 total=33 elapsed=1.17s
+2026-04-21 11:02:45 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-04-21 11:02:45 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:02:45 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-04-21 11:02:46 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.08s
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065250358
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065202258
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065278543
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062694001
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:02:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065226612
+2026-04-21 11:02:46 [INFO] search_api - [API] 書影取得 round=1 hit=0/24 elapsed=0.90s
+2026-04-21 11:02:46 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:02:46 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=0 total=33 elapsed=0.99s
+2026-04-21 11:03:25 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の殺人' page=1 per_page=20
+2026-04-21 11:03:25 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:03:25 [INFO] search_api - [NDL] リクエスト開始 query='十角館の殺人' start=1 max=60
+2026-04-21 11:03:25 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.11s
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-04-21 11:03:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065226612
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062694001
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065250358
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065202258
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065278543
+2026-04-21 11:03:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-04-21 11:03:26 [INFO] search_api - [API] 書影取得 round=1 hit=0/24 elapsed=0.95s
+2026-04-21 11:03:26 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:03:26 [INFO] search_api - [API] レスポンス返却 q='十角館の殺人' books=0 total=33 elapsed=1.07s
+2026-04-21 11:04:59 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='NDL' page=1 per_page=20
+2026-04-21 11:04:59 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:04:59 [INFO] search_api - [NDL] リクエスト開始 query='NDL' start=1 max=60
+2026-04-21 11:05:19 [ERROR] search_api - [NDL] タイムアウト query='NDL' attempt=1 elapsed=20.06s
+2026-04-21 11:05:24 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の' page=1 per_page=20
+2026-04-21 11:05:24 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:05:24 [INFO] search_api - [NDL] リクエスト開始 query='十角館の' start=1 max=60
+2026-04-21 11:05:24 [ERROR] search_api - [NDL] HTTPエラー status=429 query='十角館の'
+2026-04-21 11:05:45 [ERROR] search_api - [NDL] タイムアウト query='十角館の' attempt=2 elapsed=20.92s
+2026-04-21 11:09:01 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の' page=1 per_page=20
+2026-04-21 11:09:01 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:09:01 [INFO] search_api - [NDL] リクエスト開始 query='十角館の' start=1 max=60
+2026-04-21 11:09:01 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-21 11:09:04 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.42s
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-04-21 11:09:04 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065202258
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065250358
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065226612
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065278543
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062694001
+2026-04-21 11:09:05 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:09:05 [INFO] search_api - [API] 書影取得 round=1 hit=0/24 elapsed=1.04s
+2026-04-21 11:09:05 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:09:05 [INFO] search_api - [API] レスポンス返却 q='十角館の' books=0 total=33 elapsed=4.48s
+2026-04-21 11:11:34 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の' page=1 per_page=20
+2026-04-21 11:11:34 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:11:34 [INFO] search_api - [NDL] リクエスト開始 query='十角館の' start=1 max=60
+2026-04-21 11:11:34 [WARNING] search_api - [HTTP] 共有クライアント未初期化 → オンデマンド生成（lifespan を main.py に登録してください）
+2026-04-21 11:11:41 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=6.66s
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062694001
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065278543
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-04-21 11:11:41 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065202258
+2026-04-21 11:11:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-04-21 11:11:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:11:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065226612
+2026-04-21 11:11:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:11:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065250358
+2026-04-21 11:11:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:11:42 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:11:42 [INFO] search_api - [API] 書影取得 round=1 hit=0/24 elapsed=1.64s
+2026-04-21 11:11:42 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:11:42 [INFO] search_api - [API] レスポンス返却 q='十角館の' books=20 total=33 elapsed=8.31s
+2026-04-21 11:15:25 [INFO] search_api - [HTTP] 共有クライアント初期化完了
+2026-04-21 11:15:38 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='十角館の' page=1 per_page=20
+2026-04-21 11:15:38 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:15:38 [INFO] search_api - [NDL] リクエスト開始 query='十角館の' start=1 max=60
+2026-04-21 11:15:38 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.13s
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9783809027980
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788806259846
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9788412821666
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7806891951
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786045332436
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781782276340
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9781508503736
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789545153662
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9785041091620
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786161842987
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=406181320X
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062694001
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063037006
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065202258
+2026-04-21 11:15:38 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065175118
+2026-04-21 11:15:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:15:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061849794
+2026-04-21 11:15:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065250358
+2026-04-21 11:15:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:15:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065226612
+2026-04-21 11:15:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065278543
+2026-04-21 11:15:39 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062758574
+2026-04-21 11:15:40 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062207713
+2026-04-21 11:15:40 [INFO] search_api - [API] 書影取得 round=1 hit=0/24 elapsed=1.67s
+2026-04-21 11:15:40 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:15:40 [INFO] search_api - [API] レスポンス返却 q='十角館の' books=20 total=33 elapsed=1.82s
+2026-04-21 11:16:47 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイの森' page=1 per_page=20
+2026-04-21 11:16:47 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:16:47 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=1 max=60
+2026-04-21 11:16:47 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.09s
+2026-04-21 11:16:47 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 11:16:47 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784880654027
+2026-04-21 11:16:47 [DEBUG] search_api - [Cover] 書影取得できず isbn=4401771001
+2026-04-21 11:16:47 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784990695620
+2026-04-21 11:16:47 [INFO] search_api - [API] 書影取得 round=1 hit=0/4 elapsed=0.27s
+2026-04-21 11:16:47 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=4/20
+2026-04-21 11:16:47 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=61 max=60
+2026-04-21 11:16:47 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784863330320
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292599
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434153945
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784894766464
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=4779111722
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434153945
+2026-04-21 11:16:48 [INFO] search_api - [API] 書影取得 round=2 hit=0/6 elapsed=0.34s
+2026-04-21 11:16:48 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=10/20
+2026-04-21 11:16:48 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=121 max=60
+2026-04-21 11:16:48 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9571323004
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532742929
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9621708958
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571340043
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=7540704608
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532755387
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970123695
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784273037666
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784305707123
+2026-04-21 11:16:48 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784806047421
+2026-04-21 11:16:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784775516157
+2026-04-21 11:16:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:16:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784948755987
+2026-04-21 11:16:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=4796602089
+2026-04-21 11:16:49 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:16:49 [INFO] search_api - [API] 書影取得 round=3 hit=0/17 elapsed=0.96s
+2026-04-21 11:16:49 [INFO] search_api - [API] レスポンス返却 q='ノルウェイの森' books=20 total=527 elapsed=1.73s
+2026-04-21 11:17:00 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ノルウェイの森' page=2 per_page=20
+2026-04-21 11:17:00 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:17:00 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=1 max=60
+2026-04-21 11:17:01 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.09s
+2026-04-21 11:17:01 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 11:17:01 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=61 max=60
+2026-04-21 11:17:01 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:17:01 [INFO] search_api - [API] フェッチ round=3 ndl_start=121 fetch_size=60 書影あり=0/20
+2026-04-21 11:17:01 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=121 max=60
+2026-04-21 11:17:01 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:17:01 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970123695
+2026-04-21 11:17:01 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 11:17:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:17:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784948755987
+2026-04-21 11:17:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784806047421
+2026-04-21 11:17:01 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:17:02 [DEBUG] search_api - [Cover] 書影取得できず isbn=4796602089
+2026-04-21 11:17:02 [INFO] search_api - [API] 書影取得 round=3 hit=0/7 elapsed=1.04s
+2026-04-21 11:17:02 [INFO] search_api - [API] フェッチ round=4 ndl_start=181 fetch_size=60 書影あり=7/20
+2026-04-21 11:17:02 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=181 max=60
+2026-04-21 11:17:02 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:17:02 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:17:02 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062748681
+2026-04-21 11:17:02 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784063486216
+2026-04-21 11:17:02 [DEBUG] search_api - [Cover] 書影取得できず isbn=406274869X
+2026-04-21 11:17:02 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035162
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:17:03 [INFO] search_api - [API] 書影取得 round=4 hit=0/6 elapsed=0.85s
+2026-04-21 11:17:03 [INFO] search_api - [API] フェッチ round=5 ndl_start=241 fetch_size=60 書影あり=13/20
+2026-04-21 11:17:03 [INFO] search_api - [NDL] リクエスト開始 query='ノルウェイの森' start=241 max=60
+2026-04-21 11:17:03 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.02s
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=569904664X
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532765546
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787532776771
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374680
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789571374673
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970631410
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=8970120157
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784846018283
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848933
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035162
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=4806047007
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061879367
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784787292513
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061860526
+2026-04-21 11:17:03 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062035154
+2026-04-21 11:17:04 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061848925
+2026-04-21 11:17:04 [INFO] search_api - [API] 書影取得 round=5 hit=0/16 elapsed=1.09s
+2026-04-21 11:17:04 [INFO] search_api - [API] レスポンス返却 q='ノルウェイの森' books=20 total=527 elapsed=3.19s
+2026-04-21 11:18:22 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='深夜特急' page=1 per_page=20
+2026-04-21 11:18:22 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:18:22 [INFO] search_api - [NDL] リクエスト開始 query='深夜特急' start=1 max=60
+2026-04-21 11:18:25 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.30s
+2026-04-21 11:18:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4103275057
+2026-04-21 11:18:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4380052079
+2026-04-21 11:18:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784391143324
+2026-04-21 11:18:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784334746810
+2026-04-21 11:18:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4103750537
+2026-04-21 11:18:26 [DEBUG] search_api - [Cover] 書影取得できず isbn=4334924530
+2026-04-21 11:18:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=4380052079
+2026-04-21 11:18:27 [DEBUG] search_api - [Cover] 書影取得できず isbn=4103275057
+2026-04-21 11:18:27 [INFO] search_api - [API] 書影取得 round=1 hit=0/8 elapsed=1.65s
+2026-04-21 11:18:27 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=8/20
+2026-04-21 11:18:27 [INFO] search_api - [NDL] リクエスト開始 query='深夜特急' start=61 max=60
+2026-04-21 11:18:33 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=5.52s
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4103275065
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784052026270
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235090
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235325
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235318
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235189
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970203
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4896212711
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4887070012
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=4103275065
+2026-04-21 11:18:33 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235288
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235082
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235074
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235301
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4103275073
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235104
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235295
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235059
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235058
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235332
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784103275138
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970386
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235066
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163649204
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784198655075
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235301
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235295
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235318
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970386
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970203
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784103275077
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784198653101
+2026-04-21 11:18:34 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235288
+2026-04-21 11:18:34 [INFO] search_api - [API] 書影取得 round=2 hit=0/33 elapsed=1.65s
+2026-04-21 11:18:34 [INFO] search_api - [API] レスポンス返却 q='深夜特急' books=20 total=122 elapsed=12.17s
+2026-04-21 11:19:06 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='深夜特急' page=2 per_page=20
+2026-04-21 11:19:06 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:19:06 [INFO] search_api - [NDL] リクエスト開始 query='深夜特急' start=1 max=60
+2026-04-21 11:19:06 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.12s
+2026-04-21 11:19:06 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=0/20
+2026-04-21 11:19:06 [INFO] search_api - [NDL] リクエスト開始 query='深夜特急' start=61 max=60
+2026-04-21 11:19:06 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=0.04s
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235090
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235082
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970386
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784103275138
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235189
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235332
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784052026270
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4896212711
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4103275065
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235318
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235325
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4101235104
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4887070012
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970203
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784103275077
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4163649204
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784198655075
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784198653101
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784101235318
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970386
+2026-04-21 11:19:07 [DEBUG] search_api - [Cover] 書影取得できず isbn=4255970203
+2026-04-21 11:19:07 [INFO] search_api - [API] 書影取得 round=2 hit=0/21 elapsed=1.08s
+2026-04-21 11:19:07 [INFO] search_api - [API] レスポンス返却 q='深夜特急' books=20 total=122 elapsed=1.28s
+2026-04-21 11:21:42 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='ハサミ男' page=1 per_page=20
+2026-04-21 11:21:42 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:21:42 [INFO] search_api - [NDL] リクエスト開始 query='ハサミ男' start=1 max=60
+2026-04-21 11:21:44 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.11s
+2026-04-21 11:21:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9786048997021
+2026-04-21 11:21:44 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=1196251770
+2026-04-21 11:21:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4061820885
+2026-04-21 11:21:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062735229
+2026-04-21 11:21:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784065289839
+2026-04-21 11:21:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062187671
+2026-04-21 11:21:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784062199599
+2026-04-21 11:21:45 [INFO] search_api - [API] 書影取得 round=1 hit=0/7 elapsed=0.88s
+2026-04-21 11:21:45 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:21:45 [INFO] search_api - [API] レスポンス返却 q='ハサミ男' books=7 total=11 elapsed=3.00s
+2026-04-21 11:22:14 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='傲慢と善' page=1 per_page=20
+2026-04-21 11:22:14 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 11:22:14 [INFO] search_api - [NDL] リクエスト開始 query='傲慢と善' start=1 max=60
+2026-04-21 11:22:25 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=10.12s
+2026-04-21 11:22:25 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9789865071127
+2026-04-21 11:22:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022650597
+2026-04-21 11:22:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022144218
+2026-04-21 11:22:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022515957
+2026-04-21 11:22:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022144140
+2026-04-21 11:22:25 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784022144041
+2026-04-21 11:22:25 [INFO] search_api - [API] 書影取得 round=1 hit=0/6 elapsed=0.88s
+2026-04-21 11:22:25 [INFO] search_api - [API] フェッチ round=2 ndl_start=61 fetch_size=60 書影あり=6/20
+2026-04-21 11:22:25 [INFO] search_api - [NDL] リクエスト開始 query='傲慢と善' start=61 max=60
+2026-04-21 11:22:30 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=4.46s
+2026-04-21 11:22:30 [DEBUG] search_api - [Cover] 非日本語ISBNのため書影取得スキップ isbn=9787521727586
+2026-04-21 11:22:30 [INFO] search_api - [API] 書影取得 round=2 hit=0/1 elapsed=0.00s
+2026-04-21 11:22:30 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 11:22:30 [INFO] search_api - [API] レスポンス返却 q='傲慢と善' books=7 total=64 elapsed=15.47s
+2026-04-21 11:33:50 [INFO] search_api - [HTTP] 共有クライアント終了
+2026-04-21 17:06:18 [INFO] search_api - [HTTP] 共有クライアント初期化完了
+2026-04-21 17:34:19 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='コメダ珈琲' page=1 per_page=20
+2026-04-21 17:34:19 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 17:34:19 [INFO] search_api - [NDL] リクエスト開始 query='コメダ珈琲' start=1 max=60
+2026-04-21 17:34:23 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=3.11s
+2026-04-21 17:34:28 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784833422031
+2026-04-21 17:34:28 [INFO] search_api - [API] 書影取得 round=1 hit=0/1 elapsed=5.51s
+2026-04-21 17:34:28 [INFO] search_api - [API] NDL レコード枯渇
+2026-04-21 17:34:28 [INFO] search_api - [API] レスポンス返却 q='コメダ珈琲' books=1 total=22 elapsed=8.63s
+2026-04-21 17:48:32 [INFO] search_api - [HTTP] 共有クライアント終了
+2026-04-21 17:48:35 [INFO] search_api - [HTTP] 共有クライアント初期化完了
+2026-04-21 17:48:51 [INFO] search_api - [HTTP] 共有クライアント終了
+2026-04-21 17:48:54 [INFO] search_api - [HTTP] 共有クライアント初期化完了
+2026-04-21 17:51:40 [INFO] search_api - [API] リクエスト受信 ip=127.0.0.1 q='TOEIC' page=1 per_page=20
+2026-04-21 17:51:40 [INFO] search_api - [API] フェッチ round=1 ndl_start=1 fetch_size=60 書影あり=0/20
+2026-04-21 17:51:40 [INFO] search_api - [NDL] リクエスト開始 query='TOEIC' start=1 max=60
+2026-04-21 17:51:43 [INFO] search_api - [NDL] レスポンス受信 status=200 elapsed=2.67s
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062564041
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396317270
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701619
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396617264
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4523263361
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396617585
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434151897
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396617981
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4894070278
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=406256419X
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795293392
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701600
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4834840077
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784434151897
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795293406
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4834840069
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784532408022
+2026-04-21 17:51:44 [DEBUG] search_api - [Cover] 書影取得できず isbn=4385601798
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396618193
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396316099
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396315788
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396316396
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784877317201
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784532409067
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701791
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701597
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=4062563894
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396618186
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784761268459
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=4834840085
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=4795293430
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396316365
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=4861701627
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784844374015
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396617783
+2026-04-21 17:51:45 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396618711
+2026-04-21 17:51:46 [DEBUG] search_api - [Cover] 書影取得できず isbn=9784396617967
+2026-04-21 17:51:46 [INFO] search_api - [API] 書影取得 round=1 hit=4/41 elapsed=2.73s
+2026-04-21 17:51:46 [INFO] search_api - [API] レスポンス返却 q='TOEIC' books=20 total=6076 elapsed=5.41s

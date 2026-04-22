@@ -35,6 +35,7 @@ const SPINE_PALETTES = [
 // ─────────────────────────────────────────────
 // ヘルパー
 // ─────────────────────────────────────────────
+
 function hashCode(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
@@ -43,12 +44,21 @@ function hashCode(str) {
 function getPalette(isbn) {
   return SPINE_PALETTES[hashCode(isbn || "") % SPINE_PALETTES.length];
 }
+// ─────────────────────────────────────────────
+// ヘルパー（お手本コードの計算式を適用）
+// ─────────────────────────────────────────────
+
 function resolveSpineWidth(book) {
-  if (book?.spine_width_px != null) return book.spine_width_px;
-  return 30; 
+  // お手本: ページ数 × 0.065mm/p × 1.8 拡大、範囲 18〜55px
+  if (!book?.pages || isNaN(book.pages)) return 24; // デフォルト値
+  const widthMm = book.pages * 0.065;
+  return Math.min(55, Math.max(18, widthMm * 1.8));
 }
+
 function resolveSpineHeight(book) {
-  return book?.spine_height_px > 0 ? book.spine_height_px : 160;
+  // お手本: 高さ：実寸mm → px（1mm ≒ 1.2px、範囲 140〜230px）
+  if (!book?.height_mm || isNaN(book.height_mm)) return 180; // デフォルト値
+  return Math.min(230, Math.max(140, book.height_mm * 1.2));
 }
 function snapX(x) {
   return Math.round(x / SNAP) * SNAP;
@@ -77,17 +87,23 @@ function SpineShelfView() {
   const unitShelfHeight = TOP_GAP + MAX_BOOK_HEIGHT + SHELF_PAD;
 
   // 座標計算
+  const PX_TO_MM_SCALE = 1.2;
+  const FRAME = 20;
+
   const booksWithPosition = useMemo(() => {
     return books.map((book) => {
       const local = localLayout.find((l) => l.isbn === book.isbn);
       const shelfIdx = local?.shelf_index ?? book.shelf_index ?? 0;
-      const xPos = local?.x_pos ?? book.x_pos ?? FRAME;
+      // ★ここ修正
+      const xPosMM = local?.x_pos ?? book.x_pos ?? 0;
+      const xPx = xPosMM * PX_TO_MM_SCALE + FRAME;
+
       const orderIdx = local?.order_index ?? book.order_index ?? 0;
       return {
         ...book,
         gridRow: shelfIdx,
         gridCol: orderIdx,
-        x: xPos,
+        x: xPx,
         y: FRAME + shelfIdx * (unitShelfHeight + FRAME) + TOP_GAP,
       };
     });
@@ -105,12 +121,18 @@ function SpineShelfView() {
     return Math.min(Math.max(rawWidth, 400), 1100);
   }
   
-  const WIDTH = 800; 
-  // const WIDTH = useMemo(() => {
-  //   return d3.max(
-  //     shelves.map((s) => getShelfWidthByPixels(s.books))
-  //   ) || 400;
-  // }, [shelves]);
+  const WIDTH = useMemo(() => {
+    const maxWidth = d3.max(
+      shelves.map((s) => {
+        const total = s.books.reduce(
+          (sum, b) => sum + resolveSpineWidth(b),
+          0
+        );
+        return total + FRAME * 2;
+      })
+    );
+    return Math.min(Math.max(maxWidth || 400, 400), 1200);
+  }, [shelves]);
 
   const HEIGHT = unitShelfHeight * shelfCount + FRAME * (shelfCount + 1);
 
@@ -126,7 +148,7 @@ function SpineShelfView() {
     setLocalLayout(books.map((b) => ({
       isbn: b.isbn,
       shelf_index: b.shelf_index,
-      x_pos: b.x_pos ?? FRAME,
+      x_pos: b.x_pos ?? 0,
       order_index: b.order_index ?? 0,
     })));
   }, [books]);
@@ -305,23 +327,15 @@ function SpineShelfView() {
         const ty = e.y;
         const targetShelfIdx = getShelfIndex(ty + MAX_BOOK_HEIGHT / 2);
         const movingWidth = resolveSpineWidth(d);
-        const centerX = tx + movingWidth / 2;  // ドラッグ中の本の中心X
+        const centerX = tx + movingWidth / 2;
 
-        // 1. ターゲット棚の「他の本」を取得（左から順にソート）
         const otherBooks = booksWithPosition
           .filter(b => b.isbn !== d.isbn && b.gridRow === targetShelfIdx)
           .sort((a, b) => a.x - b.x);
 
-        // 2. 棚の「左スタック」と「右スタック」の境界を計算
-        //    左スタック: FRAME から右に詰めた本の右端
-        //    右スタック: WIDTH - FRAME から左に詰めた本の左端
-        //    → 両者の間が「空きスペース」
-        let leftEdge = FRAME;    // 左スタックの右端
-        let rightEdge = WIDTH - FRAME; // 右スタックの左端
+        let leftEdge = FRAME;
+        let rightEdge = WIDTH - FRAME;
 
-        // 本をどちらのスタックに属するか分類するために、
-        // まず既存レイアウトの order_index と x_pos で左右を判定する
-        // （ここでは簡易的に「中央より左にある本 = 左スタック」とする）
         const midX = WIDTH / 2;
         const leftBooks = otherBooks.filter(b => b.x + resolveSpineWidth(b) / 2 < midX);
         const rightBooks = otherBooks.filter(b => b.x + resolveSpineWidth(b) / 2 >= midX);
@@ -329,76 +343,79 @@ function SpineShelfView() {
         leftBooks.forEach(b => { leftEdge = Math.max(leftEdge, b.x + resolveSpineWidth(b)); });
         rightBooks.forEach(b => { rightEdge = Math.min(rightEdge, b.x); });
 
-        // 3. 空きスペースの中央で左右どちらに吸着するか判定
         const gapCenter = (leftEdge + rightEdge) / 2;
         const stackSide = centerX <= gapCenter ? "left" : "right";
 
-        // 4. 新しい配列順序の生成
-        //    left stack: 左から詰める、right stack: 右から詰める
-        //    挿入位置はスタック内でのX座標の近さで決める
         let nextLayout = [];
 
+        // 【重要】px座標をmmに変換して保存用オブジェクトを作るヘルパー
+        const toMmPos = (pxX, sIdx, oIdx, isbn) => ({
+          isbn: isbn,
+          shelf_index: sIdx,
+          x_pos: (pxX - FRAME) / PX_TO_MM_SCALE, // pxからmmへ逆変換
+          order_index: oIdx
+        });
+
         if (stackSide === "left") {
-          // 左スタックに挿入
+          // ── 左スタックへの挿入 ──
           const insertInto = [...leftBooks];
-          // centerX に最も近い隙間に挿入
-          let insertIdx = insertInto.length; // デフォルト: 末尾
+          let insertIdx = insertInto.length;
           let cursor = FRAME;
           for (let i = 0; i < insertInto.length; i++) {
             const slotCenter = cursor + resolveSpineWidth(insertInto[i]) / 2;
             if (centerX < slotCenter) { insertIdx = i; break; }
             cursor += resolveSpineWidth(insertInto[i]);
           }
-          insertInto.splice(insertIdx, 0, { ...d, gridRow: targetShelfIdx });
+          insertInto.splice(insertIdx, 0, { ...d });
 
-          // 左から詰めて座標確定
-          cursor = FRAME;
+          // 全て toMmPos を通して単位変換する
+          let cur = FRAME;
           insertInto.forEach((b, i) => {
-            nextLayout.push({ isbn: b.isbn, shelf_index: targetShelfIdx, x_pos: cursor, order_index: i });
-            cursor += resolveSpineWidth(b);
+            nextLayout.push(toMmPos(cur, targetShelfIdx, i, b.isbn));
+            cur += resolveSpineWidth(b);
           });
-          // 右スタックはそのまま
-          let rCursor = WIDTH - FRAME;
+          
+          let rCur = WIDTH - FRAME;
           [...rightBooks].reverse().forEach((b, i) => {
-            rCursor -= resolveSpineWidth(b);
-            nextLayout.push({ isbn: b.isbn, shelf_index: targetShelfIdx, x_pos: rCursor, order_index: insertInto.length + i });
+            rCur -= resolveSpineWidth(b);
+            nextLayout.push(toMmPos(rCur, targetShelfIdx, insertInto.length + i, b.isbn));
           });
 
         } else {
-          // 右スタックに挿入
+          // ── 右スタックへの挿入 ──
           const insertInto = [...rightBooks];
-          let insertIdx = 0; // デフォルト: 先頭（右スタックは右端から積む）
+          let insertIdx = 0;
           let cursor = WIDTH - FRAME;
           for (let i = insertInto.length - 1; i >= 0; i--) {
             cursor -= resolveSpineWidth(insertInto[i]);
             const slotCenter = cursor + resolveSpineWidth(insertInto[i]) / 2;
             if (centerX > slotCenter) { insertIdx = i + 1; break; }
           }
-          insertInto.splice(insertIdx, 0, { ...d, gridRow: targetShelfIdx });
+          insertInto.splice(insertIdx, 0, { ...d });
 
-          // 左スタックはそのまま
-          let lCursor = FRAME;
+          // 左スタックをmmに変換
+          let lCur = FRAME;
           leftBooks.forEach((b, i) => {
-            nextLayout.push({ isbn: b.isbn, shelf_index: targetShelfIdx, x_pos: lCursor, order_index: i });
-            lCursor += resolveSpineWidth(b);
+            nextLayout.push(toMmPos(lCur, targetShelfIdx, i, b.isbn));
+            lCur += resolveSpineWidth(b);
           });
-          // 右から詰めて座標確定
-          let rCursor = WIDTH - FRAME;
+
+          // 右スタックをmmに変換
+          let rCur = WIDTH - FRAME;
           [...insertInto].reverse().forEach((b, i) => {
-            rCursor -= resolveSpineWidth(b);
-            nextLayout.push({ isbn: b.isbn, shelf_index: targetShelfIdx, x_pos: rCursor, order_index: leftBooks.length + (insertInto.length - 1 - i) });
+            rCur -= resolveSpineWidth(b);
+            // order_indexは左からの通し番号
+            const order = leftBooks.length + (insertInto.length - 1 - i);
+            nextLayout.push(toMmPos(rCur, targetShelfIdx, order, b.isbn));
           });
         }
 
-        // 5. 他の棚はそのまま維持
+        // 5. 他の棚のデータも mm 単位で維持
+        // localLayout自体がすでにmmで保持されている前提
         for (let sIdx = 0; sIdx < shelfCount; sIdx++) {
           if (sIdx === targetShelfIdx) continue;
-          booksWithPosition
-            .filter(b => b.gridRow === sIdx)
-            .forEach(b => {
-              const existing = localLayout.find(l => l.isbn === b.isbn);
-              if (existing) nextLayout.push(existing);
-            });
+          const otherShelfBooks = localLayout.filter(l => l.shelf_index === sIdx);
+          nextLayout.push(...otherShelfBooks);
         }
 
         setLocalLayout(nextLayout);

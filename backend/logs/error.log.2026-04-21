@@ -1,0 +1,4 @@
+2026-04-21 01:52:54 [ERROR] search_api - [NDL] タイムアウト query='ハムレット' attempt=1 elapsed=20.07s
+2026-04-21 11:05:19 [ERROR] search_api - [NDL] タイムアウト query='NDL' attempt=1 elapsed=20.06s
+2026-04-21 11:05:24 [ERROR] search_api - [NDL] HTTPエラー status=429 query='十角館の'
+2026-04-21 11:05:45 [ERROR] search_api - [NDL] タイムアウト query='十角館の' attempt=2 elapsed=20.92s

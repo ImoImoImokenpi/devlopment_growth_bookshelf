@@ -10,26 +10,26 @@ logger = logging.getLogger(__name__)
 
 SHELF_MAX_WIDTH_PX = 800  # ShelfDesign.shelf_max_width に置き換えてもよい
 
-def calc_spine_width_px(pages: int | None) -> int:
-    """ページ数 → 背表紙の厚み(px)。最小8、最大36"""
-    if not pages or pages <= 0:
-        return 14
-    mm = max(4, min(18, pages / 500 * 30))
-    return int(mm * 2)
+SCALE = 0.9
+
+def calc_virtual_width(pages: int | None) -> int:
+    if not pages:
+        return 20
+    return int(pages * 0.065)  # SCALEなしでもOK
 
 def calc_spine_height_px(height_mm: int | None) -> int:
-    """本の高さ(mm) → 背表紙の高さ(px)。最小100、最大220"""
-    if not height_mm or height_mm <= 0:
-        return 160
-    return max(100, min(220, int(height_mm * 1.2)))
+    if not height_mm:
+        return 180
 
-def spine_fields(book) -> dict:
-    """MyHand → ShelfLayout の描画フィールドを返す"""
+    raw = height_mm * SCALE
+    return int(min(220, max(140, raw)))
+
+def spine_fields(book):
     return {
-        "spine_width_px":  calc_spine_width_px(book.pages),
-        "spine_height_px": calc_spine_height_px(book.height_mm),
-        "cover":           book.cover,
-        "size_label":      book.size_label,
+        "width_unit": calc_virtual_width(book.pages),
+        "height_mm": book.height_mm,
+        "cover": book.cover,
+        "size_label": book.size_label,
     }
 
 # ── 外部API ──────────────────────────────────────────────────
@@ -50,6 +50,7 @@ def add_to_shelf(db: Session, book) -> bool:
         return True
 
     except Exception as e:
+        db.rollback()   # ← ★これ絶対必要
         logger.error(f"[add_to_shelf] 配置エラー [{book.isbn}]: {e}")
         return False
 
@@ -84,19 +85,23 @@ def _rebuild_all(db: Session, trigger_book=None):
     books = db.query(MyHand).filter(MyHand.isbn.in_(isbns)).all()
 
     # ISBNごとの描画フィールドを一括取得
-    books_map = {
-        b.isbn: {
-        "isbn": b.isbn,
-        "spine_width_px": b.spine_width_px or spine_fields(b)["spine_width_px"],
-        "spine_height_px": b.spine_height_px or spine_fields(b)["spine_height_px"],
-        "pages": b.pages,
-        "height_mm": b.height_mm,
+    books_map = {}
+    for b in books:
+        books_map[b.isbn] = {
+            "isbn": b.isbn,
+            "pages": b.pages,
+            "height_mm": b.height_mm,
+            "size_label": b.size_label,
         }
-        for b in books
-    }
+
     # trigger_book が MyHand にある場合もカバー
     if trigger_book:
-        books_map.setdefault(trigger_book.isbn, spine_fields(trigger_book))
+        books_map.setdefault(trigger_book.isbn, {
+            "isbn": trigger_book.isbn,
+            "size_label": trigger_book.size_label,
+            "pages": trigger_book.pages,
+            "height_mm": trigger_book.height_mm,
+        })
 
     # 棚幅(px)で折り返しながら座標決定
     rows = _pack_into_shelves(isbns, books_map, shelf_max_px)
@@ -123,8 +128,8 @@ def _pack_into_shelves(isbns, books_map, shelf_max_px):
         if not b:
             continue
 
-        width = b["spine_width_px"]   # ← 絶対ここだけ見る
-        height = b["spine_height_px"]
+        width = calc_virtual_width(b["pages"])
+        height = b["height_mm"]  # ← mmそのまま # ← 絶対ここだけ見る
 
         # 棚折り返し
         if x_cursor + width > shelf_max_px:
@@ -136,6 +141,8 @@ def _pack_into_shelves(isbns, books_map, shelf_max_px):
             "shelf_index": shelf_index,
             "x_pos": x_cursor,
             "order_index": i,
+            "height_mm": height,
+            "pages": b["pages"],
         })
 
         x_cursor += width
@@ -147,23 +154,29 @@ def _place_one(db: Session, book):
     design       = _get_design(db)
     shelf_max_px = getattr(design, "shelf_max_width", SHELF_MAX_WIDTH_PX)
 
-    w = calc_spine_width_px(book.pages)
+    w = calc_virtual_width(book.pages)
 
-    # 棚ごとの使用状況を x_pos ベースで集計
+    # 棚ごとの使用状況
     shelf_info: dict[int, dict] = {}
+    
     for row in db.query(ShelfLayout).order_by(
         ShelfLayout.shelf_index, ShelfLayout.x_pos
     ).all():
         si = row.shelf_index
+
         if si not in shelf_info:
             shelf_info[si] = {"count": 0, "next_x": FRAME}
+
         shelf_info[si]["count"] += 1
-        # 現在の本の右端を next_x として更新
-        right = row.x_pos + row.spine_width_px + SPINE_GAP
+
+        # ✅ width_unit を使わない
+        row_width = calc_virtual_width(row.pages)
+
+        right = row.x_pos + row_width + SPINE_GAP
         if right > shelf_info[si]["next_x"]:
             shelf_info[si]["next_x"] = right
 
-    # 空きのある棚を探す（next_x + w + FRAME が shelf_max_px 以内）
+    # 空き棚チェック
     free_shelves = [
         si for si, info in shelf_info.items()
         if info["next_x"] + w + FRAME <= shelf_max_px
@@ -174,19 +187,21 @@ def _place_one(db: Session, book):
         x_pos     = shelf_info[shelf_idx]["next_x"]
         order_idx = shelf_info[shelf_idx]["count"]
     else:
-        # 全棚が満杯 → 新段
         shelf_idx = design.total_shelves or 0
         x_pos     = FRAME
         order_idx = 0
         design.total_shelves = shelf_idx + 1
 
+    # ✅ width_unit 完全削除
     new_layout = ShelfLayout(
-        isbn        = book.isbn,
-        shelf_index = shelf_idx,
-        order_index = order_idx,
-        x_pos       = x_pos,   # ← 追加
-        **spine_fields(book),
+        isbn=book.isbn,
+        shelf_index=shelf_idx,
+        order_index=order_idx,
+        x_pos=x_pos,
+        height_mm=book.height_mm,
+        pages=book.pages,
     )
+
     db.add(new_layout)
     logger.info(f"[_place_one] {book.isbn} → 棚{shelf_idx} x={x_pos}")
     

@@ -30,8 +30,8 @@ class ShelfLayout(Base):
     x_pos = Column(Integer, nullable=False, default=20)  # 左から何番目 (0, 1, 2...)
 
     # 背表紙描画用 (フロントがそのまま使える)
-    spine_width_px  = Column(Integer, default=14)
-    spine_height_px = Column(Integer, default=160)
+    height_mm = Column(Integer, default=180) # 本の高さ
+    pages = Column(Integer, default=200)     # 厚みの計算用
 
     # メタ
     cover      = Column(String)

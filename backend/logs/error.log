@@ -1,5 +1,3 @@
-2026-04-16 16:06:44 [ERROR] search_api - [NDL] タイムアウト query='ノルウェイの森' elapsed=5.69s
-2026-04-16 16:06:55 [ERROR] search_api - [NDL] タイムアウト query='ノルウェイ' elapsed=5.09s
-2026-04-16 16:07:31 [ERROR] search_api - [NDL] タイムアウト query='ハサミ男' elapsed=5.10s
-2026-04-16 16:14:48 [ERROR] search_api - [NDL] HTTPエラー status=429 query='ハサミ男'
-2026-04-16 16:15:15 [ERROR] search_api - [NDL] タイムアウト query='ハサミ男' elapsed=15.06s
+2026-04-22 16:13:59 [ERROR] search_api - [NDL] タイムアウト query='ノルウェイの森' attempt=1 elapsed=20.21s
+2026-04-22 16:14:42 [ERROR] search_api - [NDL] タイムアウト query='ノルウェイの森' attempt=1 elapsed=20.02s
+2026-04-22 16:17:16 [ERROR] search_api - [NDL] タイムアウト query='ノルウェイの森' attempt=1 elapsed=20.00s

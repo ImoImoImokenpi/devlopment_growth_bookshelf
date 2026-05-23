@@ -131,19 +131,34 @@ def _extract_ndc(subjects: List[str]) -> Optional[str]:
             return s
     return None
 
+_NDC9_PREFIX = "http://id.ndl.go.jp/class/ndc9/"
+_RDF_RESOURCE = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource"
+
+def _extract_ndc_from_bib(bib, bib_ns: dict) -> Optional[str]:
+    """dc:subject テキスト（旧形式）と dcterms:subject rdf:resource（新形式）の両方に対応"""
+    for s in bib.xpath("dc:subject/text()", namespaces=bib_ns):
+        if re.match(r"\d{3}", s):
+            return s
+    for el in bib.xpath("dcterms:subject", namespaces=bib_ns):
+        resource = el.get(_RDF_RESOURCE, "")
+        if resource.startswith(_NDC9_PREFIX):
+            return resource[len(_NDC9_PREFIX):]
+    return None
+
 
 def _extract_extent(extent: List[str]):
     pages = None
     height_mm = None
 
-    if extent:
-        pm = re.search(r"(\d+)p", extent[0])
-        hm = re.search(r"(\d+)cm", extent[0])
-
-        if pm:
-            pages = int(pm.group(1))
-        if hm:
-            height_mm = int(hm.group(1)) * 10
+    for entry in extent:
+        if pages is None:
+            pm = re.search(r"([\d]+(?:\s*[,、]\s*[\d]+)*)\s*(?:p|ページ|P)\b", entry)
+            if pm:
+                pages = sum(int(n) for n in re.findall(r"\d+", pm.group(1)))
+        if height_mm is None:
+            hm = re.search(r"(\d+)\s*cm", entry)
+            if hm:
+                height_mm = int(hm.group(1)) * 10
 
     return pages, height_mm
 
@@ -305,12 +320,12 @@ async def search_ndl_sru(query: str, start: int, max_records: int):
         creators = bib.xpath("dc:creator/text()", namespaces=bib_ns)
         publisher = bib.xpath("dcterms:publisher//foaf:name/text()", namespaces=bib_ns)
         issued = bib.xpath("dcterms:issued/text()", namespaces=bib_ns)
-        subjects_nodes = bib.xpath("dc:subject/text()", namespaces=bib_ns)
         extent = bib.xpath("dcterms:extent/text()", namespaces=bib_ns)
 
-        ndc = _extract_ndc(subjects_nodes)
+        ndc = _extract_ndc_from_bib(bib, bib_ns)
         pages, height_mm = _extract_extent(extent)
         genre = GENRE_MAP.get(ndc[0], "その他") if ndc else None
+        abstract = bib.xpath("dcterms:abstract/text()", namespaces=bib_ns)
 
         books.append({
             "isbn": isbn_normalized,
@@ -325,6 +340,7 @@ async def search_ndl_sru(query: str, start: int, max_records: int):
             "pages": pages,
             "subjects": subjects_nodes,
             "cover": None,
+            "description": abstract[0] if abstract else None,
         })
 
     return books, total_records, len(record_nodes)
@@ -373,6 +389,47 @@ async def fetch_google_cover(isbn: str) -> Optional[str]:
 
         return cover or None
 
+    except Exception:
+        return None
+
+
+async def fetch_openbd_descriptions(isbns: list) -> dict:
+    """OpenBD から説明文を一括取得。{isbn: description} を返す"""
+    if not isbns:
+        return {}
+    try:
+        r = await get_http_client().get(
+            OPENBD_API,
+            params={"isbn": ",".join(isbns)},
+        )
+        r.raise_for_status()
+        results = {}
+        for item in r.json():
+            if not item:
+                continue
+            isbn = item.get("summary", {}).get("isbn", "")
+            for tc in item.get("onix", {}).get("CollateralDetail", {}).get("TextContent", []):
+                if tc.get("TextType") in ("02", "03"):
+                    text = tc.get("Text", "").strip()
+                    if text:
+                        results[isbn] = text
+                    break
+        return results
+    except Exception:
+        return {}
+
+
+async def fetch_google_description(isbn: str) -> Optional[str]:
+    try:
+        r = await get_http_client().get(
+            GOOGLE_BOOKS_API,
+            params={"q": f"isbn:{isbn}"},
+        )
+        r.raise_for_status()
+        items = r.json().get("items")
+        if not items:
+            return None
+        return items[0].get("volumeInfo", {}).get("description") or None
     except Exception:
         return None
 
@@ -510,6 +567,25 @@ async def search_books(
             break
 
     total_pages = math.ceil(total_records / per_page) if total_records else 1
+
+    # 説明文が取れなかった本をOpenBD → Google Books の順で補完
+    no_desc_isbns = [b["isbn"] for b in books_with_cover if not b.get("description")]
+    if no_desc_isbns:
+        openbd_descs = await fetch_openbd_descriptions(no_desc_isbns)
+        for book in books_with_cover:
+            if not book.get("description"):
+                book["description"] = openbd_descs.get(book["isbn"])
+
+    still_no_desc = [b for b in books_with_cover if not b.get("description")]
+    if still_no_desc:
+        google_descs = await asyncio.gather(
+            *[fetch_google_description(b["isbn"]) for b in still_no_desc],
+            return_exceptions=True,
+        )
+        for book, desc in zip(still_no_desc, google_descs):
+            if isinstance(desc, str) and desc:
+                book["description"] = desc
+
     total_elapsed = time.perf_counter() - t_start
 
     logger.info(

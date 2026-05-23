@@ -1,156 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List
-from models import ShelfLayout, ShelfDesign
+from models import ShelfLayout, ShelfDesign, RegisteredBook
 from sqlalchemy.orm import Session
 from database import get_db
 from admin_neo4j.neo4j_driver import get_session
-from admin_neo4j.neo4j_crud import update_shelf_layout_chain  # Neo4j更新ロジック
-from utils.layout_engine import rebuild_shelf_layout, place_randomly
+from admin_neo4j.neo4j_crud import update_shelf_layout_chain, save_concept
+from utils.layout_engine import rebuild_shelf_layout, place_next_available
 
 router = APIRouter(prefix="/bookshelf", tags=["bookshelf"])
 
 SHELF_MAX_WIDTH_PX = 800  # ShelfDesign.shelf_max_width に置き換えてもよい
-
-# def calc_spine_width_px(pages: int | None) -> int:
-#     """ページ数 → 背表紙の厚み(px)。最小8、最大36"""
-#     if not pages or pages <= 0:
-#         return 14
-#     mm = max(4, min(18, pages / 500 * 30))
-#     return int(mm * 2)
-
-# def calc_spine_height_px(height_mm: int | None) -> int:
-#     """本の高さ(mm) → 背表紙の高さ(px)。最小100、最大220"""
-#     if not height_mm or height_mm <= 0:
-#         return 160
-#     return max(100, min(220, int(height_mm * 1.2)))
-
-# def spine_fields(book) -> dict:
-#     """MyHand → ShelfLayout の描画フィールドを返す"""
-#     return {
-#         "spine_width_px":  calc_spine_width_px(book.pages),
-#         "spine_height_px": calc_spine_height_px(book.height_mm),
-#         "cover":           book.cover,
-#         "size_label":      book.size_label,
-#     }
-
-# # --- リクエストモデル ---
-# class BookPosition(BaseModel):
-#     isbn: str
-#     shelf_index: int
-#     order_index: int
-
-# # ↓ リストをラップするモデルが必要
-# class SyncLayoutRequest(BaseModel):
-#     layout: List[BookPosition]
-
-# BOOK_WIDTH = 80
-# BOOK_HEIGHT = 120
-# BOOKS_PER_SHELF = 10
-
-# SHELF_MARGIN_X = 40
-# SHELF_MARGIN_Y = 30
-# SHELF_HEIGHT = 150
-# SHELF_GAP = 30
-
-# def add_to_shelf(db: Session, book) -> bool:
-#     isbn = book.isbn
-    
-#     if db.query(ShelfLayout).filter(ShelfLayout.isbn == isbn).first():
-#         return False
-
-#     existing_count = db.query(ShelfLayout).count()
-    
-#     try:
-#         if existing_count == 0:
-#             print("初回配置")
-#             rebuild_shelf_layout(db, trigger_book=book)
-#         else:
-#             print("追加配置")
-#             place_randomly(db, book)
-#     except Exception as e:
-#         return False
-    
-#     # ← ここで必ず再構築
-#     db.flush()
-#     layouts = db.query(ShelfLayout).all()
-#     neo4j_payload = [{"isbn": l.isbn, "x": l.x, "y": l.y} for l in layouts]
-#     update_shelf_layout_chain(neo4j_payload)
-
-#     return True
-
-# @router.get("/")
-# def fetch_bookshelf(db: Session = Depends(get_db)):
-
-#     design = db.query(ShelfDesign).first()
-#     if not design:
-#         design = ShelfDesign(total_shelves=1)
-#         db.add(design)
-#         db.commit()
-
-#     layouts = (
-#         db.query(ShelfLayout)
-#             .order_by(ShelfLayout.shelf_index, ShelfLayout.order_index)
-#             .all()
-#     )
-
-#     # ← 早期returnをやめて、本が0冊でも total_shelves を返す
-#     if not layouts:
-#         return {"shelves": [], "total_shelves": design.total_shelves}
-
-#     layout_map = {l.isbn: l for l in layouts}
-
-#     title_map: dict[str, str] = {}
-#     with get_session() as session:
-#         result = session.run(
-#             "MATCH (b:Book) WHERE b.isbn IN $isbns RETURN b.isbn AS isbn, b.title AS title",
-#             isbns=list(layout_map.keys())
-#         )
-#         for r in result:
-#             title_map[r["isbn"]] = r["title"]
-
-#     shelves: dict[int, list] = {}
-#     for l in layouts:
-#         shelves.setdefault(l.shelf_index, []).append({
-#             "isbn":            l.isbn,
-#             "title":           title_map.get(l.isbn, ""),
-#             "cover":           l.cover,
-#             "size_label":      l.size_label,
-#             "order_index":     l.order_index,
-#             "spine_width_px":  l.spine_width_px,
-#             "spine_height_px": l.spine_height_px,
-#         })
-
-#     return {
-#         "shelves":       [{"shelf_index": k, "books": v} for k, v in sorted(shelves.items())],
-#         "total_shelves": design.total_shelves,  # ← 常にDBの値を使う
-#     }
-
-# @router.post("/sync-layout")
-# async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
-#     try:
-#         # bulk_update_mappings は id(PK) が必要なので使わず、
-#         # isbn で直接 UPDATE する
-#         for pos in body.layout:
-#             db.query(ShelfLayout)\
-#                 .filter(ShelfLayout.isbn == pos.isbn)\
-#                 .update({
-#                     "shelf_index": pos.shelf_index,
-#                     "order_index": pos.order_index,
-#                 }, synchronize_session=False)
-
-#         db.commit()
-
-#         neo4j_payload = [item.model_dump() for item in body.layout]
-#         update_shelf_layout_chain(neo4j_payload)
-
-#         return {"status": "success"}
-
-#     except Exception as e:
-#         import traceback
-#         traceback.print_exc()
-#         db.rollback()
-#         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/add_shelves")
@@ -291,18 +151,24 @@ def fetch_bookshelf(db: Session = Depends(get_db)):
         for r in result:
             title_map[r["isbn"]] = r["title"]
 
+    reg_books = db.query(RegisteredBook).filter(RegisteredBook.isbn.in_(list(layout_map.keys()))).all()
+    spine_map = {rb.isbn: rb.spine_image for rb in reg_books}
+    ndc_map = {rb.isbn: rb.ndc for rb in reg_books}
+
     shelves: dict[int, list] = {}
     for l in layouts:
         shelves.setdefault(l.shelf_index, []).append({
             "isbn":            l.isbn,
             "title":           title_map.get(l.isbn, ""),
             "cover":           l.cover,
+            "spine_image":     spine_map.get(l.isbn),
             "size_label":      l.size_label,
             "shelf_index":     l.shelf_index,
-            "x_pos":           l.x_pos,           # ← 追加
+            "x_pos":           l.x_pos,
             "order_index":     l.order_index,
-            "pages": l.pages,
-            "height_mm": l.height_mm,
+            "pages":           l.pages,
+            "height_mm":       l.height_mm,
+            "ndc":             ndc_map.get(l.isbn),
         })
 
     return {
@@ -314,33 +180,18 @@ def fetch_bookshelf(db: Session = Depends(get_db)):
 @router.post("/sync-layout")
 async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
     try:
-        # 変換係数 (1mm = 1.2px)
-        PX_TO_MM_SCALE = 1.2
-        FRAME_OFFSET = 20  # フロントエンドの FRAME 定数と合わせる
-
         for pos in body.layout:
-            # px 座標から実寸 mm 座標へ逆変換
-            # 公式: (px座標 - オフセット) / 1.2
-            x_pos_mm = (pos.x_pos - FRAME_OFFSET) / PX_TO_MM_SCALE
-
             db.query(ShelfLayout)\
                 .filter(ShelfLayout.isbn == pos.isbn)\
                 .update({
                     "shelf_index": pos.shelf_index,
-                    "x_pos":       round(x_pos_mm, 2), # 小数点2桁程度で保存
+                    "x_pos":       round(pos.x_pos, 2),
                     "order_index": pos.order_index,
                 }, synchronize_session=False)
-        
+
         db.commit()
 
-        # Neo4j側へ送るペイロードも mm 換算済みのものにする
-        # (body.layout をループ内で直接書き換えるか、新しいリストを作成)
-        neo4j_payload = []
-        for pos in body.layout:
-            dump = pos.model_dump()
-            dump["x_pos"] = round((pos.x_pos - FRAME_OFFSET) / PX_TO_MM_SCALE, 2)
-            neo4j_payload.append(dump)
-            
+        neo4j_payload = [pos.model_dump() for pos in body.layout]
         update_shelf_layout_chain(neo4j_payload)
 
         return {"status": "success"}
@@ -349,6 +200,30 @@ async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
         traceback.print_exc()
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
+
+class SaveConceptRequest(BaseModel):
+    meaning: str
+    isbns: List[str]
+
+@router.delete("/remove-book/{isbn}")
+def remove_book_from_shelf(isbn: str, db: Session = Depends(get_db)):
+    layout = db.query(ShelfLayout).filter(ShelfLayout.isbn == isbn).first()
+    if not layout:
+        raise HTTPException(status_code=404, detail="本が見つかりません")
+    db.delete(layout)
+    db.commit()
+    return {"status": "deleted", "isbn": isbn}
+
+
+@router.post("/save-concept")
+def save_concept_endpoint(body: SaveConceptRequest):
+    if not body.meaning.strip():
+        raise HTTPException(status_code=400, detail="meaning is required")
+    if not body.isbns:
+        raise HTTPException(status_code=400, detail="isbns is required")
+    save_concept(isbns=body.isbns, meaning=body.meaning.strip())
+    return {"status": "ok", "concept": body.meaning, "books": len(body.isbns)}
+
 
 @router.post("/migrate-x-pos")
 def migrate_x_pos(db: Session = Depends(get_db)):

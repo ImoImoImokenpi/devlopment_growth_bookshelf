@@ -41,6 +41,7 @@ function ShelfView() {
     useContext(MyBookshelfContext);
   const svgRef = useRef();
   const syncTimerRef = useRef(null);
+  const pendingLayoutRef = useRef(null);
 
   // --- 定数 ---
   const BOOK_HEIGHT = 120;
@@ -99,7 +100,12 @@ function ShelfView() {
     setLocalLayout(books.map((b) => ({ isbn: b.isbn, x: b.x, y: b.y })));
   }, [books]);
   useEffect(() => { setInputValue(currentBooksPerShelf); }, [currentBooksPerShelf]);
-  useEffect(() => { return () => { if (syncTimerRef.current) clearTimeout(syncTimerRef.current); }; }, []);
+  useEffect(() => {
+    return () => {
+      if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
+      if (pendingLayoutRef.current) handleSyncLayout(pendingLayoutRef.current);
+    };
+  }, [handleSyncLayout]);
 
   // --- ハンドラ ---
   const handleCancelSelection = useCallback(() => {
@@ -269,8 +275,12 @@ function ShelfView() {
         me.transition().duration(500).ease(d3.easeElasticOut.amplitude(0.8))
           .attr("x", finalPhys.x).attr("y", finalPhys.y).attr("width", BOOK_WIDTH);
         guide.style("visibility", "hidden");
+        pendingLayoutRef.current = nextLayout;
         if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
-        syncTimerRef.current = setTimeout(() => { handleSyncLayout(nextLayout); }, 10000);
+        syncTimerRef.current = setTimeout(() => {
+          handleSyncLayout(nextLayout);
+          pendingLayoutRef.current = null;
+        }, 10000);
       });
 
     // 本の描画（表紙モードのみ）
@@ -292,7 +302,7 @@ function ShelfView() {
 
   }, [
     booksWithPosition, WIDTH, HEIGHT, shelfCount, getGridPos, getPhysPos,
-    isModalOpen, currentBooksPerShelf, fetchBookshelf, localLayout, selectedIsbns,
+    isModalOpen, currentBooksPerShelf, selectedIsbns,
   ]);
 
   // ─────────────────────────────────────────────

@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
-from models import ShelfLayout, ShelfDesign, MyHand
+from models import ShelfLayout, ShelfDesign, RegisteredBook
 from admin_neo4j.neo4j_crud import groups_from_neo4j, update_shelf_layout_chain
-import random
 import logging
 
 logger = logging.getLogger(__name__)
@@ -39,18 +38,12 @@ def add_to_shelf(db: Session, book) -> bool:
         return False
 
     try:
-        existing_count = db.query(ShelfLayout).count()
-
-        if existing_count == 0:
-            _rebuild_all(db, trigger_book=book)
-        else:
-            _place_one(db, book)
-
+        _place_one(db, book)
         db.commit()
         return True
 
     except Exception as e:
-        db.rollback()   # ← ★これ絶対必要
+        db.rollback()
         logger.error(f"[add_to_shelf] 配置エラー [{book.isbn}]: {e}")
         return False
 
@@ -82,11 +75,15 @@ def _rebuild_all(db: Session, trigger_book=None):
     if trigger_book and trigger_book.isbn not in set(isbns):
         isbns.append(trigger_book.isbn)
     
-    books = db.query(MyHand).filter(MyHand.isbn.in_(isbns)).all()
+    # 物理データは RegisteredBook から取得（MyHand は棚移動後に削除されるため）
+    reg_books = (
+        db.query(RegisteredBook)
+        .filter(RegisteredBook.isbn.in_(isbns))
+        .all()
+    )
 
-    # ISBNごとの描画フィールドを一括取得
     books_map = {}
-    for b in books:
+    for b in reg_books:
         books_map[b.isbn] = {
             "isbn": b.isbn,
             "pages": b.pages,
@@ -183,11 +180,11 @@ def _place_one(db: Session, book):
     ]
 
     if free_shelves:
-        shelf_idx = random.choice(free_shelves)
+        shelf_idx = min(free_shelves)
         x_pos     = shelf_info[shelf_idx]["next_x"]
         order_idx = shelf_info[shelf_idx]["count"]
     else:
-        shelf_idx = design.total_shelves or 0
+        shelf_idx = max(shelf_info.keys()) + 1 if shelf_info else 0
         x_pos     = FRAME
         order_idx = 0
         design.total_shelves = shelf_idx + 1

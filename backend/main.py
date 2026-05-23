@@ -6,6 +6,7 @@ import routers.myhand as myhand_router
 import routers.knowledge_graph as knowledge_graph_router
 import routers.bookshelf as bookshelf_router
 import routers.search as search_router
+import routers.register as register_router
 from routers.search import lifespan
 
 # DB初期化
@@ -27,6 +28,7 @@ app.include_router(myhand_router.router)
 app.include_router(knowledge_graph_router.router)
 app.include_router(bookshelf_router.router)
 app.include_router(search_router.router)
+app.include_router(register_router.router)
 
 @app.get("/")
 def root():

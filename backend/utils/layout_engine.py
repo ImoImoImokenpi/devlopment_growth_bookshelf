@@ -58,7 +58,7 @@ def rebuild_shelf_layout(db: Session):
         for pos in new_positions
     ])
 
-def place_randomly(db: Session, isbn: str):
+def place_next_available(db: Session, isbn: str):
 
     design = db.query(ShelfDesign).first()
     if not design:
@@ -76,29 +76,22 @@ def place_randomly(db: Session, isbn: str):
     books_per_shelf = design.books_per_shelf
     total_shelves = design.total_shelves
 
-    used_positions = db.query(ShelfLayout.x, ShelfLayout.y).all()
-    used_set = {(pos.x, pos.y) for pos in used_positions}
+    used_positions = {(pos.x, pos.y) for pos in db.query(ShelfLayout.x, ShelfLayout.y).all()}
 
-    all_positions = [
-        (row, col)
-        for row in range(total_shelves)
-        for col in range(books_per_shelf)
-    ]
-
-    free_positions = [pos for pos in all_positions if pos not in used_set]
+    # 左上から順に最初の空きマスを探す
+    row, col = None, None
+    for r in range(total_shelves):
+        for c in range(books_per_shelf):
+            if (r, c) not in used_positions:
+                row, col = r, c
+                break
+        if row is not None:
+            break
 
     # 空きなし → 段追加
-    if not free_positions:
+    if row is None:
         row = total_shelves
         col = 0
         design.total_shelves += 1
-    else:
-        row, col = random.choice(free_positions)
 
-    new_layout = ShelfLayout(
-        isbn=isbn,
-        x=row,
-        y=col
-    )
-
-    db.add(new_layout)
+    db.add(ShelfLayout(isbn=isbn, x=row, y=col))

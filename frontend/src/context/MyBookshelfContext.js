@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useCallback } from "react";
 import ErrorModal from "../components/ErrorModal";
 import axios from "axios";
 
@@ -8,11 +8,11 @@ export function MyBookshelfProvider({ children }) {
   const [myBookshelf, setMyBookshelf] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const fetchBookshelf = async () => {
+  const fetchBookshelf = useCallback(async () => {
     const res = await fetch("http://localhost:8000/bookshelf/");
     const data = await res.json();
     setMyBookshelf(data);
-  };
+  }, []);
 
   // 2. 段数（1段あたりの冊数）の更新・再構築
   const updateShelfLayout = async (newSize) => {
@@ -27,6 +27,11 @@ export function MyBookshelfProvider({ children }) {
     });
     if (res.ok) await fetchBookshelf();
   };
+
+  const removeBook = useCallback(async (isbn) => {
+    await fetch(`http://localhost:8000/bookshelf/remove-book/${isbn}`, { method: "DELETE" });
+    fetchBookshelf();
+  }, [fetchBookshelf]);
 
   const removeShelfRow = async () => {
     try{
@@ -49,7 +54,7 @@ export function MyBookshelfProvider({ children }) {
   };
 
   return (
-    <MyBookshelfContext.Provider value={{ myBookshelf, fetchBookshelf, updateShelfLayout, addShelfRow, removeShelfRow }}>
+    <MyBookshelfContext.Provider value={{ myBookshelf, fetchBookshelf, updateShelfLayout, addShelfRow, removeShelfRow, removeBook }}>
       {children}
       <ErrorModal 
         message={errorMessage}

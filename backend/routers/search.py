@@ -125,12 +125,6 @@ GENRE_MAP = {
 }
 
 
-def _extract_ndc(subjects: List[str]) -> Optional[str]:
-    for s in subjects:
-        if re.match(r"\d{3}", s):
-            return s
-    return None
-
 _NDC9_PREFIX = "http://id.ndl.go.jp/class/ndc9/"
 _RDF_RESOURCE = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}resource"
 

@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from database import get_db
 from admin_neo4j.neo4j_driver import get_session
 from admin_neo4j.neo4j_crud import update_shelf_layout_chain, save_concept
-from utils.layout_engine import rebuild_shelf_layout, place_next_available
 
 router = APIRouter(prefix="/bookshelf", tags=["bookshelf"])
 
@@ -58,71 +57,6 @@ class BookPosition(BaseModel):
 class SyncLayoutRequest(BaseModel):
     layout: List[BookPosition]
 
-
-def find_free_x(db: Session, shelf_index: int, spine_width: int) -> int:
-    """
-    指定の棚で空きスペースを左から探してx_posを返す。
-    他の本と重ならない最初の位置。
-    """
-    books = db.query(ShelfLayout)\
-        .filter(ShelfLayout.shelf_index == shelf_index)\
-        .order_by(ShelfLayout.x_pos)\
-        .all()
-
-    candidate = FRAME
-    for b in books:
-        # candidate と b が重なるか
-        if candidate + spine_width > b.x_pos and candidate < b.x_pos + b.spine_width_px:
-            # 重なるので b の右に移動
-            candidate = b.x_pos + b.spine_width_px + SPINE_GAP
-    return candidate
-
-
-def place_book(db: Session, book, design: "ShelfDesign") -> None:
-    """
-    空きを探して本を配置。全棚に収まらなければ新段を追加。
-    """
-    SHELF_MAX_WIDTH = 800  # ShelfDesign に持たせてもよい
-
-    # ★ここで計算（超重要）
-    spine_width = calc_spine_width_px(book.pages)
-    spine_height = calc_spine_height_px(book.height_mm)
-
-    for shelf_idx in range(design.total_shelves):
-        x = find_free_x(db, shelf_idx, spine_width_px)
-
-        if x + spine_width_px + FRAME <= SHELF_MAX_WIDTH:
-            # この棚に収まる
-            order = db.query(ShelfLayout)\
-                .filter(ShelfLayout.shelf_index == shelf_idx)\
-                .count()
-            layout = ShelfLayout(
-                isbn            = book.isbn,
-                shelf_index     = shelf_idx,
-                x_pos           = x,
-                order_index     = order,
-                spine_width_px  = spine_width_px,
-                spine_height_px = spine_height_px,
-                cover           = book.cover,
-                size_label      = book.size_label,
-            )
-            db.add(layout)
-            return
-
-    # 全棚に収まらなかった → 新段追加
-    design.total_shelves += 1
-    new_shelf = design.total_shelves - 1
-    layout = ShelfLayout(
-        isbn            = book.isbn,
-        shelf_index     = new_shelf,
-        x_pos           = FRAME,
-        order_index     = 0,
-        spine_width_px  = spine_width_px,
-        spine_height_px = spine_height_px,
-        cover           = book.cover,
-        size_label      = book.size_label,
-    )
-    db.add(layout)
 
 
 @router.get("/")
@@ -191,7 +125,15 @@ async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
 
         db.commit()
 
-        neo4j_payload = [pos.model_dump() for pos in body.layout]
+        isbns = [pos.isbn for pos in body.layout]
+        pages_map = {
+            r.isbn: r.pages
+            for r in db.query(ShelfLayout).filter(ShelfLayout.isbn.in_(isbns)).all()
+        }
+        neo4j_payload = [
+            {**pos.model_dump(), "pages": pages_map.get(pos.isbn, 200)}
+            for pos in body.layout
+        ]
         update_shelf_layout_chain(neo4j_payload)
 
         return {"status": "success"}

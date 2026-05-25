@@ -167,40 +167,6 @@ def groups_from_neo4j():
                 })
         return groups
 
-def get_shelf_books():
-    """フロントエンドの棚表示用データを取得"""
-    with get_session() as session:
-        # SQLiteにある座標(ShelfLayout)と、Neo4jにある本情報を結合して返す設計が理想ですが、
-        # Neo4j単体で座標を管理している場合は以下になります
-        result = session.run(
-            """
-            MATCH (b:Book)
-            RETURN
-                b.isbn AS id,  // book_idをisbnに統一
-                b.title AS title,
-                b.cover AS cover,
-                coalesce(b.shelfRow, 0) AS row,
-                coalesce(b.shelfCol, 0) AS col
-            ORDER BY row, col
-            """
-        )
-
-        return {
-            "rows": 5,
-            "cols": 10,
-            "cells": [
-                {
-                    "row": r["row"],
-                    "col": r["col"],
-                    "book": {
-                        "id": r["id"],
-                        "title": r["title"],
-                        "cover": r["cover"]
-                    }
-                }
-                for r in result
-            ]
-        }
 
 def save_concept(isbns: list[str], meaning: str):
     """
@@ -230,16 +196,21 @@ def update_shelf_layout_chain(layout_data: list[dict]):
     棚ごとに x_pos 順（実際の物理位置）で並べ、隣接する本の間に SHELF_NEXT リレーションを張る。
     左右スタック間の大きなギャップは隣接とみなさない。
     """
-    # x_pos はフロントの (pxX - FRAME) / 1.2 で格納されている
-    # 本1冊の幅は概ね 5〜80 x_pos 単位なので、100 を超えるギャップはスタック間の空白
-    ADJACENCY_THRESHOLD = 100
+    # x_pos = (pxX - FRAME) / 1.2 で格納されている
+    # 実ギャップ(px) = (b.x_pos - a.x_pos) * 1.2 - spine_width_a
+    # spine_width_px = min(100, max(1, pages * 0.08))  ← フロントと同じ式
+    PX_SCALE = 1.2
+    ADJACENCY_GAP_PX = 1  # 1px 未満なら隣接とみなす（1px以上は隣接とみなさない）
+
+    def spine_width_px(pages: int) -> float:
+        return min(100.0, max(1.0, pages * 0.08))
 
     # 1. 棚ごとにグループ化
     rows: dict[int, list[dict]] = defaultdict(list)
     for book in layout_data:
         rows[book["shelf_index"]].append(book)
 
-    # 2. 各棚で x_pos 順に並べ、ギャップが小さいペアだけ隣接とする
+    # 2. 各棚で x_pos 順に並べ、実ギャップが 1px 以内のペアだけ隣接とする
     relations = []
     for shelf_index, shelf_books in rows.items():
         shelf_books.sort(key=lambda b: b.get("x_pos", 0))
@@ -247,8 +218,9 @@ def update_shelf_layout_chain(layout_data: list[dict]):
         for i in range(len(shelf_books) - 1):
             a = shelf_books[i]
             b = shelf_books[i + 1]
-            gap = b.get("x_pos", 0) - a.get("x_pos", 0)
-            if gap <= ADJACENCY_THRESHOLD:
+            sw_a = spine_width_px(a.get("pages", 200))
+            gap_px = (b.get("x_pos", 0) - a.get("x_pos", 0)) * PX_SCALE - sw_a
+            if gap_px < ADJACENCY_GAP_PX:
                 relations.append({
                     "from": a["isbn"],
                     "to":   b["isbn"],

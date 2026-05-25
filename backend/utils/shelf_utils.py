@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models import ShelfLayout, ShelfDesign, RegisteredBook
-from admin_neo4j.neo4j_crud import groups_from_neo4j, update_shelf_layout_chain
+from admin_neo4j.neo4j_crud import groups_from_neo4j
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,14 +23,6 @@ def calc_spine_height_px(height_mm: int | None) -> int:
     raw = height_mm * SCALE
     return int(min(220, max(140, raw)))
 
-def spine_fields(book):
-    return {
-        "width_unit": calc_virtual_width(book.pages),
-        "height_mm": book.height_mm,
-        "cover": book.cover,
-        "size_label": book.size_label,
-    }
-
 # ── 外部API ──────────────────────────────────────────────────
 
 def add_to_shelf(db: Session, book) -> bool:
@@ -47,15 +39,6 @@ def add_to_shelf(db: Session, book) -> bool:
         logger.error(f"[add_to_shelf] 配置エラー [{book.isbn}]: {e}")
         return False
 
-
-def rebuild_shelf_from_neo4j(db: Session):
-    """
-    Neo4jのグループ順で棚全体を再構築する。
-    本棚の並び替え後などに呼ぶ。
-    """
-    _rebuild_all(db, trigger_book=None)
-    db.flush()
-    # _sync_to_neo4j(db)
 
 # ── 内部: 全体再構築 ──────────────────────────────────────────
 
@@ -220,10 +203,3 @@ def _flatten_groups(groups: list) -> list[str]:
                 seen.add(b["isbn"])
     return result
 
-def _sync_to_neo4j(db: Session):
-    layouts = db.query(ShelfLayout).all()
-    payload = [
-        {"isbn": l.isbn, "shelf_index": l.shelf_index, "order_index": l.order_index}
-        for l in layouts
-    ]
-    update_shelf_layout_chain(payload)

@@ -1,12 +1,12 @@
 """
 myhand テーブルを新スキーマ（registered_book_id FK）に移行するスクリプト。
-backend/ ディレクトリで実行してください:
-  python migrate_myhand.py
+プロジェクトルートから実行:
+  python backend/scripts/migrate_myhand.py
 """
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "bookshelf.db"
+DB_PATH = Path(__file__).parent.parent / "bookshelf.db"
 
 conn = sqlite3.connect(DB_PATH)
 cur  = conn.cursor()

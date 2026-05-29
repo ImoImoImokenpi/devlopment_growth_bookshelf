@@ -1,14 +1,17 @@
 """
 registered_books の NDC を Neo4j Book ノードに反映するスクリプト。
 add_book_with_meaning は MERGE を使うので既存ノードの上書き更新が安全にできる。
-backend/ ディレクトリで実行:
-  python backfill_neo4j_ndc.py
+プロジェクトルートから実行:
+  python backend/scripts/backfill_neo4j_ndc.py
 """
 import sqlite3
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from admin_neo4j.neo4j_crud import add_book_with_meaning
 
-DB_PATH = Path(__file__).parent / "bookshelf.db"
+DB_PATH = Path(__file__).parent.parent / "bookshelf.db"
 
 conn = sqlite3.connect(DB_PATH)
 conn.row_factory = sqlite3.Row

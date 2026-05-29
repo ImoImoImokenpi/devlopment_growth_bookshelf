@@ -250,6 +250,12 @@ export default function Gallery() {
                 {selected.pages && `${selected.pages} ページ`}
               </div>
               <div style={s.lightboxIsbn}>ISBN: {selected.isbn}</div>
+              {selected.spine_color && (
+                <div style={s.colorRow}>
+                  <div style={{ ...s.colorSwatch, backgroundColor: `rgb(${selected.spine_color})` }} />
+                  <span style={s.colorLabel}>代表色 rgb({selected.spine_color})</span>
+                </div>
+              )}
               <button
                 style={{
                   ...s.addBtn,
@@ -382,6 +388,14 @@ const s = {
   },
   lightboxDim:  { fontSize: "12px", color: "#aaa", marginTop: "8px" },
   lightboxIsbn: { fontSize: "11px", color: "#bbb", marginTop: "6px", fontFamily: "monospace" },
+  colorRow: {
+    display: "flex", alignItems: "center", gap: "8px", marginTop: "8px",
+  },
+  colorSwatch: {
+    width: "18px", height: "18px", borderRadius: "4px",
+    border: "1px solid rgba(0,0,0,0.12)", flexShrink: 0,
+  },
+  colorLabel: { fontSize: "11px", color: "#bbb", fontFamily: "monospace" },
   addBtn: {
     marginTop: "16px", width: "100%", padding: "10px",
     backgroundColor: "#c9a84c", color: "#fff",

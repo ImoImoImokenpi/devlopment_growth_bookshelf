@@ -1,14 +1,14 @@
 """
 registered_books の description が NULL の本を OpenBD で一括補完するスクリプト。
-backend/ ディレクトリで実行:
-  python backfill_descriptions.py
+プロジェクトルートから実行:
+  python backend/scripts/backfill_descriptions.py
 """
 import asyncio
 import sqlite3
 import httpx
 from pathlib import Path
 
-DB_PATH  = Path(__file__).parent / "bookshelf.db"
+DB_PATH  = Path(__file__).parent.parent / "bookshelf.db"
 OPENBD          = "https://api.openbd.jp/v1/get"
 GOOGLE_BOOKS    = "https://www.googleapis.com/books/v1/volumes"
 BATCH           = 50

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from database import Base, engine
 import routers.myhand as myhand_router
@@ -11,6 +12,14 @@ from routers.search import lifespan
 
 # DB初期化
 Base.metadata.create_all(bind=engine)
+
+# spine_color カラムが存在しない場合に追加（既存DB向けマイグレーション）
+with engine.connect() as _conn:
+    try:
+        _conn.execute(text("ALTER TABLE registered_books ADD COLUMN spine_color VARCHAR"))
+        _conn.commit()
+    except Exception:
+        pass  # カラムが既に存在する場合は無視
 
 app = FastAPI(lifespan=lifespan)
 

@@ -1,7 +1,7 @@
 """
 registered_books の ndc が NULL の本を NDL SRU API で一括補完するスクリプト。
-backend/ ディレクトリで実行:
-  python backfill_ndc.py
+プロジェクトルートから実行:
+  python backend/scripts/backfill_ndc.py
 """
 import asyncio
 import re
@@ -10,7 +10,7 @@ import httpx
 from pathlib import Path
 from lxml import etree
 
-DB_PATH     = Path(__file__).parent / "bookshelf.db"
+DB_PATH     = Path(__file__).parent.parent / "bookshelf.db"
 NDL_SRU_URL = "https://ndlsearch.ndl.go.jp/api/sru"
 BIB_NS = {
     "rdf":     "http://www.w3.org/1999/02/22-rdf-syntax-ns#",

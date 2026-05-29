@@ -71,6 +71,7 @@ class RegisteredBook(Base):
     height_mm      = Column(Integer, default=180)
     size_label     = Column(String)
     spine_image    = Column(String)        # ローカル背表紙画像パス (/spine_image/{isbn}.jpg)
+    spine_color    = Column(String)        # 背表紙の代表色 "R,G,B"
     cover          = Column(String)        # NDL/Google Books の書影URL
     description    = Column(String)
     registered_at  = Column(DateTime, server_default=func.now())

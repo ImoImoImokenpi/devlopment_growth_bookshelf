@@ -2,14 +2,17 @@
 registered_books の著者・出版社ノードと関係性を Neo4j に一括追加するスクリプト。
 既存の Book ノードはそのまま、Author / Publisher ノードと
 WRITTEN_BY / PUBLISHED_BY リレーションが追加される。
-backend/ ディレクトリで実行:
-  python backfill_neo4j_relations.py
+プロジェクトルートから実行:
+  python backend/scripts/backfill_neo4j_relations.py
 """
 import sqlite3
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from admin_neo4j.neo4j_crud import add_book_with_meaning
 
-DB_PATH = Path(__file__).parent / "bookshelf.db"
+DB_PATH = Path(__file__).parent.parent / "bookshelf.db"
 
 conn = sqlite3.connect(DB_PATH)
 conn.row_factory = sqlite3.Row

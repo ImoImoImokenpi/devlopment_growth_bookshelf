@@ -158,12 +158,26 @@ def list_registered(db: Session = Depends(get_db)):
             "pages":          b.pages,
             "height_mm":      b.height_mm,
             "spine_image":    b.spine_image,
+            "spine_color":    b.spine_color,
             "cover":          b.cover,
             "description":    b.description,
             "registered_at":  b.registered_at.isoformat() if b.registered_at else None,
         }
         for b in books
     ]
+
+
+def _extract_dominant_color(image_data: bytes) -> str | None:
+    """colorthief のメジアンカット法で代表色を抽出して 'R,G,B' 形式で返す。"""
+    try:
+        import io
+        from colorthief import ColorThief
+
+        cf = ColorThief(io.BytesIO(image_data))
+        r, g, b = cf.get_color(quality=1)
+        return f"{r},{g},{b}"
+    except Exception:
+        return None
 
 
 async def _ocr_extract_text(image_data: bytes) -> str:
@@ -326,11 +340,14 @@ async def save_book(
     # 背表紙画像を spine_image/{isbn}.jpg として保存
     ndl_cover   = data.get("cover")        # NDL/Google Books の書影URL
     spine_path  = None
+    spine_color = None
     if image and image.filename:
+        image_data = await image.read()
         ext = image.filename.rsplit(".", 1)[-1].lower() if "." in image.filename else "jpg"
         SPINE_IMAGE_DIR.mkdir(parents=True, exist_ok=True)
-        (SPINE_IMAGE_DIR / f"{isbn}.{ext}").write_bytes(await image.read())
-        spine_path = f"/spine_image/{isbn}.{ext}"
+        (SPINE_IMAGE_DIR / f"{isbn}.{ext}").write_bytes(image_data)
+        spine_path  = f"/spine_image/{isbn}.{ext}"
+        spine_color = _extract_dominant_color(image_data)
 
     book = RegisteredBook(
         isbn=isbn,
@@ -343,9 +360,10 @@ async def save_book(
         pages=data.get("pages") or 200,
         size_label=data.get("size_label"),
         spine_image=spine_path,
+        spine_color=spine_color,
         cover=ndl_cover,
         description=data.get("description"),
     )
     db.add(book)
     db.commit()
-    return {"message": "saved", "isbn": isbn, "spine_image": spine_path, "cover": ndl_cover}
+    return {"message": "saved", "isbn": isbn, "spine_image": spine_path, "spine_color": spine_color, "cover": ndl_cover}

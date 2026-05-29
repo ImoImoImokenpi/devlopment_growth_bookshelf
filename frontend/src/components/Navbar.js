@@ -27,6 +27,12 @@ export default function Navbar() {
                 <path d="M12 5v14M5 12h14"/>
             </svg>
         )},
+        { path: "/KnowledgeGraph", label: "知識グラフ", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/>
+                <line x1="7" y1="11" x2="17" y2="6"/><line x1="7" y1="13" x2="17" y2="18"/>
+            </svg>
+        )},
     ];
 
     useEffect(() => {

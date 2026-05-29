@@ -1,12 +1,12 @@
 """
 registered_books テーブルに description カラムを追加するスクリプト。
-backend/ ディレクトリで実行してください:
-  python migrate_description.py
+プロジェクトルートから実行:
+  python backend/scripts/migrate_description.py
 """
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "bookshelf.db"
+DB_PATH = Path(__file__).parent.parent / "bookshelf.db"
 
 conn = sqlite3.connect(DB_PATH)
 cur  = conn.cursor()

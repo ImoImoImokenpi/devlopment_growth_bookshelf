@@ -262,6 +262,12 @@ export default function Register() {
                         ))}
                       </tbody>
                     </table>
+                    {b.spine_color && (
+                      <div style={s.colorRow}>
+                        <div style={{ ...s.colorSwatch, backgroundColor: `rgb(${b.spine_color})` }} />
+                        <span style={s.colorLabel}>rgb({b.spine_color})</span>
+                      </div>
+                    )}
                     {b.description && (
                       <div style={s.listDesc}>{b.description}</div>
                     )}
@@ -549,6 +555,24 @@ const s = {
     lineHeight: "1.6",
     borderTop: "1px solid #f5f0e8",
     paddingTop: "8px",
+  },
+  colorRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    marginTop: "6px",
+  },
+  colorSwatch: {
+    width: "14px",
+    height: "14px",
+    borderRadius: "3px",
+    border: "1px solid rgba(0,0,0,0.12)",
+    flexShrink: 0,
+  },
+  colorLabel: {
+    fontSize: "11px",
+    color: "#bbb",
+    fontFamily: "monospace",
   },
   metaTable: {
     width: "100%",

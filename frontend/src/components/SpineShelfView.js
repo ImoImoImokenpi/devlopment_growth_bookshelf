@@ -122,9 +122,13 @@ function SpineShelfView() {
   const [selectedIsbns, setSelectedIsbns] = useState([]);
   const [isToolbarOpen, setIsToolbarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [meaning, setMeaning] = useState("");
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [isSavingMeaning, setIsSavingMeaning] = useState(false);
   const [rubberBand, setRubberBand] = useState(null);
   const [deletedIsbns, setDeletedIsbns] = useState(new Set());
+  const chatMessagesRef = useRef(null);
 
   const unitShelfHeight = TOP_GAP + MAX_BOOK_HEIGHT + SHELF_PAD;
 
@@ -198,21 +202,64 @@ function SpineShelfView() {
     } catch (err) { console.error("Sync failed", err); }
   }, []);
 
-  const handleSaveMeaning = async () => {
-    if (!meaning.trim()) return alert("意味を入力してください");
+  const handleSendChatMessage = async () => {
+    const text = chatInput.trim();
+    if (!text || isChatLoading) return;
+
+    const historyBeforeSend = chatHistory;
+    setChatHistory(h => [...h, { role: "user", text }]);
+    setChatInput("");
+    setIsChatLoading(true);
+
     try {
-      const res = await fetch("http://localhost:8000/bookshelf/save-concept", {
+      const res = await fetch("http://localhost:8000/bookshelf/meaning-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ meaning, isbns: selectedIsbns }),
+        body: JSON.stringify({ isbns: selectedIsbns, history: historyBeforeSend, message: text }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setChatHistory(h => [...h, { role: "ai", text: data.reply }]);
+      }
+    } catch (err) { console.error("Meaning chat failed", err); }
+    finally { setIsChatLoading(false); }
+  };
+
+  const handleSaveMeaningDialogue = async () => {
+    if (chatHistory.length === 0) return alert("対話を入力してください");
+    setIsSavingMeaning(true);
+    try {
+      const res = await fetch("http://localhost:8000/bookshelf/save-meaning-dialogue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isbns: selectedIsbns, history: chatHistory }),
       });
       if (res.ok) {
         setIsModalOpen(false);
-        setMeaning("");
+        setChatHistory([]);
         setSelectedIsbns([]);
+      } else {
+        const data = await res.json().catch(() => null);
+        alert(`保存に失敗しました: ${data?.detail || res.status}`);
       }
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error("Save meaning failed", err);
+      alert("保存に失敗しました。通信エラーの可能性があります。");
+    }
+    finally { setIsSavingMeaning(false); }
   };
+
+  const handleCloseMeaningModal = () => {
+    setIsModalOpen(false);
+    setChatHistory([]);
+    setChatInput("");
+  };
+
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [chatHistory, isChatLoading]);
 
   // ─────────────────────────────────────────────
   // D3 Rendering
@@ -651,6 +698,7 @@ function SpineShelfView() {
 
     const onMouseDown = (e) => {
       if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT") return;
+      if (e.target.closest(".meaning-modal-overlay")) return;
       startClient = { x: e.clientX, y: e.clientY };
       startedOnBook = isOnBook(e.target);
       active = true;
@@ -824,17 +872,53 @@ function SpineShelfView() {
       </div>
 
       {isModalOpen && (
-        <div style={s.overlay}>
-          <div style={s.modal}>
+        <div style={s.overlay} className="meaning-modal-overlay">
+          <div style={s.chatModal}>
             <h3 style={{ marginBottom: "6px", fontFamily: "serif", color: "#2a1f0e" }}>意味付与</h3>
-            <p style={{ fontSize: "12px", color: "#999", marginBottom: "14px" }}>{selectedIsbns.length}冊に自分なりの意味づをしてみよう</p>
-            <input
-              autoFocus style={s.modalInput} value={meaning}
-              onChange={e => setMeaning(e.target.value)} placeholder="この本たちのテーマや意味は..."
-            />
-            <div style={{ display: "flex", gap: "10px", marginTop: "20px", justifyContent: "flex-end" }}>
-              <button onClick={() => setIsModalOpen(false)} style={s.btnSecondary}>キャンセル</button>
-              <button onClick={handleSaveMeaning} style={s.btnPrimary}>保存</button>
+            <p style={{ fontSize: "12px", color: "#999", marginBottom: "14px" }}>
+              {selectedIsbns.length}冊について、AIと対話しながら自分なりの意味を深めよう
+            </p>
+
+            <div ref={chatMessagesRef} style={s.chatMessages}>
+              {chatHistory.length === 0 && (
+                <div style={s.chatPlaceholder}>
+                  この本たちが自分にとってどんな意味を持つか、まず書いてみてください
+                </div>
+              )}
+              {chatHistory.map((m, i) => (
+                <div key={i} style={m.role === "user" ? s.chatBubbleUser : s.chatBubbleAi}>
+                  {m.text}
+                </div>
+              ))}
+              {isChatLoading && <div style={s.chatBubbleAi}>考え中...</div>}
+            </div>
+
+            <div style={s.chatInputRow}>
+              <input
+                autoFocus style={s.modalInput} value={chatInput}
+                onChange={e => setChatInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendChatMessage(); }
+                }}
+                placeholder="この本たちのテーマや意味は..."
+                disabled={isChatLoading}
+              />
+              <button
+                onClick={handleSendChatMessage} style={s.btnSecondary}
+                disabled={isChatLoading || !chatInput.trim()}
+              >
+                送る
+              </button>
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", marginTop: "14px", justifyContent: "flex-end" }}>
+              <button onClick={handleCloseMeaningModal} style={s.btnSecondary}>キャンセル</button>
+              <button
+                onClick={handleSaveMeaningDialogue} style={s.btnPrimary}
+                disabled={isSavingMeaning || chatHistory.length === 0}
+              >
+                {isSavingMeaning ? "保存中..." : "保存"}
+              </button>
             </div>
           </div>
         </div>
@@ -859,7 +943,31 @@ const s = {
   btnDanger: { padding: "8px 18px", backgroundColor: "transparent", color: "#c9506a", border: "1px solid #c9506a", borderRadius: "8px", cursor: "pointer" },
   overlay: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 },
   modal: { backgroundColor: "#fff", padding: "30px", borderRadius: "12px", width: "350px", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" },
-  modalInput: { width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #ddd" },
+  modalInput: { flex: 1, width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #ddd" },
+  chatModal: {
+    backgroundColor: "#fff", padding: "26px", borderRadius: "12px",
+    width: "420px", maxWidth: "90vw", boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+    display: "flex", flexDirection: "column",
+  },
+  chatMessages: {
+    display: "flex", flexDirection: "column", gap: "8px",
+    maxHeight: "320px", minHeight: "120px", overflowY: "auto",
+    padding: "10px", borderRadius: "10px", backgroundColor: "#faf8f2",
+    border: "1px solid #ede8da",
+  },
+  chatPlaceholder: { fontSize: "12px", color: "#bbb", textAlign: "center", padding: "20px 10px" },
+  chatBubbleUser: {
+    alignSelf: "flex-end", maxWidth: "80%", padding: "8px 12px",
+    borderRadius: "14px 14px 2px 14px", backgroundColor: "#c9a84c",
+    color: "#fff", fontSize: "13px", lineHeight: 1.5, whiteSpace: "pre-wrap",
+  },
+  chatBubbleAi: {
+    alignSelf: "flex-start", maxWidth: "80%", padding: "8px 12px",
+    borderRadius: "14px 14px 14px 2px", backgroundColor: "#fff",
+    color: "#2a1f0e", fontSize: "13px", lineHeight: 1.5, whiteSpace: "pre-wrap",
+    border: "1px solid #ede8da",
+  },
+  chatInputRow: { display: "flex", gap: "8px", marginTop: "12px" },
   fab: {
     position: "fixed", bottom: "30px", right: "30px",
     width: "48px", height: "48px", borderRadius: "50%",

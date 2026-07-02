@@ -6,10 +6,17 @@ from sqlalchemy.orm import Session
 from database import get_db
 from admin_neo4j.neo4j_driver import get_session
 from admin_neo4j.neo4j_crud import update_shelf_layout_chain, save_concept
+from utils.gemini_client import GeminiClient
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 router = APIRouter(prefix="/bookshelf", tags=["bookshelf"])
 
 SHELF_MAX_WIDTH_PX = 800  # ShelfDesign.shelf_max_width に置き換えてもよい
+
+_gemini = GeminiClient.get_instance()
 
 
 @router.post("/add_shelves")
@@ -146,6 +153,102 @@ async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
 class SaveConceptRequest(BaseModel):
     meaning: str
     isbns: List[str]
+
+
+# ── 意味付与ダイアログ（対話でAIが言語化を深める） ──────────
+
+class ChatMessage(BaseModel):
+    role: str  # "user" | "ai"
+    text: str
+
+class MeaningChatRequest(BaseModel):
+    isbns: List[str]
+    history: List[ChatMessage] = []
+    message: str
+
+class SaveMeaningDialogueRequest(BaseModel):
+    isbns: List[str]
+    history: List[ChatMessage]
+
+
+def _fetch_titles(isbns: List[str]) -> List[str]:
+    with get_session() as session:
+        result = session.run(
+            "MATCH (b:Book) WHERE b.isbn IN $isbns RETURN b.title AS title",
+            isbns=isbns,
+        )
+        return [r["title"] for r in result if r["title"]]
+
+
+def _format_dialogue(history: List[ChatMessage]) -> str:
+    lines = []
+    for m in history:
+        speaker = "ユーザー" if m.role == "user" else "あなた"
+        lines.append(f"{speaker}: {m.text}")
+    return "\n".join(lines)
+
+
+def _build_dialogue_prompt(titles: List[str], history: List[ChatMessage], message: str) -> str:
+    book_list = "、".join(titles) if titles else "選択された本"
+    return "\n".join([
+        f"あなたは読書の伴走者です。ユーザーが「{book_list}」という本(たち)について、"
+        "自分にとっての個人的な意味を言葉にする手助けをしてください。",
+        "ユーザーの発言を否定せず受け止めた上で、具体的なエピソードや感情を引き出すような、"
+        "焦点を絞った質問か短い気づきを1つだけ返してください。",
+        "返答は日本語で2〜3文以内、箇条書きは使わないでください。",
+        "",
+        "これまでの対話:",
+        _format_dialogue(history),
+        f"ユーザー: {message}",
+        "あなた:",
+    ])
+
+
+def _build_summary_prompt(titles: List[str], history: List[ChatMessage]) -> str:
+    book_list = "、".join(titles) if titles else "選択された本"
+    return "\n".join([
+        f"以下はユーザーが「{book_list}」という本(たち)について、自分にとっての意味を言葉にするために交わした対話です。",
+        "この対話全体から、ユーザーにとってのこの本(たち)の個人的な意味を、"
+        "ユーザー自身の言葉を尊重しながら2〜4文の一つの文章に要約してください。",
+        "説明や前置きは不要で、要約した文章のみを日本語で返してください。",
+        "",
+        "対話:",
+        _format_dialogue(history),
+    ])
+
+
+@router.post("/meaning-chat")
+async def meaning_chat(body: MeaningChatRequest):
+    if not body.message.strip():
+        raise HTTPException(status_code=400, detail="message is required")
+
+    titles = _fetch_titles(body.isbns)
+    prompt = _build_dialogue_prompt(titles, body.history, body.message)
+    try:
+        reply = _gemini.generate_with_fallback(prompt)
+    except Exception as e:
+        logger.exception("Gemini呼び出し失敗")
+        raise HTTPException(status_code=502, detail=f"AI応答に失敗しました: {e}")
+
+    return {"reply": reply}
+
+
+@router.post("/save-meaning-dialogue")
+async def save_meaning_dialogue(body: SaveMeaningDialogueRequest):
+    if not body.isbns:
+        raise HTTPException(status_code=400, detail="isbns is required")
+    if not body.history:
+        raise HTTPException(status_code=400, detail="対話内容がありません")
+
+    titles = _fetch_titles(body.isbns)
+    prompt = _build_summary_prompt(titles, body.history)
+    try:
+        summary = _gemini.generate_with_fallback(prompt)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"要約に失敗しました: {e}")
+
+    save_concept(isbns=body.isbns, meaning=summary)
+    return {"status": "ok", "concept": summary}
 
 @router.delete("/remove-book/{isbn}")
 def remove_book_from_shelf(isbn: str, db: Session = Depends(get_db)):

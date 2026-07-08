@@ -5,12 +5,10 @@ from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException
 from fastapi.responses import Response
 from sqlalchemy.orm import Session
 from lxml import etree
-from google.genai import types
-from google.genai.errors import ClientError as GeminiClientError
 
 from database import get_db
 from models import MyHand, RegisteredBook
-from utils.gemini_client import GeminiClient
+from utils.llm_provider import get_llm_client
 from routers.search import (
     get_http_client,
     _extract_ndc_from_bib,
@@ -84,7 +82,6 @@ class BookRegistrationService:
         issued        = bib.xpath("dcterms:issued/text()",                   namespaces=BIB_NS)
         subjects      = bib.xpath("dc:subject/text()",                       namespaces=BIB_NS)
         extent        = bib.xpath("dcterms:extent/text()",                   namespaces=BIB_NS)
-        abstract      = bib.xpath("dcterms:abstract/text()",                 namespaces=BIB_NS)
 
         ndc              = _extract_ndc_from_bib(bib, BIB_NS)
         pages, height_mm = _extract_extent(extent)
@@ -92,10 +89,8 @@ class BookRegistrationService:
         isbn13 = clean if len(clean) == 13 else _isbn10_to_13(clean)
         cover  = f"https://ndlsearch.ndl.go.jp/thumbnail/{isbn13}.jpg"
 
-        description = abstract[0] if abstract else None
-        if not description:
-            openbd = await fetch_openbd_descriptions([isbn13])
-            description = openbd.get(isbn13)
+        openbd      = await fetch_openbd_descriptions([isbn13])
+        description = openbd.get(isbn13)
         if not description:
             description = await fetch_google_description(isbn13)
 
@@ -204,7 +199,7 @@ class BookRegistrationService:
 # ============================================================
 
 _registration_service = BookRegistrationService()
-_gemini               = GeminiClient.get_instance()
+_llm                  = get_llm_client()
 
 
 # ============================================================
@@ -287,37 +282,21 @@ async def extract_isbn(file: UploadFile = File(...)):
             if book:
                 return {"isbn": book["isbn"], "book": book, "method": "ocr_ndl"}
 
-    # ── Step 2: Gemini ────────────────────────────────────
+    # ── Step 2: AI Vision ──────────────────────────────────
     prompt = (
         "この本の背表紙の画像からISBNコードを抽出してください。"
         "ISBNコードのみを返してください（数字とハイフンのみ）。"
         "見つからない場合は NOT_FOUND とだけ返してください。"
     )
-    last_error = None
-    for model in GeminiClient.MODELS:
-        try:
-            response = _gemini.generate_content(
-                model=model,
-                contents=[
-                    types.Part.from_text(text=prompt),
-                    types.Part.from_bytes(data=image_data, mime_type=mime_type),
-                ],
-            )
-            isbn_raw = response.text.strip()
-            if "NOT_FOUND" in isbn_raw or not isbn_raw:
-                raise HTTPException(status_code=422, detail="ISBNが画像から読み取れませんでした")
-            isbn = re.sub(r"[^0-9X]", "", isbn_raw.upper())
-            return {"isbn": isbn, "book": None, "method": f"gemini/{model}"}
-        except GeminiClientError as e:
-            if e.code == 429:
-                last_error = e
-                continue  # 次のモデルを試す
-            raise HTTPException(status_code=502, detail=f"Gemini API エラー: {e}")
+    try:
+        isbn_raw = _llm.generate_from_image(image_data, mime_type, prompt)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"AI API エラー: {e}")
 
-    raise HTTPException(
-        status_code=429,
-        detail="Gemini API のクォータを超過しています。しばらく待ってから再試行してください。",
-    )
+    if "NOT_FOUND" in isbn_raw or not isbn_raw:
+        raise HTTPException(status_code=422, detail="ISBNが画像から読み取れませんでした")
+    isbn = re.sub(r"[^0-9X]", "", isbn_raw.upper())
+    return {"isbn": isbn, "book": None, "method": "ai"}
 
 
 # ── ISBNでNDL SRUを叩いて書誌情報を返す ─────────────

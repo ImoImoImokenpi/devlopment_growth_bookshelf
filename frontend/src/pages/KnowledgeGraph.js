@@ -47,7 +47,26 @@ export default function KnowledgeGraph() {
   });
   const [filterOpen, setFilterOpen] = useState(false);
   const [dims, setDims]           = useState({ w: window.innerWidth, h: window.innerHeight });
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
+  const [proposals, setProposals] = useState([]);
+  const [analysisError, setAnalysisError] = useState(null);
   const fgRef = useRef();
+
+  const handleAnalyze = useCallback(async () => {
+    setAnalyzing(true);
+    setAnalysisError(null);
+    try {
+      const res = await axios.post(`${API}/knowledge_graph/analyze`);
+      setProposals(res.data.proposals || []);
+      setAnalysisOpen(true);
+    } catch (err) {
+      setAnalysisError(err.response?.data?.detail || "分析に失敗しました");
+      setAnalysisOpen(true);
+    } finally {
+      setAnalyzing(false);
+    }
+  }, []);
 
   useEffect(() => {
     const onResize = () => setDims({ w: window.innerWidth, h: window.innerHeight });
@@ -226,6 +245,20 @@ export default function KnowledgeGraph() {
         フィルター
       </button>
 
+      {/* Analyze button */}
+      {!loading && !error && (
+        <button
+          style={{ ...s.filterBtn, left: 116 }}
+          onClick={handleAnalyze}
+          disabled={analyzing}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>
+          </svg>
+          {analyzing ? "分析中…" : "分析"}
+        </button>
+      )}
+
       {/* Filter panel */}
       {filterOpen && (
         <div style={s.filterPanel}>
@@ -278,6 +311,26 @@ export default function KnowledgeGraph() {
           </>
         )}
       </div>
+
+      {/* Analysis proposals overlay */}
+      {analysisOpen && (
+        <div style={s.analysisOverlay} onClick={() => setAnalysisOpen(false)}>
+          <div style={s.analysisPanel} onClick={e => e.stopPropagation()}>
+            <button style={s.closeBtn} onClick={() => setAnalysisOpen(false)}>✕</button>
+            <div style={s.analysisTitle}>本棚の分析</div>
+            {analysisError && <div style={s.analysisError}>{analysisError}</div>}
+            {!analysisError && proposals.length === 0 && (
+              <div style={s.analysisEmpty}>提案が見つかりませんでした</div>
+            )}
+            {!analysisError && proposals.map((p, i) => (
+              <div key={i} style={s.proposalCard}>
+                <div style={s.proposalTitle}>{p.title}</div>
+                <div style={s.proposalDesc}>{p.description}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -544,6 +597,62 @@ const s = {
     marginTop: 12,
     borderTop: "1px solid rgba(255,255,255,0.06)",
     paddingTop: 12,
+  },
+
+  // Analysis overlay
+  analysisOverlay: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 500,
+  },
+  analysisPanel: {
+    position: "relative",
+    width: 480,
+    maxWidth: "90vw",
+    maxHeight: "80vh",
+    overflowY: "auto",
+    background: "rgba(20,22,30,0.98)",
+    border: "1px solid rgba(255,255,255,0.1)",
+    borderRadius: 16,
+    padding: "28px 26px 24px",
+    boxSizing: "border-box",
+  },
+  analysisTitle: {
+    fontFamily: "serif",
+    fontSize: 18,
+    fontWeight: 700,
+    color: "#e8e0d0",
+    marginBottom: 18,
+  },
+  analysisError: {
+    color: "#e07070",
+    fontSize: 13,
+  },
+  analysisEmpty: {
+    color: "#888",
+    fontSize: 13,
+  },
+  proposalCard: {
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 10,
+    padding: "12px 14px",
+    marginBottom: 10,
+  },
+  proposalTitle: {
+    fontSize: 13,
+    fontWeight: 700,
+    color: "#c9a84c",
+    marginBottom: 6,
+  },
+  proposalDesc: {
+    fontSize: 12.5,
+    color: "#ccc",
+    lineHeight: 1.7,
   },
 };
 

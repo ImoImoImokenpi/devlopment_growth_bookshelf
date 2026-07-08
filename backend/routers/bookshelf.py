@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from admin_neo4j.neo4j_driver import get_session
 from admin_neo4j.neo4j_crud import update_shelf_layout_chain, save_concept
-from utils.gemini_client import GeminiClient
+from utils.llm_provider import get_llm_client
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ router = APIRouter(prefix="/bookshelf", tags=["bookshelf"])
 
 SHELF_MAX_WIDTH_PX = 800  # ShelfDesign.shelf_max_width に置き換えてもよい
 
-_gemini = GeminiClient.get_instance()
+_llm = get_llm_client()
 
 
 @router.post("/add_shelves")
@@ -225,9 +225,9 @@ async def meaning_chat(body: MeaningChatRequest):
     titles = _fetch_titles(body.isbns)
     prompt = _build_dialogue_prompt(titles, body.history, body.message)
     try:
-        reply = _gemini.generate_with_fallback(prompt)
+        reply = _llm.generate_text(prompt, max_tokens=512)
     except Exception as e:
-        logger.exception("Gemini呼び出し失敗")
+        logger.exception("AI呼び出し失敗")
         raise HTTPException(status_code=502, detail=f"AI応答に失敗しました: {e}")
 
     return {"reply": reply}
@@ -243,7 +243,7 @@ async def save_meaning_dialogue(body: SaveMeaningDialogueRequest):
     titles = _fetch_titles(body.isbns)
     prompt = _build_summary_prompt(titles, body.history)
     try:
-        summary = _gemini.generate_with_fallback(prompt)
+        summary = _llm.generate_text(prompt, max_tokens=512)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"要約に失敗しました: {e}")
 

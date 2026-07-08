@@ -470,6 +470,107 @@ class BookshelfNeo4j:
                 )
             return [dict(r) for r in result]
 
+    def get_graph_overview(self, shelf_isbns: list[str] | None = None) -> dict:
+        """
+        ナレッジグラフ全体を俯瞰するための統計スナップショット。
+        AIによる提案生成の入力として使う。
+        shelf_isbns を渡すと、book_catalog はその本棚に現在並んでいる本だけに絞り込む
+        （AI提案が棚に無い本を指してしまい、ハイライトと連動できなくなるのを防ぐため）。
+        """
+        with get_session() as session:
+            total_books = session.run(
+                "MATCH (b:Book) RETURN count(b) AS total"
+            ).single()["total"]
+
+            ndc_distribution = [
+                dict(r) for r in session.run(
+                    """
+                    MATCH (b:Book)-[:CLASSIFIED_AS]->(n:NDC)
+                    WITH substring(n.code, 0, 1) AS ndc_l1, b
+                    RETURN
+                        ndc_l1,
+                        count(DISTINCT b)              AS book_count,
+                        collect(DISTINCT b.title)[0..3] AS sample_titles
+                    ORDER BY book_count DESC
+                    """
+                )
+            ]
+
+            concept_clusters = [
+                dict(r) for r in session.run(
+                    """
+                    MATCH (c:Concept)<-[:CONCEPT]-(b:Book)
+                    WITH c, collect(DISTINCT b.title) AS titles, count(DISTINCT b) AS book_count
+                    WHERE book_count >= 2
+                    RETURN c.text AS concept, titles, book_count
+                    ORDER BY book_count DESC
+                    LIMIT 10
+                    """
+                )
+            ]
+
+            favorite_authors = [
+                dict(r) for r in session.run(
+                    """
+                    MATCH (b:Book)-[:WRITTEN_BY]->(a:Author)
+                    WITH a, count(DISTINCT b) AS book_count, collect(DISTINCT b.title) AS titles
+                    WHERE book_count >= 2
+                    RETURN a.name AS author, book_count, titles
+                    ORDER BY book_count DESC
+                    LIMIT 10
+                    """
+                )
+            ]
+
+            isolated_books = [
+                dict(r) for r in session.run(
+                    """
+                    MATCH (b:Book)
+                    WHERE NOT (b)-[:CONCEPT]-() AND NOT (b)-[:SHELF_NEXT]-()
+                    RETURN b.title AS title, b.isbn AS isbn,
+                           coalesce(b.description, '') AS description
+                    LIMIT 15
+                    """
+                )
+            ]
+
+            book_meanings = [
+                dict(r) for r in session.run(
+                    """
+                    MATCH (b:Book)-[:HAS_MEANING]->(m:Meaning)
+                    RETURN b.title AS title, m.text AS meaning
+                    ORDER BY m.createdAt DESC
+                    LIMIT 20
+                    """
+                )
+            ]
+
+            book_catalog = [
+                dict(r) for r in session.run(
+                    """
+                    MATCH (b:Book)
+                    WHERE $shelf_isbns IS NULL OR b.isbn IN $shelf_isbns
+                    RETURN b.isbn AS isbn,
+                           b.title AS title,
+                           coalesce(b.authors, '')     AS authors,
+                           coalesce(b.publisher, '')   AS publisher,
+                           coalesce(b.description, '') AS description
+                    ORDER BY b.title
+                    """,
+                    shelf_isbns=shelf_isbns,
+                )
+            ]
+
+            return {
+                "total_books":      total_books,
+                "ndc_distribution": ndc_distribution,
+                "concept_clusters": concept_clusters,
+                "favorite_authors": favorite_authors,
+                "isolated_books":   isolated_books,
+                "book_meanings":    book_meanings,
+                "book_catalog":     book_catalog,
+            }
+
 
 # ============================================================
 # モジュールレベル互換（既存の呼び出し元を変更なしで動作させる）
@@ -484,3 +585,4 @@ update_shelf_layout_chain  = _neo4j.update_shelf_layout_chain
 query_high_memory_books    = _neo4j.query_high_memory_books
 query_placement_history    = _neo4j.query_placement_history
 query_knowledge_growth     = _neo4j.query_knowledge_growth
+get_graph_overview         = _neo4j.get_graph_overview

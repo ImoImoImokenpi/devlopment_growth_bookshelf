@@ -130,6 +130,20 @@ function SpineShelfView() {
   const [deletedIsbns, setDeletedIsbns] = useState(new Set());
   const chatMessagesRef = useRef(null);
 
+  // ── AI分析 ──
+  const [isAnalysisPanelOpen, setIsAnalysisPanelOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState(null);
+  const [proposals, setProposals] = useState([]);
+  const [hoverProposalIdx, setHoverProposalIdx] = useState(null);
+  const [pinnedProposalIdx, setPinnedProposalIdx] = useState(null);
+
+  const activeProposalIdx = hoverProposalIdx ?? pinnedProposalIdx;
+  const highlightIsbns = useMemo(() => {
+    if (activeProposalIdx == null) return [];
+    return proposals[activeProposalIdx]?.related_isbns || [];
+  }, [activeProposalIdx, proposals]);
+
   const unitShelfHeight = TOP_GAP + MAX_BOOK_HEIGHT + SHELF_PAD;
 
   const PX_TO_MM_SCALE = 1.2;
@@ -254,6 +268,37 @@ function SpineShelfView() {
     setChatHistory([]);
     setChatInput("");
   };
+
+  const handleAnalyze = useCallback(async () => {
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+    setHoverProposalIdx(null);
+    setPinnedProposalIdx(null);
+    try {
+      const res = await fetch("http://localhost:8000/knowledge_graph/analyze", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.detail || "分析に失敗しました");
+      setProposals(data.proposals || []);
+      setIsAnalysisPanelOpen(true);
+    } catch (err) {
+      setAnalysisError(err.message || "分析に失敗しました");
+      setIsAnalysisPanelOpen(true);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  }, []);
+
+  const handleProposalClick = useCallback((idx) => {
+    setPinnedProposalIdx(prev => {
+      const next = prev === idx ? null : idx;
+      if (next != null) {
+        const isbns = proposals[next]?.related_isbns || [];
+        const target = isbns.length && document.getElementById(`spine-${isbns[0]}`);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+      }
+      return next;
+    });
+  }, [proposals]);
 
   useEffect(() => {
     if (chatMessagesRef.current) {
@@ -621,6 +666,7 @@ function SpineShelfView() {
       .join(
         enter => enter.append("g")
           .attr("class", "spine-book")
+          .attr("id", d => `spine-${d.isbn}`)
           .attr("transform", d => `translate(${d.x}, ${d.y})`),
         update => update,
         exit => exit.remove()
@@ -666,7 +712,7 @@ function SpineShelfView() {
       }
     });
 
-    // ハイライト表示
+    // ハイライト表示（選択中の本）
     svg.selectAll(".spine-hl").remove();
     selectedIsbns.forEach(isbn => {
       const b = booksWithPosition.find(x => x.isbn === isbn);
@@ -677,7 +723,20 @@ function SpineShelfView() {
         .attr("fill", "none").attr("stroke", "#64b4ff").attr("stroke-width", 2).attr("rx", 4);
     });
 
-  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen]);
+    // ハイライト表示（AI分析の提案に関連する本）
+    svg.selectAll(".spine-hl-ai").remove();
+    highlightIsbns.forEach(isbn => {
+      const b = booksWithPosition.find(x => x.isbn === isbn);
+      if (!b) return;
+      svg.append("rect").attr("class", "spine-hl-ai")
+        .attr("x", b.x - 4).attr("y", b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b)) - 4)
+        .attr("width", resolveSpineWidth(b) + 8).attr("height", resolveSpineHeight(b) + 8)
+        .attr("fill", "none").attr("stroke", "#ff9d3d").attr("stroke-width", 3)
+        .attr("stroke-dasharray", "6,3").attr("rx", 5)
+        .style("filter", "drop-shadow(0 0 4px rgba(255,157,61,0.7))");
+    });
+
+  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns]);
 
   // ── ラバーバンド選択 ──
   useEffect(() => {
@@ -830,6 +889,79 @@ function SpineShelfView() {
         </div>
       )}
 
+      <div
+        style={{ ...s.analyzeFab, opacity: isAnalyzing ? 0.6 : 1, cursor: isAnalyzing ? "default" : "pointer" }}
+        onClick={() => {
+          if (isAnalyzing) return;
+          if (proposals.length === 0) handleAnalyze();
+          else setIsAnalysisPanelOpen(v => !v);
+        }}
+        title="本棚をAIで分析する"
+      >
+        {isAnalyzing ? (
+          <span style={{ fontSize: "18px", fontWeight: 700 }}>…</span>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" />
+          </svg>
+        )}
+      </div>
+
+      {isAnalysisPanelOpen && (
+        <div style={s.analysisPanel}>
+          <div style={s.analysisPanelHeader}>
+            <span style={s.analysisPanelTitle}>本棚の分析</span>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <button
+                onClick={handleAnalyze}
+                disabled={isAnalyzing}
+                style={s.analysisRefreshBtn}
+                title="再分析する"
+              >
+                {isAnalyzing ? "分析中..." : "再分析"}
+              </button>
+              <button
+                onClick={() => setIsAnalysisPanelOpen(false)}
+                style={s.analysisCloseBtn}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+
+          {analysisError && <div style={s.analysisError}>{analysisError}</div>}
+
+          {!analysisError && proposals.length === 0 && !isAnalyzing && (
+            <div style={s.analysisEmpty}>「再分析」を押して提案を取得してください</div>
+          )}
+
+          {!analysisError && proposals.map((p, i) => {
+            const isActive = i === activeProposalIdx;
+            const isPinned = i === pinnedProposalIdx;
+            return (
+              <div
+                key={i}
+                data-testid="proposal-card"
+                style={{
+                  ...s.proposalCard,
+                  ...(isActive ? s.proposalCardActive : {}),
+                  ...(isPinned ? s.proposalCardPinned : {}),
+                }}
+                onMouseEnter={() => setHoverProposalIdx(i)}
+                onMouseLeave={() => setHoverProposalIdx(null)}
+                onClick={() => handleProposalClick(i)}
+              >
+                <div style={s.proposalTitle}>{p.title}</div>
+                <div style={s.proposalDesc}>{p.description}</div>
+                {p.related_isbns?.length > 0 && (
+                  <div style={s.proposalBadge}>{p.related_isbns.length}冊と連動</div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
       {selectedIsbns.length > 0 && !isModalOpen && (
         <div style={s.selectionBar}>
           <span style={s.selectionCount}>{selectedIsbns.length}冊選択中</span>
@@ -976,6 +1108,71 @@ const s = {
     cursor: "pointer",
     boxShadow: "0 4px 16px rgba(201,168,76,0.45)",
     zIndex: 1000,
+  },
+  analyzeFab: {
+    position: "fixed", bottom: "96px", right: "30px",
+    width: "48px", height: "48px", borderRadius: "50%",
+    backgroundColor: "#ff9d3d", color: "#fff",
+    display: "flex", justifyContent: "center", alignItems: "center",
+    cursor: "pointer",
+    boxShadow: "0 4px 16px rgba(255,157,61,0.45)",
+    zIndex: 1000,
+  },
+  analysisPanel: {
+    position: "fixed", top: "70px", right: "0", bottom: "0",
+    width: "320px", maxWidth: "90vw",
+    backgroundColor: "#fdfcf8", borderLeft: "1px solid #ede8da",
+    boxShadow: "-8px 0 32px rgba(0,0,0,0.12)",
+    padding: "18px", overflowY: "auto",
+    display: "flex", flexDirection: "column", gap: "10px",
+    zIndex: 1400,
+  },
+  analysisPanelHeader: {
+    display: "flex", justifyContent: "space-between", alignItems: "center",
+    marginBottom: "6px",
+  },
+  analysisPanelTitle: {
+    fontSize: "15px", fontWeight: "700", color: "#2a1f0e", fontFamily: "serif",
+  },
+  analysisRefreshBtn: {
+    padding: "4px 10px", fontSize: "11px", fontWeight: "600",
+    color: "#c9a84c", background: "transparent", border: "1px solid #c9a84c",
+    borderRadius: "10px", cursor: "pointer",
+  },
+  analysisCloseBtn: {
+    width: "22px", height: "22px", borderRadius: "50%",
+    border: "none", background: "#ede8da", color: "#4a3728",
+    cursor: "pointer", fontSize: "12px", lineHeight: 1,
+  },
+  analysisError: {
+    fontSize: "12px", color: "#c9506a", padding: "10px",
+    backgroundColor: "#fff0f2", borderRadius: "8px",
+  },
+  analysisEmpty: {
+    fontSize: "12px", color: "#bbb", textAlign: "center", padding: "20px 10px",
+  },
+  proposalCard: {
+    padding: "12px", borderRadius: "10px",
+    backgroundColor: "#fff",
+    borderStyle: "solid", borderWidth: "1px", borderColor: "#ede8da",
+    cursor: "pointer", transition: "background 0.15s, border-color 0.15s",
+  },
+  proposalCardActive: {
+    backgroundColor: "#fff8ec", borderColor: "#ff9d3d",
+  },
+  proposalCardPinned: {
+    boxShadow: "0 0 0 2px rgba(255,157,61,0.4)",
+  },
+  proposalTitle: {
+    fontSize: "13px", fontWeight: "700", color: "#2a1f0e", marginBottom: "4px",
+  },
+  proposalDesc: {
+    fontSize: "12px", color: "#6b5c47", lineHeight: 1.5,
+  },
+  proposalBadge: {
+    marginTop: "8px", display: "inline-block",
+    fontSize: "10px", fontWeight: "700", color: "#ff9d3d",
+    border: "1px solid #ff9d3d", borderRadius: "8px", padding: "2px 8px",
   },
   svg: {
     width: "100%",

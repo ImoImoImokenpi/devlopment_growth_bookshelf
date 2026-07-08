@@ -4,9 +4,14 @@ registered_books の description が NULL の本を OpenBD で一括補完する
   python backend/scripts/backfill_descriptions.py
 """
 import asyncio
+import os
 import sqlite3
 import httpx
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).parent.parent / ".env")
+GOOGLE_BOOKS_API_KEY = os.environ.get("GOOGLE_BOOKS_API_KEY")
 
 DB_PATH  = Path(__file__).parent.parent / "bookshelf.db"
 OPENBD          = "https://api.openbd.jp/v1/get"
@@ -33,7 +38,10 @@ async def fetch_openbd_batch(client: httpx.AsyncClient, isbns: list) -> dict:
 
 
 async def fetch_google_desc(client: httpx.AsyncClient, isbn: str) -> str | None:
-    r = await client.get(GOOGLE_BOOKS, params={"q": f"isbn:{isbn}"}, timeout=10)
+    params = {"q": f"isbn:{isbn}"}
+    if GOOGLE_BOOKS_API_KEY:
+        params["key"] = GOOGLE_BOOKS_API_KEY
+    r = await client.get(GOOGLE_BOOKS, params=params, timeout=10)
     if r.status_code == 429:
         print(f"  [Google] rate limited (429), stopping Google Books fetch")
         raise RuntimeError("rate_limited")

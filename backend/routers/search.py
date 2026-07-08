@@ -1,9 +1,11 @@
+import os
 import re
 import time
 import asyncio
 import traceback
 import httpx
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 from fastapi import APIRouter, Query, HTTPException, Request, FastAPI
 from lxml import etree
 from typing import List, Optional
@@ -13,6 +15,9 @@ import logging
 import logging.handlers
 import sys
 from pathlib import Path
+
+load_dotenv(Path(__file__).parent.parent / ".env")
+GOOGLE_BOOKS_API_KEY = os.environ.get("GOOGLE_BOOKS_API_KEY")
 
 LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
@@ -301,7 +306,6 @@ class NDLSearchService:
             ndc            = self._extract_ndc_from_bib(bib, bib_ns)
             pages, height_mm = self._extract_extent(extent)
             genre          = self.GENRE_MAP.get(ndc[0], "その他") if ndc else None
-            abstract       = bib.xpath("dcterms:abstract/text()",            namespaces=bib_ns)
 
             books.append({
                 "isbn":           isbn_normalized,
@@ -316,7 +320,7 @@ class NDLSearchService:
                 "pages":          pages,
                 "subjects":       subjects,
                 "cover":          None,
-                "description":    abstract[0] if abstract else None,
+                "description":    None,
             })
 
         return books, total_records, len(record_nodes)
@@ -335,11 +339,18 @@ class NDLSearchService:
         except Exception:
             return None
 
+    @staticmethod
+    def _google_books_params(isbn: str) -> dict:
+        params = {"q": f"isbn:{isbn}"}
+        if GOOGLE_BOOKS_API_KEY:
+            params["key"] = GOOGLE_BOOKS_API_KEY
+        return params
+
     async def fetch_google_cover(self, isbn: str) -> Optional[str]:
         try:
             r = await HttpClientManager.get().get(
                 self.GOOGLE_BOOKS,
-                params={"q": f"isbn:{isbn}"},
+                params=self._google_books_params(isbn),
             )
             r.raise_for_status()
 
@@ -396,7 +407,7 @@ class NDLSearchService:
         try:
             r = await HttpClientManager.get().get(
                 self.GOOGLE_BOOKS,
-                params={"q": f"isbn:{isbn}"},
+                params=self._google_books_params(isbn),
             )
             r.raise_for_status()
             items = r.json().get("items")
@@ -568,21 +579,20 @@ async def search_books(
 
     total_pages = math.ceil(total_records / per_page) if total_records else 1
 
-    # 説明文が取れなかった本をOpenBD → Google Books の順で補完
-    no_desc_isbns = [b["isbn"] for b in books_with_cover if not b.get("description")]
-    if no_desc_isbns:
-        openbd_descs = await _ndl_service.fetch_openbd_descriptions(no_desc_isbns)
+    # 概要はISBNを使ってOpenBDから取得。OpenBDにデータがない本はGoogle Booksで補完
+    isbns = [b["isbn"] for b in books_with_cover]
+    if isbns:
+        openbd_descs = await _ndl_service.fetch_openbd_descriptions(isbns)
         for book in books_with_cover:
-            if not book.get("description"):
-                book["description"] = openbd_descs.get(book["isbn"])
+            book["description"] = openbd_descs.get(book["isbn"])
 
-    still_no_desc = [b for b in books_with_cover if not b.get("description")]
-    if still_no_desc:
+    no_desc = [b for b in books_with_cover if not b.get("description")]
+    if no_desc:
         google_descs = await asyncio.gather(
-            *[_ndl_service.fetch_google_description(b["isbn"]) for b in still_no_desc],
+            *[_ndl_service.fetch_google_description(b["isbn"]) for b in no_desc],
             return_exceptions=True,
         )
-        for book, desc in zip(still_no_desc, google_descs):
+        for book, desc in zip(no_desc, google_descs):
             if isinstance(desc, str) and desc:
                 book["description"] = desc
 

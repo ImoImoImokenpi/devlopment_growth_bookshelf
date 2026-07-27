@@ -500,9 +500,10 @@ class BookshelfNeo4j:
                 dict(r) for r in session.run(
                     """
                     MATCH (c:Concept)<-[:CONCEPT]-(b:Book)
-                    WITH c, collect(DISTINCT b.title) AS titles, count(DISTINCT b) AS book_count
+                    WITH c, collect(DISTINCT b.title) AS titles, collect(DISTINCT b.isbn) AS isbns,
+                         count(DISTINCT b) AS book_count
                     WHERE book_count >= 2
-                    RETURN c.text AS concept, titles, book_count
+                    RETURN c.text AS concept, titles, isbns, book_count
                     ORDER BY book_count DESC
                     LIMIT 10
                     """
@@ -513,9 +514,10 @@ class BookshelfNeo4j:
                 dict(r) for r in session.run(
                     """
                     MATCH (b:Book)-[:WRITTEN_BY]->(a:Author)
-                    WITH a, count(DISTINCT b) AS book_count, collect(DISTINCT b.title) AS titles
+                    WITH a, count(DISTINCT b) AS book_count,
+                         collect(DISTINCT b.title) AS titles, collect(DISTINCT b.isbn) AS isbns
                     WHERE book_count >= 2
-                    RETURN a.name AS author, book_count, titles
+                    RETURN a.name AS author, book_count, titles, isbns
                     ORDER BY book_count DESC
                     LIMIT 10
                     """
@@ -537,10 +539,10 @@ class BookshelfNeo4j:
             book_meanings = [
                 dict(r) for r in session.run(
                     """
-                    MATCH (b:Book)-[:HAS_MEANING]->(m:Meaning)
-                    RETURN b.title AS title, m.text AS meaning
-                    ORDER BY m.createdAt DESC
-                    LIMIT 20
+                    MATCH (b:Book)-[:CONCEPT]->(c:Concept)
+                    RETURN b.isbn AS isbn, b.title AS title, c.text AS meaning
+                    ORDER BY c.createdAt DESC
+                    LIMIT 12
                     """
                 )
             ]
@@ -572,6 +574,297 @@ class BookshelfNeo4j:
             }
 
 
+    # ============================================================
+    # Book-Book 関係の抽出（NetworkXによる構造分析用）
+    # ============================================================
+
+    def get_book_edges(self, shelf_isbns: list[str] | None = None) -> list[dict]:
+        """
+        意味づけ(Concept)・著者・出版社・NDC分類・本棚での隣接、という観点で
+        つながっている本のペアを収集する。NetworkXでグラフを組み立てる材料。
+        shelf_isbns を渡すと、両端がその本棚に含まれるペアだけに絞り込む。
+        """
+        queries = {
+            "concept": """
+                MATCH (a:Book)-[:CONCEPT]->(:Concept)<-[:CONCEPT]-(b:Book)
+                WHERE a.isbn < b.isbn
+                  AND ($shelf_isbns IS NULL OR (a.isbn IN $shelf_isbns AND b.isbn IN $shelf_isbns))
+                RETURN DISTINCT a.isbn AS source, b.isbn AS target
+            """,
+            "author": """
+                MATCH (a:Book)-[:WRITTEN_BY]->(:Author)<-[:WRITTEN_BY]-(b:Book)
+                WHERE a.isbn < b.isbn
+                  AND ($shelf_isbns IS NULL OR (a.isbn IN $shelf_isbns AND b.isbn IN $shelf_isbns))
+                RETURN DISTINCT a.isbn AS source, b.isbn AS target
+            """,
+            "publisher": """
+                MATCH (a:Book)-[:PUBLISHED_BY]->(:Publisher)<-[:PUBLISHED_BY]-(b:Book)
+                WHERE a.isbn < b.isbn
+                  AND ($shelf_isbns IS NULL OR (a.isbn IN $shelf_isbns AND b.isbn IN $shelf_isbns))
+                RETURN DISTINCT a.isbn AS source, b.isbn AS target
+            """,
+            "ndc": """
+                MATCH (a:Book)-[:CLASSIFIED_AS]->(:NDC)<-[:CLASSIFIED_AS]-(b:Book)
+                WHERE a.isbn < b.isbn
+                  AND ($shelf_isbns IS NULL OR (a.isbn IN $shelf_isbns AND b.isbn IN $shelf_isbns))
+                RETURN DISTINCT a.isbn AS source, b.isbn AS target
+            """,
+            "shelf": """
+                MATCH (a:Book)-[:SHELF_NEXT]-(b:Book)
+                WHERE a.isbn < b.isbn
+                  AND ($shelf_isbns IS NULL OR (a.isbn IN $shelf_isbns AND b.isbn IN $shelf_isbns))
+                RETURN DISTINCT a.isbn AS source, b.isbn AS target
+            """,
+        }
+
+        edges: list[dict] = []
+        with get_session() as session:
+            for edge_type, query in queries.items():
+                for r in session.run(query, shelf_isbns=shelf_isbns):
+                    edges.append({"source": r["source"], "target": r["target"], "type": edge_type})
+        return edges
+
+    # ============================================================
+    # 複数冊(本棚のAI分析の提案など)を対象にした部分グラフの抽出
+    # ============================================================
+
+    def get_subgraph_for_isbns(self, isbns: list[str]) -> dict:
+        """
+        与えられた本(複数冊)同士の、意味づけ(Concept)・著者・出版社・NDC分類・
+        本棚での隣接、というつながりだけを抜き出した部分グラフを返す。
+        AI分析の提案に対応する本たちの「知識グラフ上でのつながり」を可視化する用途。
+        """
+        if not isbns:
+            return {"nodes": [], "links": []}
+
+        with get_session() as session:
+            book_rows = session.run(
+                """
+                MATCH (b:Book) WHERE b.isbn IN $isbns
+                RETURN b.isbn AS isbn, b.title AS title, b.cover AS cover,
+                       b.spine_image AS spine_image, b.authors AS authors
+                """,
+                isbns=isbns,
+            )
+            nodes: dict[str, dict] = {}
+            for r in book_rows:
+                nodes[f"book_{r['isbn']}"] = {"id": f"book_{r['isbn']}", "type": "Book", **dict(r)}
+
+            links: list[dict] = []
+
+            def _add_group_links(query: str, mid_prefix: str, mid_type: str, mid_label_key: str, link_type: str):
+                for r in session.run(query, isbns=isbns):
+                    mid_id = f"{mid_prefix}_{r['mid']}"
+                    nodes.setdefault(mid_id, {"id": mid_id, "type": mid_type, **{mid_label_key: r["mid_label"]}})
+                    links.append({"source": f"book_{r['a_isbn']}", "target": mid_id, "type": link_type})
+                    links.append({"source": f"book_{r['b_isbn']}", "target": mid_id, "type": link_type})
+
+            _add_group_links(
+                """
+                MATCH (a:Book)-[:CONCEPT]->(c:Concept)<-[:CONCEPT]-(b:Book)
+                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
+                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, id(c) AS mid, c.text AS mid_label
+                """,
+                "concept", "Concept", "text", "CONCEPT",
+            )
+            _add_group_links(
+                """
+                MATCH (a:Book)-[:WRITTEN_BY]->(x:Author)<-[:WRITTEN_BY]-(b:Book)
+                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
+                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, id(x) AS mid, x.name AS mid_label
+                """,
+                "author", "Author", "name", "WRITTEN_BY",
+            )
+            _add_group_links(
+                """
+                MATCH (a:Book)-[:PUBLISHED_BY]->(x:Publisher)<-[:PUBLISHED_BY]-(b:Book)
+                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
+                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, id(x) AS mid, x.name AS mid_label
+                """,
+                "publisher", "Publisher", "name", "PUBLISHED_BY",
+            )
+            _add_group_links(
+                """
+                MATCH (a:Book)-[:CLASSIFIED_AS]->(x:NDC)<-[:CLASSIFIED_AS]-(b:Book)
+                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
+                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, id(x) AS mid, x.code AS mid_label
+                """,
+                "ndc", "NDC", "code", "CLASSIFIED_AS",
+            )
+
+            for r in session.run(
+                """
+                MATCH (a:Book)-[:SHELF_NEXT]-(b:Book)
+                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
+                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn
+                """,
+                isbns=isbns,
+            ):
+                links.append({"source": f"book_{r['a_isbn']}", "target": f"book_{r['b_isbn']}", "type": "SHELF_NEXT"})
+
+            return {"nodes": list(nodes.values()), "links": links}
+
+    # ============================================================
+    # 本1冊を中心にした関連本の抽出（タップ時の詳細パネル用）
+    # ============================================================
+
+    def get_book_relations(self, isbn: str) -> dict | None:
+        """
+        1冊を中心に、意味づけ(Concept)・著者・出版社・NDC分類・本棚での隣接、
+        という観点でつながっている本を「理由」付きで取得する。
+        あわせて、そのつながりを描画するための小さな部分グラフ(nodes/links)も返す。
+        """
+        with get_session() as session:
+            book_row = session.run(
+                """
+                MATCH (b:Book {isbn: $isbn})
+                RETURN
+                    b.isbn AS isbn, b.title AS title, b.authors AS authors,
+                    b.publisher AS publisher, b.published_year AS published_year,
+                    b.cover AS cover, b.spine_image AS spine_image,
+                    coalesce(b.description, '') AS description
+                """,
+                isbn=isbn,
+            ).single()
+            if not book_row:
+                return None
+            book = dict(book_row)
+
+            reasons_by_isbn: dict[str, list[dict]] = defaultdict(list)
+            related_meta: dict[str, dict] = {}
+            sub_nodes: dict[str, dict] = {
+                f"book_{isbn}": {"id": f"book_{isbn}", "type": "Book", **book},
+            }
+            sub_links: list[dict] = []
+
+            def _register_related(row, reason, mid_id, mid_node, mid_link_type):
+                oid = row["isbn"]
+                if oid not in related_meta:
+                    related_meta[oid] = {
+                        "isbn":        oid,
+                        "title":       row["title"],
+                        "cover":       row["cover"],
+                        "spine_image": row["spine_image"],
+                        "authors":     row["authors"],
+                    }
+                reasons_by_isbn[oid].append(reason)
+                sub_nodes.setdefault(mid_id, mid_node)
+                sub_nodes.setdefault(f"book_{oid}", {"id": f"book_{oid}", "type": "Book", **related_meta[oid]})
+                sub_links.append({"source": f"book_{isbn}", "target": mid_id, "type": mid_link_type})
+                sub_links.append({"source": f"book_{oid}",  "target": mid_id, "type": mid_link_type})
+
+            # 同じ意味づけ (Concept) ── 「この本は同じ意味づけをしています」
+            for r in session.run(
+                """
+                MATCH (b:Book {isbn: $isbn})-[:CONCEPT]->(c:Concept)<-[:CONCEPT]-(o:Book)
+                WHERE o.isbn <> $isbn
+                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
+                       o.spine_image AS spine_image, o.authors AS authors,
+                       c.text AS concept_text, id(c) AS cid
+                """,
+                isbn=isbn,
+            ):
+                _register_related(
+                    r,
+                    {"type": "concept", "label": "同じ意味づけ", "detail": r["concept_text"]},
+                    f"concept_{r['cid']}",
+                    {"id": f"concept_{r['cid']}", "type": "Concept", "text": r["concept_text"]},
+                    "CONCEPT",
+                )
+
+            # 同じ著者
+            for r in session.run(
+                """
+                MATCH (b:Book {isbn: $isbn})-[:WRITTEN_BY]->(a:Author)<-[:WRITTEN_BY]-(o:Book)
+                WHERE o.isbn <> $isbn
+                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
+                       o.spine_image AS spine_image, o.authors AS authors,
+                       a.name AS author_name, id(a) AS aid
+                """,
+                isbn=isbn,
+            ):
+                _register_related(
+                    r,
+                    {"type": "author", "label": "同じ著者", "detail": r["author_name"]},
+                    f"author_{r['aid']}",
+                    {"id": f"author_{r['aid']}", "type": "Author", "name": r["author_name"]},
+                    "WRITTEN_BY",
+                )
+
+            # 同じ出版社
+            for r in session.run(
+                """
+                MATCH (b:Book {isbn: $isbn})-[:PUBLISHED_BY]->(p:Publisher)<-[:PUBLISHED_BY]-(o:Book)
+                WHERE o.isbn <> $isbn
+                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
+                       o.spine_image AS spine_image, o.authors AS authors,
+                       p.name AS publisher_name, id(p) AS pid
+                """,
+                isbn=isbn,
+            ):
+                _register_related(
+                    r,
+                    {"type": "publisher", "label": "同じ出版社", "detail": r["publisher_name"]},
+                    f"publisher_{r['pid']}",
+                    {"id": f"publisher_{r['pid']}", "type": "Publisher", "name": r["publisher_name"]},
+                    "PUBLISHED_BY",
+                )
+
+            # 同じNDC分類（最も細かい分類コードが一致）
+            for r in session.run(
+                """
+                MATCH (b:Book {isbn: $isbn})-[:CLASSIFIED_AS]->(n:NDC)<-[:CLASSIFIED_AS]-(o:Book)
+                WHERE o.isbn <> $isbn
+                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
+                       o.spine_image AS spine_image, o.authors AS authors,
+                       n.code AS ndc_code, id(n) AS nid
+                """,
+                isbn=isbn,
+            ):
+                _register_related(
+                    r,
+                    {"type": "ndc", "label": "同じNDC分類", "detail": r["ndc_code"]},
+                    f"ndc_{r['nid']}",
+                    {"id": f"ndc_{r['nid']}", "type": "NDC", "code": r["ndc_code"]},
+                    "CLASSIFIED_AS",
+                )
+
+            # 本棚で隣接
+            for r in session.run(
+                """
+                MATCH (b:Book {isbn: $isbn})-[:SHELF_NEXT]-(o:Book)
+                WHERE o.isbn <> $isbn
+                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
+                       o.spine_image AS spine_image, o.authors AS authors
+                """,
+                isbn=isbn,
+            ):
+                oid = r["isbn"]
+                if oid not in related_meta:
+                    related_meta[oid] = {
+                        "isbn": oid, "title": r["title"], "cover": r["cover"],
+                        "spine_image": r["spine_image"], "authors": r["authors"],
+                    }
+                reasons_by_isbn[oid].append({"type": "shelf", "label": "本棚で隣接", "detail": None})
+                sub_nodes.setdefault(f"book_{oid}", {"id": f"book_{oid}", "type": "Book", **related_meta[oid]})
+                sub_links.append({"source": f"book_{isbn}", "target": f"book_{oid}", "type": "SHELF_NEXT"})
+
+            related = [
+                {**meta, "reasons": reasons_by_isbn[oid]}
+                for oid, meta in related_meta.items()
+            ]
+            related.sort(key=lambda r: -len(r["reasons"]))
+
+            return {
+                "book": book,
+                "related": related[:12],
+                "subgraph": {
+                    "nodes": list(sub_nodes.values()),
+                    "links": sub_links,
+                },
+            }
+
+
 # ============================================================
 # モジュールレベル互換（既存の呼び出し元を変更なしで動作させる）
 # ============================================================
@@ -586,3 +879,6 @@ query_high_memory_books    = _neo4j.query_high_memory_books
 query_placement_history    = _neo4j.query_placement_history
 query_knowledge_growth     = _neo4j.query_knowledge_growth
 get_graph_overview         = _neo4j.get_graph_overview
+get_book_relations         = _neo4j.get_book_relations
+get_book_edges             = _neo4j.get_book_edges
+get_subgraph_for_isbns     = _neo4j.get_subgraph_for_isbns

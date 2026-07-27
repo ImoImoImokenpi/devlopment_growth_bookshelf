@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useContext, useMemo, useState, useCallback } from "react";
 import * as d3 from "d3";
+import ForceGraph2D from "react-force-graph-2d";
 import { MyBookshelfContext } from "../context/MyBookshelfContext";
+import BookDetailPanel from "./BookDetailPanel";
+import { NODE_CFG, LINK_CFG, nodeDisplayLabel } from "../utils/graphConfig";
 
 // ─────────────────────────────────────────────
 // 定数
@@ -14,6 +17,8 @@ const DARK_WOOD_URL   = "/sources/dark_wood_texture.jpg";
 const SYNC_DELAY_MS   = 10_000;
 const MAX_BOOK_HEIGHT = 250;
 const SHELF_MAX_WIDTH = 800;
+const LONG_PRESS_MS      = 400; // これ以上押し続けたら「移動」ジェスチャーとみなす
+const TAP_MOVE_THRESHOLD = 6;   // 長押しに至らなかった場合、この移動量未満なら「タップ」扱い
 
 const SPINE_PALETTES = [
   { bg: "#1a1a2e", text: "#e8d5a3", accent: "#c9a84c" },
@@ -113,6 +118,7 @@ function SpineShelfView() {
   const overTrashRef = useRef(false);
   const removeBookRef = useRef(null);
   const stackOwnershipRef = useRef({}); // isbn → "left" | "right"、ドラッグ開始時の所属を記録
+  const longPressRef = useRef({ armed: false, inited: false, timer: null, startX: 0, startY: 0 }); // タップ/長押し移動の判定用
 
   const shelves = myBookshelf?.shelves || [];
   const shelfCount = myBookshelf?.total_shelves || 1;
@@ -122,13 +128,15 @@ function SpineShelfView() {
   const [selectedIsbns, setSelectedIsbns] = useState([]);
   const [isToolbarOpen, setIsToolbarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
-  const [chatInput, setChatInput] = useState("");
-  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [meaningInput, setMeaningInput] = useState("");
   const [isSavingMeaning, setIsSavingMeaning] = useState(false);
   const [rubberBand, setRubberBand] = useState(null);
   const [deletedIsbns, setDeletedIsbns] = useState(new Set());
-  const chatMessagesRef = useRef(null);
+  const [detailIsbn, setDetailIsbn] = useState(null);
+  const [detailRelatedIsbns, setDetailRelatedIsbns] = useState([]);
+  const handleDetailRelatedChange = useCallback((isbns) => {
+    setDetailRelatedIsbns(isbns);
+  }, []);
 
   // ── AI分析 ──
   const [isAnalysisPanelOpen, setIsAnalysisPanelOpen] = useState(false);
@@ -143,6 +151,59 @@ function SpineShelfView() {
     if (activeProposalIdx == null) return [];
     return proposals[activeProposalIdx]?.related_isbns || [];
   }, [activeProposalIdx, proposals]);
+
+  // ── 提案に対応する知識グラフ（部分グラフ）──
+  const [subgraphData, setSubgraphData] = useState({ nodes: [], links: [] });
+  const [isSubgraphLoading, setIsSubgraphLoading] = useState(false);
+
+  useEffect(() => {
+    if (highlightIsbns.length < 2) {
+      setSubgraphData({ nodes: [], links: [] });
+      return;
+    }
+    let cancelled = false;
+    setIsSubgraphLoading(true);
+    fetch("http://localhost:8000/knowledge_graph/subgraph", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isbns: highlightIsbns }),
+    })
+      .then(res => res.json())
+      .then(json => { if (!cancelled) setSubgraphData(json); })
+      .catch(err => console.error("Subgraph fetch failed", err))
+      .finally(() => { if (!cancelled) setIsSubgraphLoading(false); });
+    return () => { cancelled = true; };
+  }, [highlightIsbns]);
+
+  const subgraphNodeCanvasObject = useCallback((node, ctx, scale) => {
+    const cfg = NODE_CFG[node.type] ?? { color: "#aaa", r: 5 };
+    const r = cfg.r ?? 5;
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+    ctx.fillStyle = cfg.color;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.4)";
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    if (scale > 1.4) {
+      const label = nodeDisplayLabel(node);
+      if (label) {
+        const fs = Math.max(5, 9 / scale);
+        ctx.font = `${fs}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.fillStyle = "rgba(255,255,255,0.85)";
+        const t = label.length > 10 ? label.slice(0, 10) + "…" : label;
+        ctx.fillText(t, node.x, node.y + r + 2);
+      }
+    }
+  }, []);
+
+  const subgraphLinkColor = useCallback(link => {
+    const base = LINK_CFG[link.type]?.color ?? "#888888";
+    return base + "aa";
+  }, []);
 
   const unitShelfHeight = TOP_GAP + MAX_BOOK_HEIGHT + SHELF_PAD;
 
@@ -216,41 +277,19 @@ function SpineShelfView() {
     } catch (err) { console.error("Sync failed", err); }
   }, []);
 
-  const handleSendChatMessage = async () => {
-    const text = chatInput.trim();
-    if (!text || isChatLoading) return;
-
-    const historyBeforeSend = chatHistory;
-    setChatHistory(h => [...h, { role: "user", text }]);
-    setChatInput("");
-    setIsChatLoading(true);
-
-    try {
-      const res = await fetch("http://localhost:8000/bookshelf/meaning-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isbns: selectedIsbns, history: historyBeforeSend, message: text }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setChatHistory(h => [...h, { role: "ai", text: data.reply }]);
-      }
-    } catch (err) { console.error("Meaning chat failed", err); }
-    finally { setIsChatLoading(false); }
-  };
-
-  const handleSaveMeaningDialogue = async () => {
-    if (chatHistory.length === 0) return alert("対話を入力してください");
+  const handleSaveMeaning = async () => {
+    const text = meaningInput.trim();
+    if (!text) return alert("意味を入力してください");
     setIsSavingMeaning(true);
     try {
-      const res = await fetch("http://localhost:8000/bookshelf/save-meaning-dialogue", {
+      const res = await fetch("http://localhost:8000/bookshelf/save-concept", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isbns: selectedIsbns, history: chatHistory }),
+        body: JSON.stringify({ isbns: selectedIsbns, meaning: text }),
       });
       if (res.ok) {
         setIsModalOpen(false);
-        setChatHistory([]);
+        setMeaningInput("");
         setSelectedIsbns([]);
       } else {
         const data = await res.json().catch(() => null);
@@ -265,8 +304,7 @@ function SpineShelfView() {
 
   const handleCloseMeaningModal = () => {
     setIsModalOpen(false);
-    setChatHistory([]);
-    setChatInput("");
+    setMeaningInput("");
   };
 
   const handleAnalyze = useCallback(async () => {
@@ -299,12 +337,6 @@ function SpineShelfView() {
       return next;
     });
   }, [proposals]);
-
-  useEffect(() => {
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
-    }
-  }, [chatHistory, isChatLoading]);
 
   // ─────────────────────────────────────────────
   // D3 Rendering
@@ -351,31 +383,47 @@ function SpineShelfView() {
       .attr("fill", "rgba(100,180,255,0.8)")
       .style("visibility", "hidden");
 
-    // ── Drag Logic ──
+    // ── Drag Logic（長押しで「移動」を開始する。それ未満はタップ扱い）──
+    const beginMove = (el, d) => {
+      d3.select(el).raise().attr("cursor", "grabbing");
+      guide
+        .attr("fill", "rgba(100,180,255,0.8)")
+        .style("visibility", "visible");
+
+      // ── 案C: gapベースで左右所属を記録 ──
+      const shelfBooks = booksWithPosition.filter(b => b.gridRow === d.gridRow);
+      const { left, right } = detectStacks(shelfBooks, FRAME, WIDTH - FRAME);
+      stackOwnershipRef.current = {
+        ...Object.fromEntries(left.map(b  => [b.isbn, "left"])),
+        ...Object.fromEntries(right.map(b => [b.isbn, "right"])),
+      };
+
+      if (trashRef.current) {
+        trashRef.current.style.opacity = "1";
+        trashRef.current.style.transform = "translateX(-50%) scale(1)";
+      }
+    };
+
     const dragHandler = d3.drag()
       .on("start", function(e, d) {
         if (isModalOpen) return;
-        d3.select(this).raise().attr("cursor", "grabbing");
-        guide
-          .attr("fill", "rgba(100,180,255,0.8)")
-          .style("visibility", "visible");
-
-        // ── 案C: gapベースで左右所属を記録 ──
-        const shelfBooks = booksWithPosition.filter(b => b.gridRow === d.gridRow);
-        const { left, right } = detectStacks(shelfBooks, FRAME, WIDTH - FRAME);
-        stackOwnershipRef.current = {
-          ...Object.fromEntries(left.map(b  => [b.isbn, "left"])),
-          ...Object.fromEntries(right.map(b => [b.isbn, "right"])),
-        };
-
-        if (trashRef.current) {
-          trashRef.current.style.opacity = "1";
-          trashRef.current.style.transform = "translateX(-50%) scale(1)";
-        }
+        const state = longPressRef.current;
+        state.armed = false;
+        state.inited = false;
+        state.startX = e.x;
+        state.startY = e.y;
+        clearTimeout(state.timer);
+        state.timer = setTimeout(() => { state.armed = true; }, LONG_PRESS_MS);
       })
 
       .on("drag", function(e, d) {
         if (isModalOpen) return;
+        const state = longPressRef.current;
+        if (!state.armed) return; // 長押し閾値未満の間は本を動かさない（タップ／範囲選択と衝突させないため）
+        if (!state.inited) {
+          state.inited = true;
+          beginMove(this, d);
+        }
         isDraggingBookRef.current = true;
 
         // ── drag中スペース・スタック判定 ──
@@ -526,6 +574,23 @@ function SpineShelfView() {
       // drag "end"
       // ─────────────────────────────────────────────
       .on("end", function(e, d) {
+        const state = longPressRef.current;
+        clearTimeout(state.timer);
+        const wasInited = state.inited;
+        const dist = Math.hypot(e.x - state.startX, e.y - state.startY);
+        state.armed = false;
+        state.inited = false;
+
+        if (!wasInited) {
+          // ── 長押しに至らなかった＝タップ：詳細パネルを開く ──
+          isDraggingBookRef.current = false;
+          if (!isModalOpen && dist < TAP_MOVE_THRESHOLD) {
+            setIsAnalysisPanelOpen(false);
+            setDetailIsbn(d.isbn);
+          }
+          return;
+        }
+
         isDraggingBookRef.current = false;
         guide.style("visibility", "hidden");
         if (trashRef.current) {
@@ -671,18 +736,7 @@ function SpineShelfView() {
         update => update,
         exit => exit.remove()
       )
-      .call(dragHandler)
-      .on("click", function(e, d) {
-        e.stopPropagation();
-        setSelectedIsbns(prev => {
-          if (e.shiftKey) {
-            return prev.includes(d.isbn)
-              ? prev.filter(i => i !== d.isbn)
-              : [...prev, d.isbn];
-          }
-          return prev.length === 1 && prev[0] === d.isbn ? [] : [d.isbn];
-        });
-      });
+      .call(dragHandler);
 
     bookGroups.each(function(d) {
       const g = d3.select(this);
@@ -736,7 +790,32 @@ function SpineShelfView() {
         .style("filter", "drop-shadow(0 0 4px rgba(255,157,61,0.7))");
     });
 
-  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns]);
+    // ハイライト表示（タップ中の本＋知識グラフでつながっている本）
+    svg.selectAll(".spine-hl-detail-center").remove();
+    svg.selectAll(".spine-hl-detail-related").remove();
+    if (detailIsbn) {
+      const centerBook = booksWithPosition.find(x => x.isbn === detailIsbn);
+      if (centerBook) {
+        svg.append("rect").attr("class", "spine-hl-detail-center")
+          .attr("x", centerBook.x - 5).attr("y", centerBook.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(centerBook)) - 5)
+          .attr("width", resolveSpineWidth(centerBook) + 10).attr("height", resolveSpineHeight(centerBook) + 10)
+          .attr("fill", "none").attr("stroke", "#2dd4bf").attr("stroke-width", 3).attr("rx", 5)
+          .style("filter", "drop-shadow(0 0 6px rgba(45,212,191,0.8))");
+      }
+      detailRelatedIsbns.forEach(isbn => {
+        if (isbn === detailIsbn) return;
+        const b = booksWithPosition.find(x => x.isbn === isbn);
+        if (!b) return;
+        svg.append("rect").attr("class", "spine-hl-detail-related")
+          .attr("x", b.x - 3).attr("y", b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b)) - 3)
+          .attr("width", resolveSpineWidth(b) + 6).attr("height", resolveSpineHeight(b) + 6)
+          .attr("fill", "none").attr("stroke", "#2dd4bf").attr("stroke-width", 2)
+          .attr("stroke-dasharray", "5,3").attr("rx", 4)
+          .style("filter", "drop-shadow(0 0 3px rgba(45,212,191,0.6))");
+      });
+    }
+
+  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns, detailIsbn, detailRelatedIsbns]);
 
   // ── ラバーバンド選択 ──
   useEffect(() => {
@@ -758,6 +837,7 @@ function SpineShelfView() {
     const onMouseDown = (e) => {
       if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT") return;
       if (e.target.closest(".meaning-modal-overlay")) return;
+      if (e.target.closest(".book-detail-panel")) return;
       startClient = { x: e.clientX, y: e.clientY };
       startedOnBook = isOnBook(e.target);
       active = true;
@@ -889,23 +969,7 @@ function SpineShelfView() {
         </div>
       )}
 
-      <div
-        style={{ ...s.analyzeFab, opacity: isAnalyzing ? 0.6 : 1, cursor: isAnalyzing ? "default" : "pointer" }}
-        onClick={() => {
-          if (isAnalyzing) return;
-          if (proposals.length === 0) handleAnalyze();
-          else setIsAnalysisPanelOpen(v => !v);
-        }}
-        title="本棚をAIで分析する"
-      >
-        {isAnalyzing ? (
-          <span style={{ fontSize: "18px", fontWeight: 700 }}>…</span>
-        ) : (
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" />
-          </svg>
-        )}
-      </div>
+      {/* AI分析ボタンは非表示中（対話ボタン(AnalysisChatPanel)に統合したため） */}
 
       {isAnalysisPanelOpen && (
         <div style={s.analysisPanel}>
@@ -933,6 +997,38 @@ function SpineShelfView() {
 
           {!analysisError && proposals.length === 0 && !isAnalyzing && (
             <div style={s.analysisEmpty}>「再分析」を押して提案を取得してください</div>
+          )}
+
+          {!analysisError && proposals.length > 0 && (
+            <>
+              <div style={s.analysisGraphTitle}>関連する知識グラフ</div>
+              <div style={s.analysisGraphBox}>
+                {isSubgraphLoading ? (
+                  <div style={s.graphEmpty}>読み込み中...</div>
+                ) : subgraphData.nodes.length > 1 ? (
+                  <ForceGraph2D
+                    graphData={subgraphData}
+                    width={284}
+                    height={170}
+                    nodeId="id"
+                    nodeCanvasObject={subgraphNodeCanvasObject}
+                    nodeCanvasObjectMode={() => "replace"}
+                    linkColor={subgraphLinkColor}
+                    linkDirectionalArrowLength={0}
+                    linkWidth={1}
+                    backgroundColor="#0d1117"
+                    cooldownTicks={80}
+                    enableZoomPanInteraction={true}
+                  />
+                ) : (
+                  <div style={s.graphEmpty}>
+                    {activeProposalIdx == null
+                      ? "提案にカーソルを合わせると、関連する知識グラフを表示します"
+                      : "この提案の本同士に、知識グラフ上の直接的なつながりはまだありません"}
+                  </div>
+                )}
+              </div>
+            </>
           )}
 
           {!analysisError && proposals.map((p, i) => {
@@ -965,7 +1061,7 @@ function SpineShelfView() {
       {selectedIsbns.length > 0 && !isModalOpen && (
         <div style={s.selectionBar}>
           <span style={s.selectionCount}>{selectedIsbns.length}冊選択中</span>
-          <button style={s.btnPrimary} onClick={() => setIsModalOpen(true)}>意味付与</button>
+          <button style={s.btnPrimary} onClick={() => setIsModalOpen(true)}>意味付け</button>
           <button style={s.btnSecondary} onClick={() => setSelectedIsbns([])}>解除</button>
         </div>
       )}
@@ -1003,51 +1099,37 @@ function SpineShelfView() {
         </svg>
       </div>
 
+      {detailIsbn && (
+        <BookDetailPanel
+          isbn={detailIsbn}
+          onClose={() => setDetailIsbn(null)}
+          onSelectRelated={(isbn) => setDetailIsbn(isbn)}
+          onRelatedChange={handleDetailRelatedChange}
+        />
+      )}
+
       {isModalOpen && (
         <div style={s.overlay} className="meaning-modal-overlay">
-          <div style={s.chatModal}>
-            <h3 style={{ marginBottom: "6px", fontFamily: "serif", color: "#2a1f0e" }}>意味付与</h3>
+          <div style={s.modal}>
+            <h3 style={{ marginBottom: "6px", fontFamily: "serif", color: "#2a1f0e" }}>意味付け</h3>
             <p style={{ fontSize: "12px", color: "#999", marginBottom: "14px" }}>
-              {selectedIsbns.length}冊について、AIと対話しながら自分なりの意味を深めよう
+              選択した{selectedIsbns.length}冊について、自分なりの意味を書き留めよう
             </p>
 
-            <div ref={chatMessagesRef} style={s.chatMessages}>
-              {chatHistory.length === 0 && (
-                <div style={s.chatPlaceholder}>
-                  この本たちが自分にとってどんな意味を持つか、まず書いてみてください
-                </div>
-              )}
-              {chatHistory.map((m, i) => (
-                <div key={i} style={m.role === "user" ? s.chatBubbleUser : s.chatBubbleAi}>
-                  {m.text}
-                </div>
-              ))}
-              {isChatLoading && <div style={s.chatBubbleAi}>考え中...</div>}
-            </div>
-
-            <div style={s.chatInputRow}>
-              <input
-                autoFocus style={s.modalInput} value={chatInput}
-                onChange={e => setChatInput(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendChatMessage(); }
-                }}
-                placeholder="この本たちのテーマや意味は..."
-                disabled={isChatLoading}
-              />
-              <button
-                onClick={handleSendChatMessage} style={s.btnSecondary}
-                disabled={isChatLoading || !chatInput.trim()}
-              >
-                送る
-              </button>
-            </div>
+            <textarea
+              autoFocus
+              style={s.meaningTextarea}
+              value={meaningInput}
+              onChange={e => setMeaningInput(e.target.value)}
+              placeholder="この本のテーマや意味は..."
+              disabled={isSavingMeaning}
+            />
 
             <div style={{ display: "flex", gap: "10px", marginTop: "14px", justifyContent: "flex-end" }}>
               <button onClick={handleCloseMeaningModal} style={s.btnSecondary}>キャンセル</button>
               <button
-                onClick={handleSaveMeaningDialogue} style={s.btnPrimary}
-                disabled={isSavingMeaning || chatHistory.length === 0}
+                onClick={handleSaveMeaning} style={s.btnPrimary}
+                disabled={isSavingMeaning || !meaningInput.trim()}
               >
                 {isSavingMeaning ? "保存中..." : "保存"}
               </button>
@@ -1074,32 +1156,14 @@ const s = {
   btnSecondary: { padding: "8px 18px", backgroundColor: "transparent", color: "#c9a84c", border: "1px solid #c9a84c", borderRadius: "12px", cursor: "pointer" },
   btnDanger: { padding: "8px 18px", backgroundColor: "transparent", color: "#c9506a", border: "1px solid #c9506a", borderRadius: "8px", cursor: "pointer" },
   overlay: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 },
-  modal: { backgroundColor: "#fff", padding: "30px", borderRadius: "12px", width: "350px", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" },
+  modal: { backgroundColor: "#fff", padding: "26px", borderRadius: "12px", width: "420px", maxWidth: "90vw", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" },
   modalInput: { flex: 1, width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #ddd" },
-  chatModal: {
-    backgroundColor: "#fff", padding: "26px", borderRadius: "12px",
-    width: "420px", maxWidth: "90vw", boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
-    display: "flex", flexDirection: "column",
+  meaningTextarea: {
+    width: "100%", minHeight: "140px", padding: "10px",
+    borderRadius: "8px", border: "1px solid #ddd",
+    fontSize: "14px", lineHeight: 1.6, fontFamily: "inherit",
+    resize: "vertical", boxSizing: "border-box",
   },
-  chatMessages: {
-    display: "flex", flexDirection: "column", gap: "8px",
-    maxHeight: "320px", minHeight: "120px", overflowY: "auto",
-    padding: "10px", borderRadius: "10px", backgroundColor: "#faf8f2",
-    border: "1px solid #ede8da",
-  },
-  chatPlaceholder: { fontSize: "12px", color: "#bbb", textAlign: "center", padding: "20px 10px" },
-  chatBubbleUser: {
-    alignSelf: "flex-end", maxWidth: "80%", padding: "8px 12px",
-    borderRadius: "14px 14px 2px 14px", backgroundColor: "#c9a84c",
-    color: "#fff", fontSize: "13px", lineHeight: 1.5, whiteSpace: "pre-wrap",
-  },
-  chatBubbleAi: {
-    alignSelf: "flex-start", maxWidth: "80%", padding: "8px 12px",
-    borderRadius: "14px 14px 14px 2px", backgroundColor: "#fff",
-    color: "#2a1f0e", fontSize: "13px", lineHeight: 1.5, whiteSpace: "pre-wrap",
-    border: "1px solid #ede8da",
-  },
-  chatInputRow: { display: "flex", gap: "8px", marginTop: "12px" },
   fab: {
     position: "fixed", bottom: "30px", right: "30px",
     width: "48px", height: "48px", borderRadius: "50%",
@@ -1133,6 +1197,18 @@ const s = {
   },
   analysisPanelTitle: {
     fontSize: "15px", fontWeight: "700", color: "#2a1f0e", fontFamily: "serif",
+  },
+  analysisGraphTitle: {
+    fontSize: "11px", fontWeight: "700", color: "#c9a84c",
+    textTransform: "uppercase", letterSpacing: "0.06em",
+  },
+  analysisGraphBox: {
+    borderRadius: "10px", overflow: "hidden", border: "1px solid #ede8da",
+    width: "284px", height: "170px", background: "#0d1117",
+    display: "flex", alignItems: "center", justifyContent: "center",
+  },
+  graphEmpty: {
+    fontSize: "11px", color: "#666", textAlign: "center", padding: "0 16px",
   },
   analysisRefreshBtn: {
     padding: "4px 10px", fontSize: "11px", fontWeight: "600",

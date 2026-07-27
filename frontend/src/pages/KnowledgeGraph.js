@@ -1,37 +1,9 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import axios from "axios";
 import ForceGraph2D from "react-force-graph-2d";
+import { NODE_CFG, LINK_CFG, NDC_L1, ndcR, nodeDisplayLabel } from "../utils/graphConfig";
 
 const API = "http://localhost:8000";
-
-const NDC_L1 = {
-  "0": "総記", "1": "哲学", "2": "歴史・地理", "3": "社会科学",
-  "4": "自然科学", "5": "技術", "6": "産業", "7": "芸術", "8": "言語", "9": "文学",
-};
-
-const NODE_CFG = {
-  Book:      { color: "#5b9bd5", r: 7,    ja: "本" },
-  Author:    { color: "#c9a84c", r: 5,    ja: "著者" },
-  Publisher: { color: "#6aab8c", r: 5,    ja: "出版社" },
-  NDC:       { color: "#9d78c4", r: null, ja: "NDC" },
-  Concept:   { color: "#e07070", r: 6,    ja: "コンセプト" },
-  Meaning:   { color: "#e09040", r: 4,    ja: "意味" },
-};
-
-const LINK_CFG = {
-  WRITTEN_BY:    { color: "#c9a84c", ja: "著者" },
-  PUBLISHED_BY:  { color: "#6aab8c", ja: "出版社" },
-  CLASSIFIED_AS: { color: "#9d78c4", ja: "分類" },
-  BROADER:       { color: "#c8a0e8", ja: "上位NDC" },
-  SHELF_NEXT:    { color: "#5b9bd5", ja: "本棚で隣接" },
-  CONCEPT:       { color: "#e07070", ja: "コンセプト" },
-  HAS_MEANING:   { color: "#e09040", ja: "意味" },
-};
-
-const ndcR = (level) => ([13, 9, 7, 5][level - 1] ?? 5);
-
-const nodeDisplayLabel = (n) =>
-  n.title || n.name || n.code || n.text || "";
 
 export default function KnowledgeGraph() {
   const [rawData, setRawData]     = useState({ nodes: [], links: [] });

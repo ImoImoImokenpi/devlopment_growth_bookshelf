@@ -2,11 +2,13 @@ import { useState, useContext, useEffect } from "react";
 import { MyHandContext } from "../context/MyHandContext";
 import HandPanel from "./HandPanel";
 import { Link, useLocation } from "react-router-dom";
+import { getParticipantId, setParticipantId, PARTICIPANT_IDS } from "../utils/participant";
 
 export default function Navbar() {
     const { myHand } = useContext(MyHandContext);
     const [isOpen, setIsOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
+    const participantId = getParticipantId();
 
     const location = useLocation();
     const currentPath = location.pathname;
@@ -108,7 +110,42 @@ export default function Navbar() {
                         ))}
                 </div>
 
-                {/* 右上：手元（カート） */}
+                {/* 右上：被験者の切り替えと手元（カート） */}
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+
+                {/* 被験者ID。本棚・知識グラフはこのIDごとに完全に分かれている。 */}
+                <label
+                    title="被験者ID（本棚と知識グラフはこのIDごとに分かれています）"
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        fontSize: "12px",
+                        color: "#666",
+                    }}
+                >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <select
+                        value={participantId}
+                        onChange={(e) => setParticipantId(e.target.value)}
+                        style={{
+                            border: "1px solid rgba(0,0,0,0.12)",
+                            borderRadius: "999px",
+                            padding: "4px 8px",
+                            fontSize: "12px",
+                            background: "rgba(255,255,255,0.8)",
+                            color: "#333",
+                            cursor: "pointer",
+                        }}
+                    >
+                        {PARTICIPANT_IDS.map((id) => (
+                            <option key={id} value={id}>{id}</option>
+                        ))}
+                    </select>
+                </label>
+
                 <div
                     style={{
                         position: "relative",
@@ -151,6 +188,7 @@ export default function Navbar() {
                             {myHand.length}
                         </span>
                     )}
+                </div>
                 </div>
             </nav>
 

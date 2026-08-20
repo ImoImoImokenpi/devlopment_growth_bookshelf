@@ -4,7 +4,7 @@ import Navbar from "./Navbar";
 const Layout = ({ children }) => {
   return (
     <div
-      style={{ position: "relative", height: "10000vh", overflow: "visible" }}
+      style={{ position: "relative", minHeight: "100vh", overflow: "visible" }}
     >
       <Navbar />
       {/* メインコンテンツ */}

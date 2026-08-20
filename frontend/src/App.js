@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import Search from "./pages/Search";
 import KnowledgeGraph from "./pages/KnowledgeGraph";
 import Layout from "./components/Layout";
+import ShelfToGraphBridge from "./components/ShelfToGraphBridge"; // 本棚→知識グラフの遷移演出（試験導入・削除可）
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/KnowledgeGraph" element={<KnowledgeGraph />} />
             </Routes>
           </Layout>
+          <ShelfToGraphBridge />
         </Router>
       </MyBookshelfProvider>
     </MyHandProvider>

@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useContext, useMemo, useState, useCallback } from "react";
 import * as d3 from "d3";
-import ForceGraph2D from "react-force-graph-2d";
 import { MyBookshelfContext } from "../context/MyBookshelfContext";
-import BookDetailPanel from "./BookDetailPanel";
-import { NODE_CFG, LINK_CFG, nodeDisplayLabel } from "../utils/graphConfig";
+import { useShelfWorkspace } from "../context/ShelfWorkspaceContext";
 
 // ─────────────────────────────────────────────
 // 定数
@@ -19,6 +17,9 @@ const MAX_BOOK_HEIGHT = 250;
 const SHELF_MAX_WIDTH = 800;
 const LONG_PRESS_MS      = 400; // これ以上押し続けたら「移動」ジェスチャーとみなす
 const TAP_MOVE_THRESHOLD = 6;   // 長押しに至らなかった場合、この移動量未満なら「タップ」扱い
+const SHELF_WIDTH_MIN  = 30;
+const SHELF_WIDTH_MAX  = 50;
+const SHELF_WIDTH_STEP = 5;
 
 const SPINE_PALETTES = [
   { bg: "#1a1a2e", text: "#e8d5a3", accent: "#c9a84c" },
@@ -110,6 +111,16 @@ function detectStacks(books, frameLeft, frameRight) {
 function SpineShelfView() {
   const { myBookshelf, fetchBookshelf, addShelfRow, removeShelfRow, removeBook } = useContext(MyBookshelfContext);
 
+  // 選択・強調・発見の線は右ペインと共有する（設計書6.1の2ペイン構成）
+  const {
+    selectedIsbns, setSelectedIsbns,
+    focusIsbn, setFocusIsbn,
+    highlightIsbns, conceptHighlight,
+    discoveryLines,
+    refreshDiscoveries, refreshGrowth,
+    shelfWidthPct, setShelfWidthPct,
+  } = useShelfWorkspace();
+
   const svgRef = useRef();
   const syncTimerRef = useRef(null);
   const containerRef = useRef();
@@ -125,85 +136,22 @@ function SpineShelfView() {
   const books = useMemo(() => shelves.flatMap((s) => s.books), [shelves]);
 
   const [localLayout, setLocalLayout] = useState([]);
-  const [selectedIsbns, setSelectedIsbns] = useState([]);
   const [isToolbarOpen, setIsToolbarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [meaningInput, setMeaningInput] = useState("");
   const [isSavingMeaning, setIsSavingMeaning] = useState(false);
   const [rubberBand, setRubberBand] = useState(null);
   const [deletedIsbns, setDeletedIsbns] = useState(new Set());
-  const [detailIsbn, setDetailIsbn] = useState(null);
-  const [detailRelatedIsbns, setDetailRelatedIsbns] = useState([]);
-  const handleDetailRelatedChange = useCallback((isbns) => {
-    setDetailRelatedIsbns(isbns);
-  }, []);
 
-  // ── AI分析 ──
-  const [isAnalysisPanelOpen, setIsAnalysisPanelOpen] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisError, setAnalysisError] = useState(null);
-  const [proposals, setProposals] = useState([]);
-  const [hoverProposalIdx, setHoverProposalIdx] = useState(null);
-  const [pinnedProposalIdx, setPinnedProposalIdx] = useState(null);
+  // 本棚からの語りかけは右ペインの対話パネルが担当する（設計書6.1）。
+  // ここでは棚の描画と操作だけに集中する。
 
-  const activeProposalIdx = hoverProposalIdx ?? pinnedProposalIdx;
-  const highlightIsbns = useMemo(() => {
-    if (activeProposalIdx == null) return [];
-    return proposals[activeProposalIdx]?.related_isbns || [];
-  }, [activeProposalIdx, proposals]);
+  // 意味づけの色分け強調は、右ペインの「この本について」で意味づけに
+  // カーソルを合わせたときにだけ出す。棚の上をなぞるだけでは出さない。
 
-  // ── 提案に対応する知識グラフ（部分グラフ）──
-  const [subgraphData, setSubgraphData] = useState({ nodes: [], links: [] });
-  const [isSubgraphLoading, setIsSubgraphLoading] = useState(false);
-
-  useEffect(() => {
-    if (highlightIsbns.length < 2) {
-      setSubgraphData({ nodes: [], links: [] });
-      return;
-    }
-    let cancelled = false;
-    setIsSubgraphLoading(true);
-    fetch("http://localhost:8000/knowledge_graph/subgraph", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isbns: highlightIsbns }),
-    })
-      .then(res => res.json())
-      .then(json => { if (!cancelled) setSubgraphData(json); })
-      .catch(err => console.error("Subgraph fetch failed", err))
-      .finally(() => { if (!cancelled) setIsSubgraphLoading(false); });
-    return () => { cancelled = true; };
-  }, [highlightIsbns]);
-
-  const subgraphNodeCanvasObject = useCallback((node, ctx, scale) => {
-    const cfg = NODE_CFG[node.type] ?? { color: "#aaa", r: 5 };
-    const r = cfg.r ?? 5;
-    ctx.beginPath();
-    ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-    ctx.fillStyle = cfg.color;
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,0.4)";
-    ctx.lineWidth = 0.8;
-    ctx.stroke();
-
-    if (scale > 1.4) {
-      const label = nodeDisplayLabel(node);
-      if (label) {
-        const fs = Math.max(5, 9 / scale);
-        ctx.font = `${fs}px sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "top";
-        ctx.fillStyle = "rgba(255,255,255,0.85)";
-        const t = label.length > 10 ? label.slice(0, 10) + "…" : label;
-        ctx.fillText(t, node.x, node.y + r + 2);
-      }
-    }
-  }, []);
-
-  const subgraphLinkColor = useCallback(link => {
-    const base = LINK_CFG[link.type]?.color ?? "#888888";
-    return base + "aa";
-  }, []);
+  // AI分析の提案は「発見(Discovery)」として保存され、
+  // 本棚上の質問カードと右ペインの「まとめて確認」で扱う（設計書6.2）。
+  // 強調する本も右ペインから共有されるので、ここでは状態を持たない。
 
   const unitShelfHeight = TOP_GAP + MAX_BOOK_HEIGHT + SHELF_PAD;
 
@@ -291,6 +239,9 @@ function SpineShelfView() {
         setIsModalOpen(false);
         setMeaningInput("");
         setSelectedIsbns([]);
+        // 意味づけが増えると発見と育ち具合が変わるので、右ペインに反映させる
+        refreshDiscoveries();
+        refreshGrowth();
       } else {
         const data = await res.json().catch(() => null);
         alert(`保存に失敗しました: ${data?.detail || res.status}`);
@@ -306,37 +257,6 @@ function SpineShelfView() {
     setIsModalOpen(false);
     setMeaningInput("");
   };
-
-  const handleAnalyze = useCallback(async () => {
-    setIsAnalyzing(true);
-    setAnalysisError(null);
-    setHoverProposalIdx(null);
-    setPinnedProposalIdx(null);
-    try {
-      const res = await fetch("http://localhost:8000/knowledge_graph/analyze", { method: "POST" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.detail || "分析に失敗しました");
-      setProposals(data.proposals || []);
-      setIsAnalysisPanelOpen(true);
-    } catch (err) {
-      setAnalysisError(err.message || "分析に失敗しました");
-      setIsAnalysisPanelOpen(true);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }, []);
-
-  const handleProposalClick = useCallback((idx) => {
-    setPinnedProposalIdx(prev => {
-      const next = prev === idx ? null : idx;
-      if (next != null) {
-        const isbns = proposals[next]?.related_isbns || [];
-        const target = isbns.length && document.getElementById(`spine-${isbns[0]}`);
-        if (target) target.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-      }
-      return next;
-    });
-  }, [proposals]);
 
   // ─────────────────────────────────────────────
   // D3 Rendering
@@ -452,8 +372,9 @@ function SpineShelfView() {
           }
         }
 
-        const nx = snapX(e.x);
-        const ny = e.y;
+        // 棚の外（余白）までスライドしていかないよう、描画領域内に留める
+        const nx = Math.max(FRAME, Math.min(snapX(e.x), WIDTH - FRAME - movingWidth));
+        const ny = Math.max(0, Math.min(e.y, HEIGHT - MAX_BOOK_HEIGHT));
         const centerX = nx + movingWidth / 2;
 
         d3.select(this).attr("transform", `translate(${nx}, ${ny})`);
@@ -582,11 +503,13 @@ function SpineShelfView() {
         state.inited = false;
 
         if (!wasInited) {
-          // ── 長押しに至らなかった＝タップ：詳細パネルを開く ──
+          // ── 長押しに至らなかった＝タップ ── 詳細パネルを開く
           isDraggingBookRef.current = false;
           if (!isModalOpen && dist < TAP_MOVE_THRESHOLD) {
-            setIsAnalysisPanelOpen(false);
-            setDetailIsbn(d.isbn);
+            // 1冊タップ →「この本について」を右ペインに出す（設計書4章①）。
+            // 選択（青枠）は範囲選択＝複数冊への意味づけ専用にして、ここでは触らない。
+            // 両方付けると1冊に青とオレンジの枠が重なって読めなくなる。
+            setFocusIsbn(d.isbn);
           }
           return;
         }
@@ -766,56 +689,119 @@ function SpineShelfView() {
       }
     });
 
-    // ハイライト表示（選択中の本）
+    // ── 強調の描き分け ─────────────────────────────
+    //
+    // 同時に何色も光ると意味が読めなくなるので、常にどれか1つだけを出す。
+    // 優先順位は「今この瞬間ユーザーが指しているもの」が上。
+    //
+    //   1. 意味づけのホバー … 右ペインで意味づけにカーソルを合わせている“今”
+    //   2. 範囲選択        … 複数冊への意味づけを待っている状態
+    //   3. この本について  … 詳細を開いている1冊
+    //   4. 対話・質問カード … 背景で進んでいる文脈
+    //
+    // 強調対象以外の本は沈めて、対象だけが浮かび上がるようにする。
+    // 細い枠を足すだけでは、背表紙が密に並んだ棚では埋もれてしまう。
     svg.selectAll(".spine-hl").remove();
-    selectedIsbns.forEach(isbn => {
-      const b = booksWithPosition.find(x => x.isbn === isbn);
-      if (!b) return;
-      svg.append("rect").attr("class", "spine-hl")
-        .attr("x", b.x - 2).attr("y", b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b)) - 2)
-        .attr("width", resolveSpineWidth(b) + 4).attr("height", resolveSpineHeight(b) + 4)
-        .attr("fill", "none").attr("stroke", "#64b4ff").attr("stroke-width", 2).attr("rx", 4);
-    });
+    svg.selectAll(".spine-hl-focus").remove();
 
-    // ハイライト表示（AI分析の提案に関連する本）
-    svg.selectAll(".spine-hl-ai").remove();
-    highlightIsbns.forEach(isbn => {
-      const b = booksWithPosition.find(x => x.isbn === isbn);
-      if (!b) return;
-      svg.append("rect").attr("class", "spine-hl-ai")
-        .attr("x", b.x - 4).attr("y", b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b)) - 4)
-        .attr("width", resolveSpineWidth(b) + 8).attr("height", resolveSpineHeight(b) + 8)
-        .attr("fill", "none").attr("stroke", "#ff9d3d").attr("stroke-width", 3)
-        .attr("stroke-dasharray", "6,3").attr("rx", 5)
-        .style("filter", "drop-shadow(0 0 4px rgba(255,157,61,0.7))");
-    });
+    const hasSelection = selectedIsbns.length > 0;
 
-    // ハイライト表示（タップ中の本＋知識グラフでつながっている本）
-    svg.selectAll(".spine-hl-detail-center").remove();
-    svg.selectAll(".spine-hl-detail-related").remove();
-    if (detailIsbn) {
-      const centerBook = booksWithPosition.find(x => x.isbn === detailIsbn);
-      if (centerBook) {
-        svg.append("rect").attr("class", "spine-hl-detail-center")
-          .attr("x", centerBook.x - 5).attr("y", centerBook.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(centerBook)) - 5)
-          .attr("width", resolveSpineWidth(centerBook) + 10).attr("height", resolveSpineHeight(centerBook) + 10)
-          .attr("fill", "none").attr("stroke", "#2dd4bf").attr("stroke-width", 3).attr("rx", 5)
-          .style("filter", "drop-shadow(0 0 6px rgba(45,212,191,0.8))");
-      }
-      detailRelatedIsbns.forEach(isbn => {
-        if (isbn === detailIsbn) return;
-        const b = booksWithPosition.find(x => x.isbn === isbn);
-        if (!b) return;
-        svg.append("rect").attr("class", "spine-hl-detail-related")
-          .attr("x", b.x - 3).attr("y", b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b)) - 3)
-          .attr("width", resolveSpineWidth(b) + 6).attr("height", resolveSpineHeight(b) + 6)
-          .attr("fill", "none").attr("stroke", "#2dd4bf").attr("stroke-width", 2)
-          .attr("stroke-dasharray", "5,3").attr("rx", 4)
-          .style("filter", "drop-shadow(0 0 3px rgba(45,212,191,0.6))");
-      });
+    // [対象のISBN, 枠の色, 枠線, 沈めるかどうか] を先に決めてから1回だけ描く
+    let markIsbns = [];
+    let markColor = null;
+    let markDashed = false;
+    let markWidth = 3;
+    let dimOthers = false;
+
+    if (conceptHighlight) {
+      markIsbns = conceptHighlight.isbns || [];
+      markColor = conceptHighlight.color;
+      dimOthers = true;
+    } else if (hasSelection) {
+      markIsbns = selectedIsbns;
+      markColor = "#64b4ff";
+      dimOthers = true;
+    } else if (focusIsbn) {
+      // 詳細を開いている間は、その1冊に軽く印を付けるだけにする。
+      // ここで棚を沈めると、詳細を読んでいる間ずっと1冊しか見えなくなり、
+      // 棚を眺めながら考えるという本来の使い方ができなくなる。
+      markIsbns = [focusIsbn];
+      markColor = "#ff9d3d";
+      markWidth = 2;
+    } else if (highlightIsbns.length) {
+      markIsbns = highlightIsbns;
+      markColor = "#ff9d3d";
+      markDashed = true;
     }
 
-  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns, detailIsbn, detailRelatedIsbns]);
+    const markSet = new Set(markIsbns);
+    bookGroups.attr("opacity", d => (!dimOthers || markSet.has(d.isbn) ? 1 : 0.22));
+
+    markSet.forEach(isbn => {
+      const b = booksWithPosition.find(x => x.isbn === isbn);
+      if (!b) return;
+      const top = b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b));
+      svg.append("rect").attr("class", "spine-hl-focus")
+        .attr("x", b.x - 3).attr("y", top - 3)
+        .attr("width", resolveSpineWidth(b) + 6).attr("height", resolveSpineHeight(b) + 6)
+        .attr("fill", "none").attr("stroke", markColor).attr("stroke-width", markWidth).attr("rx", 5)
+        .attr("stroke-dasharray", markDashed ? "6,3" : null)
+        .style("filter", `drop-shadow(0 0 ${dimOthers ? 7 : 4}px ${markColor}${dimOthers ? "d9" : "99"})`)
+        .style("pointer-events", "none");
+    });
+
+    // 発見の可視化（設計書6.3）
+    //   未確定の発見 … 淡い光の線
+    //   確認された発見 … 実線
+    // 本の上を弧で結ぶ。直線だと他の背表紙を横切って何と何が繋がっているか読めない。
+    svg.selectAll(".discovery-arc").remove();
+    // 発見の線は、その発見に関係する本を選んでいるときだけ出す。
+    // 常時描いていると棚が線だらけになり、本そのものが読めなくなる。
+    const activeIsbns = new Set([
+      ...(focusIsbn ? [focusIsbn] : []),
+      ...selectedIsbns,
+      // 右ペインで発見カードを選ぶと、その発見が根拠にした本が highlightIsbns に入る。
+      // 発見と棚を同時に見られるよう、そのときも線を出す。
+      ...highlightIsbns,
+    ]);
+    const visibleLines = activeIsbns.size
+      ? discoveryLines.filter(l => activeIsbns.has(l.from) || activeIsbns.has(l.to))
+      : [];
+
+    visibleLines.forEach(line => {
+      const a = booksWithPosition.find(x => x.isbn === line.from);
+      const b = booksWithPosition.find(x => x.isbn === line.to);
+      if (!a || !b) return;
+
+      const ax = a.x + resolveSpineWidth(a) / 2;
+      const ay = a.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(a));
+      const bx = b.x + resolveSpineWidth(b) / 2;
+      const by = b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b));
+
+      // 弧の頂点。離れた本ほど高く持ち上げたいが、上限を決めないと
+      // 段の上枠を突き抜けて描画領域の外へ出てしまい、途中で切れた線に見える。
+      // その段の天井（本の上端の少し上）より上には出さない。
+      const shelfTop = Math.min(a.y, b.y) - TOP_GAP + 6;
+      const rise = Math.min(26, 10 + Math.abs(bx - ax) * 0.04);
+      const midY = Math.max(shelfTop, Math.min(ay, by) - rise);
+
+      svg.append("path").attr("class", "discovery-arc")
+        .attr("d", `M ${ax} ${ay} Q ${(ax + bx) / 2} ${midY} ${bx} ${by}`)
+        .attr("fill", "none")
+        .attr("stroke", line.confirmed ? "#c9a84c" : "#ffeab4")
+        .attr("stroke-width", line.confirmed ? 1.4 : 1.1)
+        .attr("stroke-linecap", "round")
+        .attr("stroke-dasharray", line.confirmed ? null : "1,7")
+        // 意味づけの色分けを見ている間だけは引っ込める（そちらに集中させるため）。
+        // 選択中は、その本の発見を見たくて選んでいるので出したままにする。
+        .attr("opacity", conceptHighlight ? 0.1 : (line.confirmed ? 0.7 : 0.55))
+        .style("filter", line.confirmed
+          ? "drop-shadow(0 0 2px rgba(201,168,76,0.5))"
+          : "drop-shadow(0 0 4px rgba(255,234,180,0.6))")
+        .style("pointer-events", "none");
+    });
+
+  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns, conceptHighlight, focusIsbn, discoveryLines]);
 
   // ── ラバーバンド選択 ──
   useEffect(() => {
@@ -836,8 +822,12 @@ function SpineShelfView() {
 
     const onMouseDown = (e) => {
       if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT") return;
+      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
       if (e.target.closest(".meaning-modal-overlay")) return;
-      if (e.target.closest(".book-detail-panel")) return;
+      // 本棚の外（右ペイン・質問カード・上部のナビ）で押した場合は、
+      // 範囲選択の対象にしない。ここを見落とすと、右ペインをクリックしただけで
+      // 棚の選択が解除されてしまう。
+      if (!e.target.closest(".shelf-surface")) return;
       startClient = { x: e.clientX, y: e.clientY };
       startedOnBook = isOnBook(e.target);
       active = true;
@@ -903,9 +893,19 @@ function SpineShelfView() {
 
   return (
     <div style={s.container}>
-      <h2 style={s.heading}>My本棚</h2>
-      <div ref={containerRef} style={{ width: "100%", height: "100vh" }}>
-        <svg ref={svgRef} style={{ width: "100%", height: "100%", display: "block" }} />
+      {/* 見出しと育ち具合の表示は右ペイン（育成インジケータ）が担う。
+          左ペインは本棚そのものだけに使う（設計書6.1）。 */}
+      {/* shelf-surface は範囲選択の当たり判定に使う目印。
+          ここより外（右ペインなど）で押しても選択は始まらない。 */}
+      <div
+        ref={containerRef}
+        className="shelf-surface"
+        style={{ width: "100%", height: "100%", minHeight: 0 }}
+      >
+        {/* 幅は常にこのペインいっぱい。段が増えて高さが伸びても幅は縮めず、
+            はみ出た分は shelfPane 側の縦スクロールで見る（詳細パネルの
+            開閉やレイアウトの幅にサイズ感を左右されないようにする）。 */}
+        <svg ref={svgRef} style={{ width: "100%", height: "auto", display: "block" }} />
       </div>
       {rubberBand && (
         <div style={{
@@ -940,9 +940,7 @@ function SpineShelfView() {
 
       {isToolbarOpen && (
         <div style={s.floatingPanel}>
-          <div style={{ fontSize: "10px", fontWeight: "700", color: "#c9a84c", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "10px" }}>
-            棚の調整
-          </div>
+          <div style={s.panelSectionTitle}>段の増減</div>
           <button
             onClick={addShelfRow}
             style={s.panelBtn}
@@ -954,7 +952,6 @@ function SpineShelfView() {
             </svg>
             段を追加
           </button>
-          <div style={{ height: "1px", background: "#ede8da", margin: "4px 0" }} />
           <button
             onClick={removeShelfRow}
             style={{ ...s.panelBtn, color: "#c9506a" }}
@@ -966,95 +963,29 @@ function SpineShelfView() {
             </svg>
             段を削除
           </button>
-        </div>
-      )}
 
-      {/* AI分析ボタンは非表示中（対話ボタン(AnalysisChatPanel)に統合したため） */}
+          <div style={s.panelDivider} />
 
-      {isAnalysisPanelOpen && (
-        <div style={s.analysisPanel}>
-          <div style={s.analysisPanelHeader}>
-            <span style={s.analysisPanelTitle}>本棚の分析</span>
-            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-              <button
-                onClick={handleAnalyze}
-                disabled={isAnalyzing}
-                style={s.analysisRefreshBtn}
-                title="再分析する"
-              >
-                {isAnalyzing ? "分析中..." : "再分析"}
-              </button>
-              <button
-                onClick={() => setIsAnalysisPanelOpen(false)}
-                style={s.analysisCloseBtn}
-              >
-                ✕
-              </button>
-            </div>
+          <div style={s.panelSectionTitle}>本棚サイズの調整</div>
+          <div style={s.sizeRow}>
+            <button
+              onClick={() => setShelfWidthPct(v => Math.max(SHELF_WIDTH_MIN, v - SHELF_WIDTH_STEP))}
+              style={{ ...s.sizeBtn, ...(shelfWidthPct <= SHELF_WIDTH_MIN ? s.sizeBtnDisabled : {}) }}
+              disabled={shelfWidthPct <= SHELF_WIDTH_MIN}
+              title="本棚を小さくする（圧迫感を減らす）"
+            >
+              －
+            </button>
+            <span style={s.sizeValue}>{shelfWidthPct}%</span>
+            <button
+              onClick={() => setShelfWidthPct(v => Math.min(SHELF_WIDTH_MAX, v + SHELF_WIDTH_STEP))}
+              style={{ ...s.sizeBtn, ...(shelfWidthPct >= SHELF_WIDTH_MAX ? s.sizeBtnDisabled : {}) }}
+              disabled={shelfWidthPct >= SHELF_WIDTH_MAX}
+              title="本棚を大きくする"
+            >
+              ＋
+            </button>
           </div>
-
-          {analysisError && <div style={s.analysisError}>{analysisError}</div>}
-
-          {!analysisError && proposals.length === 0 && !isAnalyzing && (
-            <div style={s.analysisEmpty}>「再分析」を押して提案を取得してください</div>
-          )}
-
-          {!analysisError && proposals.length > 0 && (
-            <>
-              <div style={s.analysisGraphTitle}>関連する知識グラフ</div>
-              <div style={s.analysisGraphBox}>
-                {isSubgraphLoading ? (
-                  <div style={s.graphEmpty}>読み込み中...</div>
-                ) : subgraphData.nodes.length > 1 ? (
-                  <ForceGraph2D
-                    graphData={subgraphData}
-                    width={284}
-                    height={170}
-                    nodeId="id"
-                    nodeCanvasObject={subgraphNodeCanvasObject}
-                    nodeCanvasObjectMode={() => "replace"}
-                    linkColor={subgraphLinkColor}
-                    linkDirectionalArrowLength={0}
-                    linkWidth={1}
-                    backgroundColor="#0d1117"
-                    cooldownTicks={80}
-                    enableZoomPanInteraction={true}
-                  />
-                ) : (
-                  <div style={s.graphEmpty}>
-                    {activeProposalIdx == null
-                      ? "提案にカーソルを合わせると、関連する知識グラフを表示します"
-                      : "この提案の本同士に、知識グラフ上の直接的なつながりはまだありません"}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          {!analysisError && proposals.map((p, i) => {
-            const isActive = i === activeProposalIdx;
-            const isPinned = i === pinnedProposalIdx;
-            return (
-              <div
-                key={i}
-                data-testid="proposal-card"
-                style={{
-                  ...s.proposalCard,
-                  ...(isActive ? s.proposalCardActive : {}),
-                  ...(isPinned ? s.proposalCardPinned : {}),
-                }}
-                onMouseEnter={() => setHoverProposalIdx(i)}
-                onMouseLeave={() => setHoverProposalIdx(null)}
-                onClick={() => handleProposalClick(i)}
-              >
-                <div style={s.proposalTitle}>{p.title}</div>
-                <div style={s.proposalDesc}>{p.description}</div>
-                {p.related_isbns?.length > 0 && (
-                  <div style={s.proposalBadge}>{p.related_isbns.length}冊と連動</div>
-                )}
-              </div>
-            );
-          })}
         </div>
       )}
 
@@ -1062,6 +993,7 @@ function SpineShelfView() {
         <div style={s.selectionBar}>
           <span style={s.selectionCount}>{selectedIsbns.length}冊選択中</span>
           <button style={s.btnPrimary} onClick={() => setIsModalOpen(true)}>意味付け</button>
+          
           <button style={s.btnSecondary} onClick={() => setSelectedIsbns([])}>解除</button>
         </div>
       )}
@@ -1099,14 +1031,7 @@ function SpineShelfView() {
         </svg>
       </div>
 
-      {detailIsbn && (
-        <BookDetailPanel
-          isbn={detailIsbn}
-          onClose={() => setDetailIsbn(null)}
-          onSelectRelated={(isbn) => setDetailIsbn(isbn)}
-          onRelatedChange={handleDetailRelatedChange}
-        />
-      )}
+      {/* 本の詳細は右ペインの「この本について」が出す（重ねて表示しない） */}
 
       {isModalOpen && (
         <div style={s.overlay} className="meaning-modal-overlay">
@@ -1142,22 +1067,19 @@ function SpineShelfView() {
 }
 
 const s = {
-  container: { paddingTop: "70px", margin: 0, minHeight: "100vh", position: "relative", backgroundColor: "#fff" },
-  heading: {
-    position: "fixed", top: "72px", left: "40px", zIndex: 100,
-    fontSize: "22px", fontWeight: "700", color: "#e8d5a3",
-    fontFamily: "serif", letterSpacing: "0.08em",
-    textShadow: "0 2px 10px rgba(0,0,0,0.9)", pointerEvents: "none",
+  // Home.js の shelfPane（position: relative）にぴったり重ねる。
+  // height:"100%" だとネストしたflex/percentage次第で親よりわずかに
+  // 大きくなり、shelfPane側のスクロールが棚の外まで伸びてしまうことが
+  // あったため、inset:0 で確実に親の範囲だけに固定する。
+  // 棚が画面いっぱいで見づらいので、四方に少し余白を取る。
+  container: {
+    margin: 0, position: "absolute", inset: 0,
+    boxSizing: "border-box", padding: "24px 28px",
   },
-  toolbar: { display: "flex", gap: "24px", padding: "14px 28px", backgroundColor: "#fff", borderRadius: "16px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", marginBottom: "40px", border: "1px solid #e0d8c0" },
-  toolGroup: { display: "flex", flexDirection: "column", gap: "5px" },
-  label: { fontSize: "10px", fontWeight: "700", color: "#c9a84c", textTransform: "uppercase" },
   btnPrimary: { padding: "8px 18px", backgroundColor: "#c9a84c", color: "#fff", border: "none", borderRadius: "12px", cursor: "pointer", fontWeight: "700" },
   btnSecondary: { padding: "8px 18px", backgroundColor: "transparent", color: "#c9a84c", border: "1px solid #c9a84c", borderRadius: "12px", cursor: "pointer" },
-  btnDanger: { padding: "8px 18px", backgroundColor: "transparent", color: "#c9506a", border: "1px solid #c9506a", borderRadius: "8px", cursor: "pointer" },
   overlay: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 },
   modal: { backgroundColor: "#fff", padding: "26px", borderRadius: "12px", width: "420px", maxWidth: "90vw", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" },
-  modalInput: { flex: 1, width: "100%", padding: "10px", borderRadius: "6px", border: "1px solid #ddd" },
   meaningTextarea: {
     width: "100%", minHeight: "140px", padding: "10px",
     borderRadius: "8px", border: "1px solid #ddd",
@@ -1172,91 +1094,6 @@ const s = {
     cursor: "pointer",
     boxShadow: "0 4px 16px rgba(201,168,76,0.45)",
     zIndex: 1000,
-  },
-  analyzeFab: {
-    position: "fixed", bottom: "96px", right: "30px",
-    width: "48px", height: "48px", borderRadius: "50%",
-    backgroundColor: "#ff9d3d", color: "#fff",
-    display: "flex", justifyContent: "center", alignItems: "center",
-    cursor: "pointer",
-    boxShadow: "0 4px 16px rgba(255,157,61,0.45)",
-    zIndex: 1000,
-  },
-  analysisPanel: {
-    position: "fixed", top: "70px", right: "0", bottom: "0",
-    width: "320px", maxWidth: "90vw",
-    backgroundColor: "#fdfcf8", borderLeft: "1px solid #ede8da",
-    boxShadow: "-8px 0 32px rgba(0,0,0,0.12)",
-    padding: "18px", overflowY: "auto",
-    display: "flex", flexDirection: "column", gap: "10px",
-    zIndex: 1400,
-  },
-  analysisPanelHeader: {
-    display: "flex", justifyContent: "space-between", alignItems: "center",
-    marginBottom: "6px",
-  },
-  analysisPanelTitle: {
-    fontSize: "15px", fontWeight: "700", color: "#2a1f0e", fontFamily: "serif",
-  },
-  analysisGraphTitle: {
-    fontSize: "11px", fontWeight: "700", color: "#c9a84c",
-    textTransform: "uppercase", letterSpacing: "0.06em",
-  },
-  analysisGraphBox: {
-    borderRadius: "10px", overflow: "hidden", border: "1px solid #ede8da",
-    width: "284px", height: "170px", background: "#0d1117",
-    display: "flex", alignItems: "center", justifyContent: "center",
-  },
-  graphEmpty: {
-    fontSize: "11px", color: "#666", textAlign: "center", padding: "0 16px",
-  },
-  analysisRefreshBtn: {
-    padding: "4px 10px", fontSize: "11px", fontWeight: "600",
-    color: "#c9a84c", background: "transparent", border: "1px solid #c9a84c",
-    borderRadius: "10px", cursor: "pointer",
-  },
-  analysisCloseBtn: {
-    width: "22px", height: "22px", borderRadius: "50%",
-    border: "none", background: "#ede8da", color: "#4a3728",
-    cursor: "pointer", fontSize: "12px", lineHeight: 1,
-  },
-  analysisError: {
-    fontSize: "12px", color: "#c9506a", padding: "10px",
-    backgroundColor: "#fff0f2", borderRadius: "8px",
-  },
-  analysisEmpty: {
-    fontSize: "12px", color: "#bbb", textAlign: "center", padding: "20px 10px",
-  },
-  proposalCard: {
-    padding: "12px", borderRadius: "10px",
-    backgroundColor: "#fff",
-    borderStyle: "solid", borderWidth: "1px", borderColor: "#ede8da",
-    cursor: "pointer", transition: "background 0.15s, border-color 0.15s",
-  },
-  proposalCardActive: {
-    backgroundColor: "#fff8ec", borderColor: "#ff9d3d",
-  },
-  proposalCardPinned: {
-    boxShadow: "0 0 0 2px rgba(255,157,61,0.4)",
-  },
-  proposalTitle: {
-    fontSize: "13px", fontWeight: "700", color: "#2a1f0e", marginBottom: "4px",
-  },
-  proposalDesc: {
-    fontSize: "12px", color: "#6b5c47", lineHeight: 1.5,
-  },
-  proposalBadge: {
-    marginTop: "8px", display: "inline-block",
-    fontSize: "10px", fontWeight: "700", color: "#ff9d3d",
-    border: "1px solid #ff9d3d", borderRadius: "8px", padding: "2px 8px",
-  },
-  svg: {
-    width: "100%",
-    height: "auto",
-    display: "block",
-    boxShadow: "0 40px 80px rgba(0,0,0,0.15)",
-    borderRadius: "4px",
-    backgroundColor: "#333",
   },
   selectionBar: {
     position: "fixed",
@@ -1286,8 +1123,16 @@ const s = {
     borderRadius: "14px",
     boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
     display: "flex", flexDirection: "column",
-    minWidth: "140px",
+    minWidth: "160px",
     zIndex: 1000,
+  },
+  panelSectionTitle: {
+    fontSize: "10px", fontWeight: "700", color: "#c9a84c",
+    letterSpacing: "0.1em", textTransform: "uppercase",
+    marginBottom: "8px",
+  },
+  panelDivider: {
+    height: "1px", background: "#ede8da", margin: "10px 0",
   },
   panelBtn: {
     display: "flex", alignItems: "center", gap: "8px",
@@ -1296,6 +1141,24 @@ const s = {
     color: "#4a3728", fontSize: "13px", fontWeight: "600",
     cursor: "pointer", textAlign: "left", width: "100%",
     transition: "background 0.15s",
+  },
+  sizeRow: {
+    display: "flex", alignItems: "center", justifyContent: "space-between",
+    gap: "8px",
+  },
+  sizeBtn: {
+    width: "28px", height: "28px", borderRadius: "8px",
+    border: "1px solid #e0d5b8", background: "#fff",
+    color: "#4a3728", fontSize: "15px", fontWeight: "700",
+    cursor: "pointer", lineHeight: 1,
+    display: "flex", alignItems: "center", justifyContent: "center",
+  },
+  sizeBtnDisabled: {
+    opacity: 0.4, cursor: "not-allowed",
+  },
+  sizeValue: {
+    fontSize: "13px", fontWeight: "700", color: "#2a1f0e",
+    minWidth: "36px", textAlign: "center",
   },
 };
 

@@ -50,7 +50,7 @@ function HandPanel({ isOpen, onClose }) {
           background: isOpen ? "rgba(0,0,0,0.35)" : "transparent",
           pointerEvents: isOpen ? "auto" : "none",
           transition: "background 0.3s ease",
-          zIndex: 99998,
+          zIndex: 8000,
           backdropFilter: isOpen ? "blur(2px)" : "none",
         }}
       />
@@ -63,7 +63,7 @@ function HandPanel({ isOpen, onClose }) {
         boxShadow: "-8px 0 40px rgba(0,0,0,0.12)",
         transform: isOpen ? "translateX(0)" : "translateX(100%)",
         transition: "transform 0.35s cubic-bezier(0.4,0,0.2,1)",
-        zIndex: 99999,
+        zIndex: 8001,
         display: "flex", flexDirection: "column",
         borderLeft: "1px solid #ede8da",
       }}>

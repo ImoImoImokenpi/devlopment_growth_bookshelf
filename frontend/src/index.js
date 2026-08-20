@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { installParticipantHeader } from './utils/participant';
+
+// バックエンド宛の全リクエストに被験者IDを付ける。
+// App の描画より前に入れないと、初回のデータ取得がヘッダ無しで飛んでしまう。
+installParticipantHeader();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

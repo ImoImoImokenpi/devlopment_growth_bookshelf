@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
 
 from database import Base, engine
+from migrations import run_migrations
+from admin_neo4j.neo4j_migrate import run_neo4j_migrations
 import routers.myhand as myhand_router
 import routers.knowledge_graph as knowledge_graph_router
 import routers.bookshelf as bookshelf_router
@@ -10,16 +11,10 @@ import routers.search as search_router
 import routers.register as register_router
 from routers.search import lifespan
 
-# DB初期化
+# DB初期化（未作成のテーブルを新スキーマで作る → 既存テーブルを移行する、の順）
 Base.metadata.create_all(bind=engine)
-
-# spine_color カラムが存在しない場合に追加（既存DB向けマイグレーション）
-with engine.connect() as _conn:
-    try:
-        _conn.execute(text("ALTER TABLE registered_books ADD COLUMN spine_color VARCHAR"))
-        _conn.commit()
-    except Exception:
-        pass  # カラムが既に存在する場合は無視
+run_migrations(engine)
+run_neo4j_migrations()
 
 app = FastAPI(lifespan=lifespan)
 

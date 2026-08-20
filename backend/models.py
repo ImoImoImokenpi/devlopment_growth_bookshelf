@@ -1,13 +1,19 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
+from participant import DEFAULT_PARTICIPANT_ID
 
 class MyHand(Base):
     __tablename__ = "myhand"
+    __table_args__ = (
+        # 被験者ごとに手札を持つ。別の被験者が同じ本を手札に持てるようにする。
+        UniqueConstraint("participant_id", "registered_book_id", name="uq_myhand_participant_book"),
+    )
 
     id                 = Column(Integer, primary_key=True, autoincrement=True)
-    registered_book_id = Column(Integer, ForeignKey("registered_books.id"), unique=True, nullable=False)
+    participant_id     = Column(String, nullable=False, index=True, default=DEFAULT_PARTICIPANT_ID)
+    registered_book_id = Column(Integer, ForeignKey("registered_books.id"), nullable=False)
 
     book = relationship("RegisteredBook", lazy="joined")
 
@@ -39,9 +45,14 @@ class MyHand(Base):
 
 class ShelfLayout(Base):
     __tablename__ = "shelflayout"
-    
+    __table_args__ = (
+        # 本棚は被験者ごと。同じISBNを複数の被験者が自分の棚に並べられる。
+        UniqueConstraint("participant_id", "isbn", name="uq_shelflayout_participant_isbn"),
+    )
+
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    isbn = Column(String, unique=True, index=True)  # Google Books API の ID
+    participant_id = Column(String, nullable=False, index=True, default=DEFAULT_PARTICIPANT_ID)
+    isbn = Column(String, index=True)  # Google Books API の ID
 
     shelf_index = Column(Integer, nullable=False)
     x_pos = Column(Integer, nullable=False, default=20)  # 左から何番目 (0, 1, 2...)
@@ -80,5 +91,8 @@ class RegisteredBook(Base):
 class ShelfDesign(Base):
     __tablename__ = "shelfdesign"
     id = Column(Integer, primary_key=True, index=True)
+    # 棚の段数などの設定も被験者ごとに1行持つ
+    participant_id = Column(String, nullable=False, unique=True, index=True, default=DEFAULT_PARTICIPANT_ID)
     shelf_size = Column(Integer)
     total_shelves = Column(Integer)
+    last_forced_concept_count = Column(Integer, default=0)  # 前回「強制対話」を行った時点のConceptノード累計数

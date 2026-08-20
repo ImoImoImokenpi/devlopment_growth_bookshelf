@@ -17,6 +17,12 @@ export const LINK_CFG = {
   HAS_MEANING:   { color: "#e09040", ja: "意味" },
 };
 
+// 意味づけ(Concept)を色分けして見分けられるようにするための配色。
+// 本棚のホバー強調(SpineShelfView)と右ペインの「この本について」(BookFocusPanel)で
+// 同じ配色を使い、棚の上のドットとパネルの一覧が対応して見えるようにする。
+export const CONCEPT_COLORS = ["#9d5cff", "#2dd4bf", "#ff6b6b", "#4a9eca", "#e0587a", "#7cb342", "#ffb020"];
+export const conceptColor = (index) => CONCEPT_COLORS[index % CONCEPT_COLORS.length];
+
 export const NDC_L1 = {
   "0": "総記", "1": "哲学", "2": "歴史・地理", "3": "社会科学",
   "4": "自然科学", "5": "技術", "6": "産業", "7": "芸術", "8": "言語", "9": "文学",
@@ -28,7 +34,7 @@ export const nodeDisplayLabel = (n) =>
   n.title || n.name || n.code || n.text || "";
 
 // タップした本の関連理由(type)を、対応するリレーション種別(LINK_CFG のキー)にマッピングする。
-// BookDetailPanel の関連本リストの色分けに使う。
+// 関連本を「なぜ関連しているか」で色分けするために使う。
 export const REASON_LINK_TYPE = {
   concept:   "CONCEPT",
   author:    "WRITTEN_BY",

@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import axios from "axios";
 import ForceGraph2D from "react-force-graph-2d";
+import * as d3 from "d3";
 import { NODE_CFG, LINK_CFG, NDC_L1, ndcR, nodeDisplayLabel } from "../utils/graphConfig";
 
 const API = "http://localhost:8000";
+const BOOK_COVER_R = 16; // 本ノードは表紙が見えるよう他のノードより大きく描く
 
 export default function KnowledgeGraph() {
   const [rawData, setRawData]     = useState({ nodes: [], links: [] });
@@ -24,6 +26,33 @@ export default function KnowledgeGraph() {
   const [proposals, setProposals] = useState([]);
   const [analysisError, setAnalysisError] = useState(null);
   const fgRef = useRef();
+  const coverImageCacheRef = useRef({});
+
+  // 表紙画像を読み込んでキャッシュする。読み込み完了前は null を返し、
+  // 呼び出し側はプレースホルダーの丸を描く（force-graphは毎フレーム再描画するため、
+  // 読み込みが終わり次第、次のフレームで自然に表紙へ差し替わる）
+  const getCoverImage = useCallback((url) => {
+    if (!url) return null;
+    const cache = coverImageCacheRef.current;
+    let img = cache[url];
+    if (!img) {
+      img = new Image();
+      img.src = url;
+      cache[url] = img;
+    }
+    return img.complete && img.naturalWidth > 0 ? img : null;
+  }, []);
+
+  // 本ノードは表紙画像が大きくなる分、他ノードと重なりにくいよう衝突半径を広げる
+  useEffect(() => {
+    const fg = fgRef.current;
+    if (!fg) return;
+    fg.d3Force("collide", d3.forceCollide(node => {
+      if (node.type === "Book") return BOOK_COVER_R + 4;
+      if (node.type === "NDC") return ndcR(node.level) + 3;
+      return (NODE_CFG[node.type]?.r ?? 5) + 3;
+    }));
+  }, [rawData]);
 
   const handleAnalyze = useCallback(async () => {
     setAnalyzing(true);
@@ -97,7 +126,8 @@ export default function KnowledgeGraph() {
 
   const nodeCanvasObject = useCallback((node, ctx, scale) => {
     const cfg = NODE_CFG[node.type] ?? { color: "#aaa", r: 5 };
-    const r = node.type === "NDC" ? ndcR(node.level) : cfg.r;
+    const isBook = node.type === "Book";
+    const r = isBook ? BOOK_COVER_R : node.type === "NDC" ? ndcR(node.level) : cfg.r;
     const dimmed = hlNodes.size > 0 && !hlNodes.has(node.id);
 
     ctx.save();
@@ -108,19 +138,42 @@ export default function KnowledgeGraph() {
       ctx.shadowBlur  = 14;
     }
 
-    ctx.beginPath();
-    ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
-    ctx.fillStyle = cfg.color;
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,0.35)";
-    ctx.lineWidth   = 0.8;
-    ctx.stroke();
+    const coverUrl = isBook ? (node.cover || (node.isbn ? `${API}/register/cover/${node.isbn}` : null)) : null;
+    const img = coverUrl ? getCoverImage(coverUrl) : null;
+
+    if (img) {
+      // object-fit: cover 相当で正方形にクロップして円形に切り抜く
+      const scaleFit = Math.max((r * 2) / img.naturalWidth, (r * 2) / img.naturalHeight);
+      const dw = img.naturalWidth * scaleFit;
+      const dh = img.naturalHeight * scaleFit;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+      ctx.clip();
+      ctx.drawImage(img, node.x - dw / 2, node.y - dh / 2, dw, dh);
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+      ctx.strokeStyle = "rgba(255,255,255,0.5)";
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, r, 0, 2 * Math.PI);
+      ctx.fillStyle = cfg.color;
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.35)";
+      ctx.lineWidth   = 0.8;
+      ctx.stroke();
+    }
     ctx.shadowBlur  = 0;
 
     const label = nodeDisplayLabel(node);
     if (label) {
       const show = node.type === "Book"
-        ? scale > 1.2
+        ? scale > 1.2 && !img
         : node.type === "NDC"
         ? scale > 2.5
         : scale > 2;
@@ -135,11 +188,11 @@ export default function KnowledgeGraph() {
       }
     }
     ctx.restore();
-  }, [hlNodes, hoverId]);
+  }, [hlNodes, hoverId, getCoverImage]);
 
   const nodePointerAreaPaint = useCallback((node, color, ctx) => {
     const cfg = NODE_CFG[node.type] ?? { r: 5 };
-    const r = node.type === "NDC" ? ndcR(node.level) : cfg.r;
+    const r = node.type === "Book" ? BOOK_COVER_R : node.type === "NDC" ? ndcR(node.level) : cfg.r;
     ctx.beginPath();
     ctx.arc(node.x, node.y, r + 3, 0, 2 * Math.PI);
     ctx.fillStyle = color;

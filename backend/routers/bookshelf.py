@@ -4,8 +4,11 @@ from typing import List
 from models import ShelfLayout, ShelfDesign, RegisteredBook
 from sqlalchemy.orm import Session
 from database import get_db
+from participant import resolve_participant_id
 from admin_neo4j.neo4j_driver import get_session
-from admin_neo4j.neo4j_crud import update_shelf_layout_chain, save_concept
+from admin_neo4j.neo4j_crud import (
+    update_shelf_layout_chain, save_concept, remove_book_ownership,
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,21 +19,40 @@ router = APIRouter(prefix="/bookshelf", tags=["bookshelf"])
 SHELF_MAX_WIDTH_PX = 800  # ShelfDesign.shelf_max_width に置き換えてもよい
 
 
-@router.post("/add_shelves")
-def add_shelves(db: Session = Depends(get_db)):
-    design = db.query(ShelfDesign).first()
+def _get_or_create_design(db: Session, participant_id: str) -> ShelfDesign:
+    design = (
+        db.query(ShelfDesign)
+        .filter(ShelfDesign.participant_id == participant_id)
+        .first()
+    )
     if not design:
-        design = ShelfDesign(total_shelves=1)
+        design = ShelfDesign(participant_id=participant_id, total_shelves=1)
         db.add(design)
-    else:
-        design.total_shelves += 1
+        db.flush()
+    return design
+
+
+@router.post("/add_shelves")
+def add_shelves(
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    design = _get_or_create_design(db, participant_id)
+    design.total_shelves = (design.total_shelves or 0) + 1
     db.commit()
     return {"total_shelves": design.total_shelves}
 
 
 @router.post("/remove_shelves")
-def remove_shelves(db: Session = Depends(get_db)):
-    design = db.query(ShelfDesign).first()
+def remove_shelves(
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    design = (
+        db.query(ShelfDesign)
+        .filter(ShelfDesign.participant_id == participant_id)
+        .first()
+    )
     if not design or design.total_shelves <= 1:
         raise HTTPException(status_code=400, detail="これ以上段を削除できません")
 
@@ -38,7 +60,8 @@ def remove_shelves(db: Session = Depends(get_db)):
 
     # 一番下の段に本があるか確認
     books_on_last = db.query(ShelfLayout)\
-        .filter(ShelfLayout.shelf_index == last_shelf_index)\
+        .filter(ShelfLayout.participant_id == participant_id,
+                ShelfLayout.shelf_index == last_shelf_index)\
         .count()
 
     if books_on_last > 0:
@@ -64,14 +87,15 @@ class SyncLayoutRequest(BaseModel):
 
 
 @router.get("/")
-def fetch_bookshelf(db: Session = Depends(get_db)):
-    design = db.query(ShelfDesign).first()
-    if not design:
-        design = ShelfDesign(total_shelves=1)
-        db.add(design)
-        db.commit()
+def fetch_bookshelf(
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    design = _get_or_create_design(db, participant_id)
+    db.commit()
 
     layouts = db.query(ShelfLayout)\
+        .filter(ShelfLayout.participant_id == participant_id)\
         .order_by(ShelfLayout.shelf_index, ShelfLayout.x_pos)\
         .all()
 
@@ -116,11 +140,16 @@ def fetch_bookshelf(db: Session = Depends(get_db)):
 
 
 @router.post("/sync-layout")
-async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
+async def sync_layout(
+    body: SyncLayoutRequest,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
     try:
         for pos in body.layout:
             db.query(ShelfLayout)\
-                .filter(ShelfLayout.isbn == pos.isbn)\
+                .filter(ShelfLayout.participant_id == participant_id,
+                        ShelfLayout.isbn == pos.isbn)\
                 .update({
                     "shelf_index": pos.shelf_index,
                     "x_pos":       round(pos.x_pos, 2),
@@ -132,13 +161,16 @@ async def sync_layout(body: SyncLayoutRequest, db: Session = Depends(get_db)):
         isbns = [pos.isbn for pos in body.layout]
         pages_map = {
             r.isbn: r.pages
-            for r in db.query(ShelfLayout).filter(ShelfLayout.isbn.in_(isbns)).all()
+            for r in db.query(ShelfLayout)
+                       .filter(ShelfLayout.participant_id == participant_id,
+                               ShelfLayout.isbn.in_(isbns))
+                       .all()
         }
         neo4j_payload = [
             {**pos.model_dump(), "pages": pages_map.get(pos.isbn, 200)}
             for pos in body.layout
         ]
-        update_shelf_layout_chain(neo4j_payload)
+        update_shelf_layout_chain(neo4j_payload, participant_id=participant_id)
 
         return {"status": "success"}
     except Exception as e:
@@ -153,29 +185,55 @@ class SaveConceptRequest(BaseModel):
 
 
 @router.delete("/remove-book/{isbn}")
-def remove_book_from_shelf(isbn: str, db: Session = Depends(get_db)):
-    layout = db.query(ShelfLayout).filter(ShelfLayout.isbn == isbn).first()
+def remove_book_from_shelf(
+    isbn: str,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    layout = (
+        db.query(ShelfLayout)
+        .filter(ShelfLayout.participant_id == participant_id, ShelfLayout.isbn == isbn)
+        .first()
+    )
     if not layout:
         raise HTTPException(status_code=404, detail="本が見つかりません")
     db.delete(layout)
     db.commit()
+    # Book ノードは他の被験者も持ちうるので消さず、所有関係だけ外す
+    remove_book_ownership(isbn, participant_id=participant_id)
     return {"status": "deleted", "isbn": isbn}
 
 
 @router.post("/save-concept")
-def save_concept_endpoint(body: SaveConceptRequest):
+def save_concept_endpoint(
+    body: SaveConceptRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
     if not body.meaning.strip():
         raise HTTPException(status_code=400, detail="meaning is required")
     if not body.isbns:
         raise HTTPException(status_code=400, detail="isbns is required")
-    save_concept(isbns=body.isbns, meaning=body.meaning.strip())
-    return {"status": "ok", "concept": body.meaning, "books": len(body.isbns)}
+    concept_id = save_concept(
+        isbns=body.isbns,
+        meaning=body.meaning.strip(),
+        participant_id=participant_id,
+    )
+    return {
+        "status": "ok",
+        "concept": body.meaning,
+        "concept_id": concept_id,
+        "books": len(body.isbns),
+    }
 
 
 @router.post("/migrate-x-pos")
-def migrate_x_pos(db: Session = Depends(get_db)):
+def migrate_x_pos(
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
     """order_index → x_pos への一回限りのマイグレーション"""
     layouts = db.query(ShelfLayout)\
+        .filter(ShelfLayout.participant_id == participant_id)\
         .order_by(ShelfLayout.shelf_index, ShelfLayout.order_index)\
         .all()
     shelves: dict[int, list] = {}

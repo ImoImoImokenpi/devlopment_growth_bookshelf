@@ -12,8 +12,8 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 class GroqClient:
     """プロトタイプ用（無料枠のレート制限が緩い）。呼び出し元は generate_text / generate_from_image のみ使う。"""
 
-    MODEL        = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
-    VISION_MODEL = os.environ.get("GROQ_VISION_MODEL", "meta-llama/llama-4-scout-17b-16e-instruct")
+    MODEL        = os.environ.get("GROQ_MODEL", "groq/compound-mini")
+    VISION_MODEL = os.environ.get("GROQ_VISION_MODEL", "qwen/qwen3.6-27b")
 
     _instance: "GroqClient | None" = None
 

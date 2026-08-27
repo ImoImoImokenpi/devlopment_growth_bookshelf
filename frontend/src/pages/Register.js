@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import axios from "axios";
+import PageHeader from "../components/PageHeader";
+import Breadcrumb from "../components/Breadcrumb";
 
 const API = "http://localhost:8000";
 
@@ -115,8 +117,10 @@ export default function Register() {
 
   return (
     <div style={s.page}>
-      <h2 style={s.heading}>本を登録する</h2>
-      <p style={s.sub}>背表紙の写真とISBNを紐づけて書誌情報を保存します</p>
+      <PageHeader
+        title={<Breadcrumb items={[{ label: "実験準備" }, { label: "登録" }]} />}
+        sub="背表紙の写真とISBNを紐づけて書誌情報を保存します"
+      />
 
       {/* ── STEP 1: 画像アップロード ── */}
       <div style={s.stepLabel}>① 背表紙の写真を選ぶ</div>
@@ -284,23 +288,11 @@ export default function Register() {
 
 const s = {
   page: {
-    padding: "60px 40px",
+    padding: "70px 28px 40px",
     minHeight: "100vh",
     backgroundColor: "#fdfcf8",
-    maxWidth: "680px",
+    maxWidth: "900px",
     margin: "0 auto",
-  },
-  heading: {
-    fontSize: "24px",
-    fontWeight: "700",
-    color: "#2a1f0e",
-    fontFamily: "serif",
-    marginBottom: "6px",
-  },
-  sub: {
-    fontSize: "13px",
-    color: "#888",
-    marginBottom: "24px",
   },
   stepLabel: {
     fontSize: "13px",

@@ -14,13 +14,6 @@ export function MyBookshelfProvider({ children }) {
     setMyBookshelf(data);
   }, []);
 
-  // 2. 段数（1段あたりの冊数）の更新・再構築
-  const updateShelfLayout = async (newSize) => {
-    // サーバー側のAPIエンドポイントに合わせてパスを変更してください
-    await axios.post(`http://localhost:8000/bookshelf/add_per_shelf?books_per_shelf=${newSize}`);
-    fetchBookshelf();
-  };
-
   const addShelfRow = async () => {
     const res = await fetch("http://localhost:8000/bookshelf/add_shelves", {
       method: "POST",
@@ -54,7 +47,7 @@ export function MyBookshelfProvider({ children }) {
   };
 
   return (
-    <MyBookshelfContext.Provider value={{ myBookshelf, fetchBookshelf, updateShelfLayout, addShelfRow, removeShelfRow, removeBook }}>
+    <MyBookshelfContext.Provider value={{ myBookshelf, fetchBookshelf, addShelfRow, removeShelfRow, removeBook }}>
       {children}
       <ErrorModal 
         message={errorMessage}

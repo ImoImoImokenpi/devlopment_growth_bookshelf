@@ -17,7 +17,7 @@ export default function BookFocusPanel() {
     focusDetail, isFocusLoading,
     setConceptHighlight,
     refreshGrowth,
-    conceptsVersion,
+    conceptsVersion, bumpConceptsVersion,
   } = useShelfWorkspace();
 
   const [concepts, setConcepts] = useState([]);
@@ -81,6 +81,23 @@ export default function BookFocusPanel() {
       setIsSaving(false);
     }
   }, [focusIsbn, impression, refreshGrowth]);
+
+  // 意味づけを1件消す。この本との結び付きだけを外す（他の本との結び付きは残る）。
+  const deleteConcept = useCallback(async (edgeId) => {
+    setConcepts(list => list.filter(c => c.edge_id !== edgeId));
+    try {
+      const res = await fetch(`${API}/knowledge_graph/concept-edge/${edgeId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("削除に失敗しました");
+      bumpConceptsVersion();
+    } catch (err) {
+      setError(err.message);
+      // 失敗したら一覧を取り直して元に戻す
+      fetch(`${API}/knowledge_graph/book/${focusIsbn}/concepts`)
+        .then(res => (res.ok ? res.json() : { concepts: [] }))
+        .then(conceptData => setConcepts(conceptData.concepts || []))
+        .catch(() => {});
+    }
+  }, [focusIsbn, bumpConceptsVersion]);
 
   if (!focusIsbn) {
     return (
@@ -149,7 +166,7 @@ export default function BookFocusPanel() {
             <div style={s.conceptList}>
               {concepts.map((c, i) => (
                 <div
-                  key={i}
+                  key={c.edge_id ?? i}
                   style={{ ...s.conceptItem, borderLeftColor: conceptColor(i) }}
                   // この意味づけでつながっている本を、意味づけ固有の色で棚に映す。
                   // 中心の本も含めて、ひとつのまとまりとして見えるようにする。
@@ -161,7 +178,14 @@ export default function BookFocusPanel() {
                   title="この意味づけでつながっている本が、本棚で同じ色に光ります"
                 >
                   <span style={{ ...s.conceptDot, backgroundColor: conceptColor(i) }} />
-                  <span>{c.text}</span>
+                  <span style={s.conceptText}>{c.text}</span>
+                  <button
+                    style={s.conceptDelete}
+                    onClick={e => { e.stopPropagation(); deleteConcept(c.edge_id); }}
+                    title="この本からこの意味づけを消す"
+                  >
+                    ✕
+                  </button>
                 </div>
               ))}
             </div>
@@ -218,6 +242,12 @@ const s = {
     borderLeftWidth: 3, borderLeftStyle: "solid",
   },
   conceptDot: { width: 7, height: 7, borderRadius: "50%", flexShrink: 0, marginTop: 4 },
+  conceptText: { flex: 1 },
+  conceptDelete: {
+    flexShrink: 0, width: 18, height: 18, marginTop: 1,
+    border: "none", borderRadius: "50%", background: "transparent",
+    color: "#c4b8a2", cursor: "pointer", fontSize: 10, lineHeight: 1,
+  },
   textarea: {
     width: "100%", minHeight: 70, padding: 9,
     borderRadius: 8, border: "1px solid #e5ded0",

@@ -1,6 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react";
 import axios from "axios";
 import { MyHandContext } from "../context/MyHandContext";
+import PageHeader from "../components/PageHeader";
+import Breadcrumb from "../components/Breadcrumb";
 
 const API           = "http://localhost:8000";
 const SHELF_PAD     = 8;
@@ -182,7 +184,9 @@ export default function Gallery() {
         }
       `}</style>
 
-      <h2 style={s.heading}>Gallery</h2>
+      <div style={s.headerRow}>
+        <PageHeader title={<Breadcrumb items={[{ label: "実験準備" }, { label: "ギャラリー" }]} />} />
+      </div>
 
       <div style={s.bookcase} ref={bookcaseRef}>
         {books.length === 0 ? (
@@ -283,19 +287,7 @@ const s = {
     position: "relative",
     backgroundColor: "#fff",
   },
-  heading: {
-    position: "fixed",
-    top: "72px",
-    left: "40px",
-    zIndex: 100,
-    fontSize: "22px",
-    fontWeight: "700",
-    color: "#e8d5a3",
-    fontFamily: "serif",
-    letterSpacing: "0.08em",
-    textShadow: "0 2px 10px rgba(0,0,0,0.9)",
-    pointerEvents: "none",
-  },
+  headerRow: { padding: "0 28px 12px" },
   empty: {
     color: "#a08060",
     fontSize: "14px",

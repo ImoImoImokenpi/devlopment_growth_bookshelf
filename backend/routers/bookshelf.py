@@ -116,13 +116,22 @@ def fetch_bookshelf(
     reg_books = db.query(RegisteredBook).filter(RegisteredBook.isbn.in_(list(layout_map.keys()))).all()
     spine_map = {rb.isbn: rb.spine_image for rb in reg_books}
     ndc_map = {rb.isbn: rb.ndc for rb in reg_books}
+    # ShelfLayout.cover は配置時に埋められておらず常に空のため、登録時に
+    # NDL/Google Booksから取得済みの RegisteredBook.cover（表表紙）を使う
+    cover_map = {rb.isbn: rb.cover for rb in reg_books}
+    # 統制UI（グリッド型）のソート（著者・登録日等）に使うため、本棚UIでは
+    # 使っていない書誌項目もここでまとめて持たせる（データ層は共通化する）
+    authors_map = {rb.isbn: (rb.authors.split(",") if rb.authors else []) for rb in reg_books}
+    publisher_map = {rb.isbn: rb.publisher for rb in reg_books}
+    published_year_map = {rb.isbn: rb.published_year for rb in reg_books}
+    registered_at_map = {rb.isbn: rb.registered_at.isoformat() if rb.registered_at else None for rb in reg_books}
 
     shelves: dict[int, list] = {}
     for l in layouts:
         shelves.setdefault(l.shelf_index, []).append({
             "isbn":            l.isbn,
             "title":           title_map.get(l.isbn, ""),
-            "cover":           l.cover,
+            "cover":           cover_map.get(l.isbn),
             "spine_image":     spine_map.get(l.isbn),
             "size_label":      l.size_label,
             "shelf_index":     l.shelf_index,
@@ -131,6 +140,10 @@ def fetch_bookshelf(
             "pages":           l.pages,
             "height_mm":       l.height_mm,
             "ndc":             ndc_map.get(l.isbn),
+            "authors":         authors_map.get(l.isbn, []),
+            "publisher":       publisher_map.get(l.isbn),
+            "published_year":  published_year_map.get(l.isbn),
+            "registered_at":   registered_at_map.get(l.isbn),
         })
 
     return {

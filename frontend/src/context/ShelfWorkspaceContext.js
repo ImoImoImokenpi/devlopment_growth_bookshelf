@@ -53,11 +53,6 @@ export function ShelfWorkspaceProvider({ children }) {
   const [discoveries, setDiscoveries] = useState([]);
   const [isLoadingDiscoveries, setIsLoadingDiscoveries] = useState(false);
 
-  // 本棚上で今出している質問カードの発見ID
-  const [activeDiscoveryId, setActiveDiscoveryId] = useState(null);
-  // まとめて確認モード（設計書6.2）
-  const [isBatchOpen, setIsBatchOpen] = useState(false);
-
   // ── 強調（対話や提案が根拠にした本）──
   const [highlightIsbns, setHighlightIsbns] = useState([]);
 
@@ -66,26 +61,35 @@ export function ShelfWorkspaceProvider({ children }) {
   // 色を棚まで運ぶ必要があるので、ISBNの配列とは別の入れ物にしている。
   const [conceptHighlight, setConceptHighlight] = useState(null); // { color, isbns } | null
 
-  // 質問カードの「もっと話す」から右ペインの対話へ話題を引き継ぐための種
+  // 発見バブルの「さらに話す」から左ペインの対話へ話題を引き継ぐための種
   // （設計書6.2の2段階構成：一次応答 → 自由記述への展開）
   const [chatSeed, setChatSeed] = useState(null); // { question, discoveryId } | null
+
+  // 対話ストリームがAIの返信を待っている間かどうか。DialoguePanelが立てる。
+  // 発見に関する会話（さらに話す）と自由な会話が同じ1本のストリームに
+  // 同時に流れ込むと、返信が来る順番と表示順がずれて誰の発言への返信か
+  // 分からなくなる。返信待ち中は発見一覧側の「さらに話す」を押せなくして、
+  // 2つの会話が交錯しないようにする。
+  const [isChatBusy, setIsChatBusy] = useState(false);
 
   // ── 育成インジケータ（設計書6.4）──
   const [growth, setGrowth] = useState({ level: 0 });
 
-  // 発見への「はい」「一部ちがう」で知識グラフに意味づけが書き戻されたとき、
-  // 右ペイン（本詳細）の意味づけ一覧に取り直しを促すためのバージョン番号。
+  // 発見への「はい」「一部ちがう」や、対話の要約確認で知識グラフに意味づけが
+  // 書き戻されたとき、右ペイン（本詳細）の意味づけ一覧に取り直しを促すための
+  // バージョン番号。書き戻す経路が複数あるので、関数として外に出す。
   const [conceptsVersion, setConceptsVersion] = useState(0);
+  const bumpConceptsVersion = useCallback(() => setConceptsVersion(v => v + 1), []);
 
   // ── 本棚のサイズ感（設定パネルの「本棚サイズの調整」）──
   // 画面幅に対する本棚ペインの割合。段が増えても縮まないよう固定幅にしたが、
   // 画面いっぱいだと圧迫感が出るので、ユーザーが自分で調整できるようにする。
-  const [shelfWidthPct, setShelfWidthPct] = useState(50); // 30〜50の範囲
+  const [shelfWidthPct, setShelfWidthPct] = useState(40); // 30〜50の範囲
 
-  // ── 左ペイン「発見と対話」の開閉 ──
-  // 本詳細（右）と違い特定の本に紐づかない常設の相棒機能なので、初期状態は
-  // 開いておく。ただし本棚の幅を圧迫するので、ユーザーが好きに収納できる。
-  const [isDialogueOpen, setIsDialogueOpen] = useState(true);
+  // ── 左ペイン「棚を見て気づいたこと」の開閉 ──
+  // 本詳細（右）と違い特定の本に紐づかない常設の相棒機能だが、本棚の幅を
+  // 圧迫するため初期状態はしまっておく。ユーザーがいつでも開ける。
+  const [isDialogueOpen, setIsDialogueOpen] = useState(false);
 
   const refreshDiscoveries = useCallback(async () => {
     setIsLoadingDiscoveries(true);
@@ -171,7 +175,7 @@ export function ShelfWorkspaceProvider({ children }) {
       // 「はい」「一部ちがう」は知識グラフに意味づけとして書き戻されるため、
       // 右ペイン（本詳細）が同じ本を開いていれば意味づけ一覧を取り直させる。
       if (status === "confirmed" || status === "modified") {
-        setConceptsVersion(v => v + 1);
+        bumpConceptsVersion();
       }
     } catch (err) {
       console.error("フィードバックの記録に失敗しました", err);
@@ -181,7 +185,7 @@ export function ShelfWorkspaceProvider({ children }) {
         list.map(d => (d.discovery_id === discoveryId ? { ...d, status: "pending" } : d))
       );
     }
-  }, [refreshGrowth]);
+  }, [refreshGrowth, bumpConceptsVersion]);
 
   // 優先度順（＝関連する本の数が多いほど大きなパターンとみなして上に出す）。
   // 同数のときは新しい発見を先に見せる（discoveries は createdAt DESC で来る）。
@@ -210,59 +214,29 @@ export function ShelfWorkspaceProvider({ children }) {
     runAnalysis({ silent: true });
   }, [hasLoadedDiscoveriesOnce, pendingDiscoveries.length, isLoadingDiscoveries, isAnalyzing, runAnalysis]);
 
-  const answeredDiscoveries = useMemo(
-    () => discoveries.filter(d => d.status !== "pending"),
-    [discoveries]
-  );
-
-  // 本棚に描く「発見の線」。未確定＝淡い光、確認済み＝実線（設計書6.3）。
-  // 全体の構造（structural）は個々の本のつながりというより俯瞰的な話で、
-  // 棚の上に線として描くと逆に読みにくいので対象外にする。
-  const discoveryLines = useMemo(() => {
-    const lines = [];
-    for (const d of discoveries) {
-      if (d.status === "rejected") continue;
-      if (d.type === "structural") continue;
-      const isbns = d.related_book_ids || [];
-      // 関連本を数珠つなぎにする（総当たりだと線が増えすぎて棚が読めなくなる）
-      for (let i = 0; i < isbns.length - 1; i++) {
-        lines.push({
-          discoveryId: d.discovery_id,
-          from: isbns[i],
-          to: isbns[i + 1],
-          confirmed: d.status === "confirmed" || d.status === "modified",
-          type: d.type,
-        });
-      }
-    }
-    return lines;
-  }, [discoveries]);
-
   const value = useMemo(() => ({
     selectedIsbns, setSelectedIsbns,
     focusIsbn, setFocusIsbn,
     focusDetail, isFocusLoading,
-    discoveries, pendingDiscoveries, answeredDiscoveries,
+    discoveries, pendingDiscoveries,
     isLoadingDiscoveries, refreshDiscoveries,
-    activeDiscoveryId, setActiveDiscoveryId,
-    isBatchOpen, setIsBatchOpen,
     answerDiscovery,
-    discoveryLines,
     highlightIsbns, setHighlightIsbns,
     conceptHighlight, setConceptHighlight,
     growth, refreshGrowth,
-    conceptsVersion,
+    conceptsVersion, bumpConceptsVersion,
     chatSeed, setChatSeed,
+    isChatBusy, setIsChatBusy,
     runAnalysis, isAnalyzing, analysisError,
     shelfWidthPct, setShelfWidthPct,
     isDialogueOpen, setIsDialogueOpen,
   }), [
     selectedIsbns, focusIsbn, focusDetail, isFocusLoading,
-    discoveries, pendingDiscoveries, answeredDiscoveries,
-    isLoadingDiscoveries, refreshDiscoveries, activeDiscoveryId, isBatchOpen,
-    answerDiscovery, discoveryLines, highlightIsbns, conceptHighlight,
-    growth, refreshGrowth, conceptsVersion,
-    chatSeed, runAnalysis, isAnalyzing, analysisError,
+    discoveries, pendingDiscoveries,
+    isLoadingDiscoveries, refreshDiscoveries,
+    answerDiscovery, highlightIsbns, conceptHighlight,
+    growth, refreshGrowth, conceptsVersion, bumpConceptsVersion,
+    chatSeed, isChatBusy, runAnalysis, isAnalyzing, analysisError,
     shelfWidthPct, isDialogueOpen,
   ]);
 

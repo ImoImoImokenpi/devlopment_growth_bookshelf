@@ -8,8 +8,10 @@ import { MyBookshelfProvider } from "./context/MyBookshelfContext";
 import Home from "./pages/Home";
 import Gallery from "./pages/Gallery";
 import Register from "./pages/Register";
-import Search from "./pages/Search";
 import KnowledgeGraph from "./pages/KnowledgeGraph";
+import BrowseLayout from "./pages/BrowseLayout";
+import ParticipantGrid from "./pages/ParticipantGrid";
+import ExploreShelf from "./pages/ExploreShelf";
 import Layout from "./components/Layout";
 import ShelfToGraphBridge from "./components/ShelfToGraphBridge"; // 本棚→知識グラフの遷移演出（試験導入・削除可）
 
@@ -21,10 +23,13 @@ function App() {
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
-              {/* <Route path="/Search" element={<Search />} /> */}
               <Route path="/Gallery" element={<Gallery />} />
               <Route path="/Register" element={<Register />} />
               <Route path="/KnowledgeGraph" element={<KnowledgeGraph />} />
+              <Route path="/Browse" element={<BrowseLayout />}>
+                <Route index element={<ParticipantGrid />} />
+                <Route path=":participantId" element={<ExploreShelf />} />
+              </Route>
             </Routes>
           </Layout>
           <ShelfToGraphBridge />

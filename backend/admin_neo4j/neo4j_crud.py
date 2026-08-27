@@ -313,6 +313,26 @@ class BookshelfNeo4j:
             ).single()
             return row is not None
 
+    def delete_concept_edge(self, edge_id: str, participant_id: str) -> bool:
+        """本と意味づけ(Concept)の結び付きを1件消す（本詳細パネルの「消す」）。
+        他に結び付く本がなくなったConceptノードは道連れに片付ける
+        （participantId+textで一意なので、他の意味づけと誤って消す心配はない）。"""
+        with get_session() as session:
+            row = session.run(
+                """
+                MATCH (:Book)-[r:CONCEPT {edgeId: $edge_id, participantId: $pid}]->(c:Concept)
+                DELETE r
+                WITH c
+                OPTIONAL MATCH (c)<-[remaining:CONCEPT]-()
+                WITH c, count(remaining) AS remainingCount
+                FOREACH (_ IN CASE WHEN remainingCount = 0 THEN [1] ELSE [] END | DETACH DELETE c)
+                RETURN true AS deleted
+                """,
+                edge_id=edge_id,
+                pid=participant_id,
+            ).single()
+            return row is not None
+
     def count_concept_nodes(self, participant_id: str) -> int:
         """その被験者が自由に付けた意味づけ（Concept）の累計数。
         本棚からの「強制対話」の閾値判定に使う。"""
@@ -1394,6 +1414,104 @@ class BookshelfNeo4j:
                 )
             ]
 
+    # ============================================================
+    # 対話履歴（左ペイン「発見と対話」）
+    #
+    # 以前はDialoguePanelのReact stateのみで持っていたため、リロードすると
+    # 消えていた。被験者ごとに機器を共有する研究運用（participant.js参照）
+    # では localStorage だと別の被験者のIDに乗ってしまう恐れがあるため、
+    # Discoveryと同じくバックエンド側にparticipantId付きで永続化する。
+    # ============================================================
+
+    def save_chat_message(
+        self,
+        participant_id: str,
+        role: str,
+        text: str,
+        related_book_ids: list[str] | None = None,
+    ) -> None:
+        with get_session() as session:
+            session.run(
+                """
+                CREATE (m:ChatMessage {
+                    messageId:      $mid,
+                    participantId:  $pid,
+                    role:           $role,
+                    text:           $text,
+                    relatedBookIds: $isbns,
+                    createdAt:      datetime()
+                })
+                """,
+                mid=str(uuid.uuid4()),
+                pid=participant_id,
+                role=role,
+                text=text,
+                isbns=related_book_ids or [],
+            )
+
+    def list_chat_history(self, participant_id: str, limit: int = 300) -> list[dict]:
+        with get_session() as session:
+            return [
+                dict(r)
+                for r in session.run(
+                    """
+                    MATCH (m:ChatMessage {participantId: $pid})
+                    RETURN m.messageId      AS message_id,
+                           m.role           AS role,
+                           m.text           AS text,
+                           m.relatedBookIds AS related_isbns,
+                           toString(m.createdAt) AS created_at
+                    ORDER BY m.createdAt ASC
+                    LIMIT $limit
+                    """,
+                    pid=participant_id,
+                    limit=limit,
+                )
+            ]
+
+    def clear_chat_history(self, participant_id: str) -> None:
+        with get_session() as session:
+            session.run(
+                "MATCH (m:ChatMessage {participantId: $pid}) DETACH DELETE m",
+                pid=participant_id,
+            )
+
+    def write_concept_for_books(
+        self,
+        participant_id: str,
+        meaning: str,
+        isbns: list[str],
+        origin: str = "chat_summary",
+    ) -> None:
+        """雑談の要約をユーザーが確認した上で意味づけとして書き戻す。
+        record_discovery_feedback の書き戻しと同じ形（MERGE Concept→CONCEPT edge）だが、
+        根拠がDiscoveryノードではなく対話そのものなので、対象の本をISBNで直接受け取る。"""
+        meaning = (meaning or "").strip()
+        isbns = [i for i in isbns if i]
+        if not meaning or not isbns:
+            return
+        with get_session() as session:
+            session.run(
+                """
+                MERGE (c:Concept {participantId: $pid, text: $meaning})
+                    ON CREATE SET c.conceptId = randomUUID(), c.createdAt = datetime()
+                WITH c
+                UNWIND $isbns AS isbn
+                MATCH (b:Book {isbn: isbn})
+                MERGE (b)-[r:CONCEPT {participantId: $pid}]->(c)
+                    ON CREATE SET r.edgeId = randomUUID(), r.createdAt = datetime(), r.reinforceCount = 1
+                    ON MATCH SET r.reinforceCount = coalesce(r.reinforceCount, 1) + 1
+                SET r.confidence       = 'confirmed',
+                    r.strength         = 1.0,
+                    r.origin           = $origin,
+                    r.lastReinforcedAt = datetime()
+                """,
+                pid=participant_id,
+                meaning=meaning,
+                isbns=isbns,
+                origin=origin,
+            )
+
     def get_growth_stats(self, participant_id: str) -> dict:
         """知識グラフがどれだけ育っているかの素の数値。
 
@@ -1466,6 +1584,7 @@ remove_book_ownership             = _neo4j.remove_book_ownership
 groups_from_neo4j                 = _neo4j.groups_from_neo4j
 save_concept                      = _neo4j.save_concept
 confirm_concept_edge              = _neo4j.confirm_concept_edge
+delete_concept_edge               = _neo4j.delete_concept_edge
 count_concept_nodes               = _neo4j.count_concept_nodes
 get_latest_concept_topic          = _neo4j.get_latest_concept_topic
 update_shelf_layout_chain         = _neo4j.update_shelf_layout_chain
@@ -1487,3 +1606,7 @@ record_discovery_feedback         = _neo4j.record_discovery_feedback
 list_discoveries                  = _neo4j.list_discoveries
 get_answered_discovery_questions  = _neo4j.get_answered_discovery_questions
 get_growth_stats                  = _neo4j.get_growth_stats
+save_chat_message                 = _neo4j.save_chat_message
+list_chat_history                 = _neo4j.list_chat_history
+clear_chat_history                = _neo4j.clear_chat_history
+write_concept_for_books           = _neo4j.write_concept_for_books

@@ -9,15 +9,16 @@ from admin_neo4j.neo4j_driver import get_session
 from admin_neo4j.neo4j_crud import (
     get_graph_overview, get_book_relations, get_book_concepts, get_book_basic, save_book_impression,
     get_book_impressions, get_book_edges, get_subgraph_for_isbns, get_full_graph,
-    count_concept_nodes, get_latest_concept_topic, confirm_concept_edge,
+    count_concept_nodes, get_latest_concept_topic, confirm_concept_edge, delete_concept_edge,
     save_discoveries, record_discovery_feedback, list_discoveries,
     get_answered_discovery_questions, query_co_occurrence_pairs, get_growth_stats,
+    save_chat_message, list_chat_history, clear_chat_history, write_concept_for_books,
 )
 from utils.llm_provider import get_llm_client
 from utils.network_analysis import analyze_book_network
 from utils.shelf_pattern_analysis import analyze_shelf_patterns
 from database import get_db
-from participant import resolve_participant_id
+from participant import resolve_participant_id, is_valid_participant_id
 from models import ShelfLayout, RegisteredBook, ShelfDesign
 
 router = APIRouter(prefix="/knowledge_graph")
@@ -563,6 +564,40 @@ def _parse_chat_reply(raw: str, valid_isbns: set[str]) -> tuple[str, list[str]]:
     return text, []
 
 
+def _build_chat_summary_prompt(history: list) -> str:
+    """「終わる」で対話を締めたときに、そこまでの雑談から新しい意味づけが
+    生まれていないかをAI自身に振り返らせるためのプロンプト。"""
+    lines = ["以下はユーザーと本棚AIとの会話です。"]
+    for m in history:
+        speaker = "ユーザー" if m.role == "user" else "本棚"
+        lines.append(f"{speaker}: {m.text}")
+    lines.append("")
+    lines.append(
+        "この会話を通じてユーザーが言葉にした、本や本同士の関係についての意味づけ・気づきを"
+        "1文程度で要約してください。挨拶や相槌だけで、新しい意味づけと呼べる内容がなければ"
+        "summarizable を false にしてください。"
+    )
+    lines.append(
+        "出力は次のJSON形式のみとし、前置きや説明文、コードブロック記法は付けないでください。"
+    )
+    lines.append('{"summarizable": true, "summary": "一言のまとめ"}')
+    return "\n".join(lines)
+
+
+def _parse_chat_summary(raw: str) -> tuple[bool, str]:
+    text = raw.strip()
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.MULTILINE).strip()
+    obj_start, obj_end = text.find("{"), text.rfind("}")
+    candidate = text[obj_start:obj_end + 1] if obj_start != -1 and obj_end > obj_start else text
+    try:
+        data = json.loads(candidate)
+        summary = str(data.get("summary", "")).strip()
+        summarizable = bool(data.get("summarizable", False)) and bool(summary)
+        return summarizable, summary
+    except (json.JSONDecodeError, AttributeError):
+        return False, ""
+
+
 class AnalysisChatMessage(BaseModel):
     role: str  # "user" | "ai"
     text: str
@@ -618,6 +653,8 @@ def get_forced_whisper(
     design.last_forced_concept_count = current_count
     db.commit()
 
+    save_chat_message(participant_id, "ai", reply, topic["isbns"][:5])
+
     return {
         "forced": True,
         "isbn": anchor_isbn,
@@ -626,6 +663,80 @@ def get_forced_whisper(
         "reply": reply,
         "related_isbns": topic["isbns"][:5],
     }
+
+
+@router.get("/chat-history")
+def get_chat_history(participant_id: str = Depends(resolve_participant_id)):
+    """左ペイン「発見と対話」の対話履歴（設計書6.1）。
+    以前はReact stateのみで保持しリロードで消えていたため、被験者ごとに
+    バックエンド側へ永続化したものを読み直す。"""
+    return {"messages": list_chat_history(participant_id)}
+
+
+@router.delete("/chat-history")
+def delete_chat_history(participant_id: str = Depends(resolve_participant_id)):
+    """「会話を消す」で押されたときに、永続化した履歴側も一緒に消す。"""
+    clear_chat_history(participant_id)
+    return {"ok": True}
+
+
+class ChatMessageRequest(BaseModel):
+    role: str  # "user" | "ai"
+    text: str
+    related_isbns: list[str] = []
+
+
+@router.post("/chat-message")
+def post_chat_message(
+    body: ChatMessageRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """book-chat/forced-whisper を経由しないメッセージ（発見カードの「もっと話す」で
+    差し込まれるAIの問いかけなど）も履歴として残すための汎用エンドポイント。"""
+    save_chat_message(participant_id, body.role, body.text, body.related_isbns)
+    return {"ok": True}
+
+
+class ChatSummaryRequest(BaseModel):
+    history: list[AnalysisChatMessage] = []
+
+
+@router.post("/chat-summary")
+def chat_summary(
+    body: ChatSummaryRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """「終わる」を押したときに、そこまでの会話から意味づけを提案する。
+    ここではまだ何も書き戻さない。ユーザーが/chat-summary/confirmで確認して
+    初めて知識グラフに残る（発見と同じく、AIの仮説→ユーザーの判断、の順を守る）。"""
+    if not body.history:
+        raise HTTPException(status_code=400, detail="要約する会話がありません")
+
+    prompt = _build_chat_summary_prompt(body.history)
+    try:
+        raw = _llm.generate_json(prompt, max_tokens=200)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"会話の振り返りに失敗しました: {e}")
+
+    summarizable, summary = _parse_chat_summary(raw)
+    return {"summarizable": summarizable, "summary": summary}
+
+
+class ChatSummaryConfirmRequest(BaseModel):
+    summary: str
+    related_isbns: list[str] = []
+
+
+@router.post("/chat-summary/confirm")
+def confirm_chat_summary(
+    body: ChatSummaryConfirmRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """/chat-summary の提案をユーザーが承認したときだけ、実際に意味づけとして書き戻す。"""
+    if not body.summary.strip() or not body.related_isbns:
+        raise HTTPException(status_code=400, detail="まとめか対象の本が指定されていません")
+    write_concept_for_books(participant_id, body.summary, body.related_isbns)
+    return {"ok": True}
 
 
 class BookChatRequest(BaseModel):
@@ -671,7 +782,13 @@ def book_chat(
         raise HTTPException(status_code=502, detail=f"対話に失敗しました: {e}")
 
     reply, related_isbns = _parse_chat_reply(raw, valid_isbns)
-    return {"reply": _ensure_trailing_question(reply), "related_isbns": related_isbns}
+    reply = _ensure_trailing_question(reply)
+
+    if body.message:
+        save_chat_message(participant_id, "user", body.message)
+    save_chat_message(participant_id, "ai", reply, related_isbns)
+
+    return {"reply": reply, "related_isbns": related_isbns}
 
 
 @router.post("/analyze")
@@ -804,3 +921,216 @@ def confirm_concept_edge_endpoint(
     if not ok:
         raise HTTPException(status_code=404, detail="エッジが見つかりません")
     return {"ok": True}
+
+
+@router.delete("/concept-edge/{edge_id}")
+def delete_concept_edge_endpoint(
+    edge_id: str,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """本詳細パネルの意味づけ一覧から「消す」を押したときの削除。"""
+    ok = delete_concept_edge(edge_id, participant_id=participant_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="エッジが見つかりません")
+    return {"ok": True}
+
+
+# ============================================================
+# 他の参加者との比較対話（「他の人の本棚を観察する」画面）
+#
+# 閲覧は読み取り専用（既存の /book/{isbn}/basic 等をそのまま呼べば良い）だが、
+# ここでは「自分の知識グラフ」と「相手の知識グラフ」の構造的な違いを根拠に
+# 話しかける対話だけを新設する。書き込みは対話ログの保存のみで、
+# 相手の蔵書・意味づけには一切触れない。
+# ============================================================
+
+def _build_participant_stats(participant_id: str) -> dict:
+    """比較の材料になる統計一式（俯瞰統計＋ネットワーク分析）。
+    /analyze と違い棚の並びには依存せず、その人の蔵書全体を対象にする。"""
+    overview = get_graph_overview(participant_id)
+    edges = get_book_edges(participant_id)
+    network = analyze_book_network(nodes=overview["book_catalog"], edges=edges)
+    return {"overview": overview, "network": network}
+
+
+def _require_comparable(other_id: str, participant_id: str) -> None:
+    if not is_valid_participant_id(other_id):
+        raise HTTPException(status_code=400, detail="other_id が不正です")
+    if other_id == participant_id:
+        raise HTTPException(status_code=400, detail="自分自身とは比較できません")
+
+
+def _build_comparison_stats_lines(label: str, overview: dict, network: dict) -> list[str]:
+    lines = [f"【{label}の蔵書】", f"総冊数: {overview['total_books']}冊", "", "NDC分類の内訳:"]
+    for row in overview["ndc_distribution"][:6]:
+        name = NDC_L1.get(row["ndc_l1"], row["ndc_l1"] or "不明")
+        lines.append(f"- {name}: {row['book_count']}冊")
+
+    lines.append("")
+    lines.append("複数の本に共通する意味づけ:")
+    if overview["concept_clusters"]:
+        for row in overview["concept_clusters"][:5]:
+            titles = "、".join(row["titles"][:3])
+            lines.append(f"- 「{row['concept']}」({row['book_count']}冊): {titles}")
+    else:
+        lines.append("- なし")
+
+    lines.append("")
+    lines.append("複数冊持っている著者:")
+    if overview["favorite_authors"]:
+        for row in overview["favorite_authors"][:5]:
+            lines.append(f"- {row['author']}({row['book_count']}冊)")
+    else:
+        lines.append("- なし")
+
+    lines.append("")
+    lines.append("ハブとなる本・テーマクラスタ（ネットワーク構造分析）:")
+    if network["hub_books"]:
+        for b in network["hub_books"][:4]:
+            lines.append(f"- [{b['isbn']}] {b['title']}")
+    else:
+        lines.append("- なし")
+    if network["communities"]:
+        for c in network["communities"][:3]:
+            titles = "、".join(b["title"] for b in c["books"][:3])
+            lines.append(f"- クラスタ（{c['size']}冊）: {titles}")
+
+    return lines
+
+
+def _build_comparison_prompt(
+    other_id: str,
+    me_lines: list[str],
+    other_lines: list[str],
+    history: list,
+    message: str | None,
+) -> str:
+    lines = [
+        "あなたは2人の読書家の蔵書を見比べ、対話しながら違いへの気づきを深めてくれる、気さくな伴走者です。",
+        "以下はユーザー本人と、比較対象の参加者それぞれの蔵書ナレッジグラフから抽出した統計情報です。",
+        "",
+        *me_lines,
+        "",
+        *other_lines,
+        "",
+    ]
+
+    if not history and not message:
+        lines.append("これから対話を始めます。")
+        lines.append(
+            f"上記2人の蔵書を比べて見える違いや共通点の中から、ユーザーが気づいていなさそうな点を1つ選び、"
+            f"{other_id}さんの本棚との違いについて話しかけてください。日本語で2〜3文以内、堅苦しくない口調で。"
+        )
+    else:
+        lines.append("これまでの対話:")
+        for m in history:
+            speaker = "ユーザー" if m.role == "user" else "あなた"
+            lines.append(f"{speaker}: {m.text}")
+        if message:
+            lines.append(f"ユーザー: {message}")
+        lines.append(
+            "上記2人の蔵書の違い・共通点を根拠にしながら、ユーザーの発言に応答してください。"
+            "共感的に受け止めつつ、必要に応じて具体的な違いに触れ、日本語で2〜4文以内で応答してください。"
+        )
+
+    lines.append("")
+    lines.append(
+        "【重要】reply の最後の1文は必ずユーザーへの問いかけにし、文末を「？」で終えてください。問いかけの無い返答は不可です。"
+    )
+    lines.append(
+        "返答の中で具体的に触れた本があれば、そのISBNを related_isbns に1〜5冊程度含めてください。"
+    )
+    lines.append(
+        "related_isbns には上記コンテキストに登場したISBNの文字列のみを使い、特に触れていなければ空配列にしてください。"
+    )
+    lines.append(
+        "出力は次のJSONオブジェクトの形式のみとし、前置きや説明文、コードブロック記法は付けないでください。"
+    )
+    lines.append('{"reply": "対話の返答文", "related_isbns": ["isbn1", "isbn2"]}')
+    return "\n".join(lines)
+
+
+def _compare_chat_scope(me: str, other_id: str) -> str:
+    """比較対話ログ専用の合成キー。参加者IDの正規表現は':'を許さないため、
+    実在の participant_id と衝突しない。"""
+    return f"cmp::{me}::{other_id}"
+
+
+@router.get("/compare/{other_id}")
+def compare_overview(
+    other_id: str,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """比較対話パネル冒頭の簡易サマリー用。自分と相手、双方の蔵書統計を返す。
+    どちらかが0冊でもエラーにしない（相手がまだ本を並べていない場合がある）。"""
+    _require_comparable(other_id, participant_id)
+    me_stats = _build_participant_stats(participant_id)
+    other_stats = _build_participant_stats(other_id)
+    return {
+        "me": {"participant_id": participant_id, **me_stats},
+        "other": {"participant_id": other_id, **other_stats},
+    }
+
+
+class CompareChatRequest(BaseModel):
+    history: list[AnalysisChatMessage] = []
+    message: str | None = None
+
+
+@router.get("/compare/{other_id}/chat-history")
+def get_compare_chat_history(
+    other_id: str,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    if not is_valid_participant_id(other_id):
+        raise HTTPException(status_code=400, detail="other_id が不正です")
+    return {"messages": list_chat_history(_compare_chat_scope(participant_id, other_id))}
+
+
+@router.delete("/compare/{other_id}/chat-history")
+def delete_compare_chat_history(
+    other_id: str,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    if not is_valid_participant_id(other_id):
+        raise HTTPException(status_code=400, detail="other_id が不正です")
+    clear_chat_history(_compare_chat_scope(participant_id, other_id))
+    return {"ok": True}
+
+
+@router.post("/compare/{other_id}/chat")
+def compare_chat(
+    other_id: str,
+    body: CompareChatRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """自分の知識グラフと相手の知識グラフの構造的な違いを根拠にした対話。
+    相手の蔵書・意味づけへは一切書き込まない（対話ログは合成キーで自分側にだけ残る）。"""
+    _require_comparable(other_id, participant_id)
+
+    me_stats = _build_participant_stats(participant_id)
+    other_stats = _build_participant_stats(other_id)
+    me_lines = _build_comparison_stats_lines("あなた", me_stats["overview"], me_stats["network"])
+    other_lines = _build_comparison_stats_lines(other_id, other_stats["overview"], other_stats["network"])
+
+    valid_isbns = (
+        {r["isbn"] for r in me_stats["overview"]["book_catalog"] if r.get("isbn")}
+        | {r["isbn"] for r in other_stats["overview"]["book_catalog"] if r.get("isbn")}
+    )
+
+    recent_history = body.history[-8:]
+    prompt = _build_comparison_prompt(other_id, me_lines, other_lines, recent_history, body.message)
+    try:
+        raw = _llm.generate_json(prompt, max_tokens=450)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"対話に失敗しました: {e}")
+
+    reply, related_isbns = _parse_chat_reply(raw, valid_isbns)
+    reply = _ensure_trailing_question(reply)
+
+    scope = _compare_chat_scope(participant_id, other_id)
+    if body.message:
+        save_chat_message(scope, "user", body.message)
+    save_chat_message(scope, "ai", reply, related_isbns)
+
+    return {"reply": reply, "related_isbns": related_isbns}

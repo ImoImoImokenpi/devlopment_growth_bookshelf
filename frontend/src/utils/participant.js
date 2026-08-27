@@ -20,7 +20,10 @@ const STORAGE_KEY = "growth_bookshelf.participant_id";
 
 export const DEFAULT_PARTICIPANT_ID = "P00";
 
-// 被験者IDの候補。P00 は開発用・既存データ用。
+// 「他の参加者の本棚を観察する」画面ではP00をプロトタイプ参加者として扱う。
+export const PROTOTYPE_PARTICIPANT_ID = "P00";
+
+// 被験者IDの候補。P00 は開発用・既存データ用（かつプロトタイプ参加者）。
 export const PARTICIPANT_IDS = [
   DEFAULT_PARTICIPANT_ID,
   ...Array.from({ length: 20 }, (_, i) => `P${String(i + 1).padStart(2, "0")}`),
@@ -60,9 +63,14 @@ export function installParticipantHeader() {
     const full = url.startsWith("http") ? url : (config.baseURL || "") + url;
     if (isBackendUrl(full)) {
       // axios v1 の headers は AxiosHeaders。set があればそちらを使う。
+      // 呼び出し側が既に明示的にヘッダを付けている場合（他の参加者の棚を
+      // 読み取る withParticipant() 経由の呼び出しなど）はそちらを優先し、
+      // 自分のIDで上書きしない。
       if (config.headers && typeof config.headers.set === "function") {
-        config.headers.set(PARTICIPANT_HEADER, getParticipantId());
-      } else {
+        if (!config.headers.has(PARTICIPANT_HEADER)) {
+          config.headers.set(PARTICIPANT_HEADER, getParticipantId());
+        }
+      } else if (!config.headers || !(PARTICIPANT_HEADER in config.headers)) {
         config.headers = {
           ...(config.headers || {}),
           [PARTICIPANT_HEADER]: getParticipantId(),
@@ -95,8 +103,21 @@ export function installParticipantHeader() {
           ? input.headers
           : undefined)
     );
-    headers.set(PARTICIPANT_HEADER, getParticipantId());
+    // 呼び出し側が既に明示的にヘッダを付けている場合は上書きしない
+    // （他の参加者の棚を読み取る withParticipant() 経由の呼び出しなど）。
+    if (!headers.has(PARTICIPANT_HEADER)) {
+      headers.set(PARTICIPANT_HEADER, getParticipantId());
+    }
 
     return originalFetch(input, { ...(init || {}), headers });
   };
+}
+
+// 「他の参加者の本棚を観察する」画面専用。自分のIDを変えずに、
+// 指定した参加者のデータだけを読み取るための fetch オプションを作る。
+// 例: fetch(`${API_ORIGIN}/bookshelf/`, withParticipant(otherId))
+export function withParticipant(participantId, init = {}) {
+  const headers = new Headers(init.headers || undefined);
+  headers.set(PARTICIPANT_HEADER, participantId);
+  return { ...init, headers };
 }

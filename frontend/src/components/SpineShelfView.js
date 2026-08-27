@@ -17,10 +17,6 @@ const MAX_BOOK_HEIGHT = 250;
 const SHELF_MAX_WIDTH = 800;
 const LONG_PRESS_MS      = 400; // これ以上押し続けたら「移動」ジェスチャーとみなす
 const TAP_MOVE_THRESHOLD = 6;   // 長押しに至らなかった場合、この移動量未満なら「タップ」扱い
-const SHELF_WIDTH_MIN  = 30;
-const SHELF_WIDTH_MAX  = 50;
-const SHELF_WIDTH_STEP = 5;
-
 const SPINE_PALETTES = [
   { bg: "#1a1a2e", text: "#e8d5a3", accent: "#c9a84c" },
   { bg: "#2d1b33", text: "#f0e6d3", accent: "#d4a0c0" },
@@ -109,16 +105,14 @@ function detectStacks(books, frameLeft, frameRight) {
 // SpineShelfView Component
 // ─────────────────────────────────────────────
 function SpineShelfView() {
-  const { myBookshelf, fetchBookshelf, addShelfRow, removeShelfRow, removeBook } = useContext(MyBookshelfContext);
+  const { myBookshelf, fetchBookshelf, removeBook } = useContext(MyBookshelfContext);
 
   // 選択・強調・発見の線は右ペインと共有する（設計書6.1の2ペイン構成）
   const {
     selectedIsbns, setSelectedIsbns,
     focusIsbn, setFocusIsbn,
     highlightIsbns, conceptHighlight,
-    discoveryLines,
     refreshDiscoveries, refreshGrowth,
-    shelfWidthPct, setShelfWidthPct,
   } = useShelfWorkspace();
 
   const svgRef = useRef();
@@ -136,7 +130,6 @@ function SpineShelfView() {
   const books = useMemo(() => shelves.flatMap((s) => s.books), [shelves]);
 
   const [localLayout, setLocalLayout] = useState([]);
-  const [isToolbarOpen, setIsToolbarOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [meaningInput, setMeaningInput] = useState("");
   const [isSavingMeaning, setIsSavingMeaning] = useState(false);
@@ -750,58 +743,7 @@ function SpineShelfView() {
         .style("pointer-events", "none");
     });
 
-    // 発見の可視化（設計書6.3）
-    //   未確定の発見 … 淡い光の線
-    //   確認された発見 … 実線
-    // 本の上を弧で結ぶ。直線だと他の背表紙を横切って何と何が繋がっているか読めない。
-    svg.selectAll(".discovery-arc").remove();
-    // 発見の線は、その発見に関係する本を選んでいるときだけ出す。
-    // 常時描いていると棚が線だらけになり、本そのものが読めなくなる。
-    const activeIsbns = new Set([
-      ...(focusIsbn ? [focusIsbn] : []),
-      ...selectedIsbns,
-      // 右ペインで発見カードを選ぶと、その発見が根拠にした本が highlightIsbns に入る。
-      // 発見と棚を同時に見られるよう、そのときも線を出す。
-      ...highlightIsbns,
-    ]);
-    const visibleLines = activeIsbns.size
-      ? discoveryLines.filter(l => activeIsbns.has(l.from) || activeIsbns.has(l.to))
-      : [];
-
-    visibleLines.forEach(line => {
-      const a = booksWithPosition.find(x => x.isbn === line.from);
-      const b = booksWithPosition.find(x => x.isbn === line.to);
-      if (!a || !b) return;
-
-      const ax = a.x + resolveSpineWidth(a) / 2;
-      const ay = a.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(a));
-      const bx = b.x + resolveSpineWidth(b) / 2;
-      const by = b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b));
-
-      // 弧の頂点。離れた本ほど高く持ち上げたいが、上限を決めないと
-      // 段の上枠を突き抜けて描画領域の外へ出てしまい、途中で切れた線に見える。
-      // その段の天井（本の上端の少し上）より上には出さない。
-      const shelfTop = Math.min(a.y, b.y) - TOP_GAP + 6;
-      const rise = Math.min(26, 10 + Math.abs(bx - ax) * 0.04);
-      const midY = Math.max(shelfTop, Math.min(ay, by) - rise);
-
-      svg.append("path").attr("class", "discovery-arc")
-        .attr("d", `M ${ax} ${ay} Q ${(ax + bx) / 2} ${midY} ${bx} ${by}`)
-        .attr("fill", "none")
-        .attr("stroke", line.confirmed ? "#c9a84c" : "#ffeab4")
-        .attr("stroke-width", line.confirmed ? 1.4 : 1.1)
-        .attr("stroke-linecap", "round")
-        .attr("stroke-dasharray", line.confirmed ? null : "1,7")
-        // 意味づけの色分けを見ている間だけは引っ込める（そちらに集中させるため）。
-        // 選択中は、その本の発見を見たくて選んでいるので出したままにする。
-        .attr("opacity", conceptHighlight ? 0.1 : (line.confirmed ? 0.7 : 0.55))
-        .style("filter", line.confirmed
-          ? "drop-shadow(0 0 2px rgba(201,168,76,0.5))"
-          : "drop-shadow(0 0 4px rgba(255,234,180,0.6))")
-        .style("pointer-events", "none");
-    });
-
-  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns, conceptHighlight, focusIsbn, discoveryLines]);
+  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns, conceptHighlight, focusIsbn]);
 
   // ── ラバーバンド選択 ──
   useEffect(() => {
@@ -920,74 +862,9 @@ function SpineShelfView() {
           zIndex: 9999,
         }} />
       )}
-      <div
-        style={{
-          ...s.fab,
-          transform: isToolbarOpen ? "rotate(45deg)" : "rotate(0deg)",
-          transition: "transform 0.25s ease, box-shadow 0.2s",
-        }}
-        onClick={() => setIsToolbarOpen(v => !v)}
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/>
-          <line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>
-          <line x1="1" y1="14" x2="7" y2="14"/>
-          <line x1="9" y1="8" x2="15" y2="8"/>
-          <line x1="17" y1="16" x2="23" y2="16"/>
-        </svg>
-      </div>
-
-      {isToolbarOpen && (
-        <div style={s.floatingPanel}>
-          <div style={s.panelSectionTitle}>段の増減</div>
-          <button
-            onClick={addShelfRow}
-            style={s.panelBtn}
-            onMouseEnter={e => e.currentTarget.style.background = "#f5f0e8"}
-            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            段を追加
-          </button>
-          <button
-            onClick={removeShelfRow}
-            style={{ ...s.panelBtn, color: "#c9506a" }}
-            onMouseEnter={e => e.currentTarget.style.background = "#fff0f2"}
-            onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            段を削除
-          </button>
-
-          <div style={s.panelDivider} />
-
-          <div style={s.panelSectionTitle}>本棚サイズの調整</div>
-          <div style={s.sizeRow}>
-            <button
-              onClick={() => setShelfWidthPct(v => Math.max(SHELF_WIDTH_MIN, v - SHELF_WIDTH_STEP))}
-              style={{ ...s.sizeBtn, ...(shelfWidthPct <= SHELF_WIDTH_MIN ? s.sizeBtnDisabled : {}) }}
-              disabled={shelfWidthPct <= SHELF_WIDTH_MIN}
-              title="本棚を小さくする（圧迫感を減らす）"
-            >
-              －
-            </button>
-            <span style={s.sizeValue}>{shelfWidthPct}%</span>
-            <button
-              onClick={() => setShelfWidthPct(v => Math.min(SHELF_WIDTH_MAX, v + SHELF_WIDTH_STEP))}
-              style={{ ...s.sizeBtn, ...(shelfWidthPct >= SHELF_WIDTH_MAX ? s.sizeBtnDisabled : {}) }}
-              disabled={shelfWidthPct >= SHELF_WIDTH_MAX}
-              title="本棚を大きくする"
-            >
-              ＋
-            </button>
-          </div>
-        </div>
-      )}
+      {/* 段の増減・本棚サイズの調整・表示切り替えは ShelfSettingsMenu（右下の
+          設定ボタン）に集約した。Home.js側でSpineShelfView/OwnBookGridと並べて
+          常に表示できるようにするため、ここでは持たない。 */}
 
       {selectedIsbns.length > 0 && !isModalOpen && (
         <div style={s.selectionBar}>
@@ -1086,15 +963,6 @@ const s = {
     fontSize: "14px", lineHeight: 1.6, fontFamily: "inherit",
     resize: "vertical", boxSizing: "border-box",
   },
-  fab: {
-    position: "fixed", bottom: "30px", right: "30px",
-    width: "48px", height: "48px", borderRadius: "50%",
-    backgroundColor: "#c9a84c", color: "#fff",
-    display: "flex", justifyContent: "center", alignItems: "center",
-    cursor: "pointer",
-    boxShadow: "0 4px 16px rgba(201,168,76,0.45)",
-    zIndex: 1000,
-  },
   selectionBar: {
     position: "fixed",
     bottom: "90px",
@@ -1114,51 +982,6 @@ const s = {
     fontSize: "13px",
     fontWeight: "600",
     color: "#2a1f0e",
-  },
-  floatingPanel: {
-    position: "fixed", bottom: "90px", right: "30px",
-    backgroundColor: "#fdfcf8",
-    border: "1px solid #ede8da",
-    padding: "14px 16px",
-    borderRadius: "14px",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-    display: "flex", flexDirection: "column",
-    minWidth: "160px",
-    zIndex: 1000,
-  },
-  panelSectionTitle: {
-    fontSize: "10px", fontWeight: "700", color: "#c9a84c",
-    letterSpacing: "0.1em", textTransform: "uppercase",
-    marginBottom: "8px",
-  },
-  panelDivider: {
-    height: "1px", background: "#ede8da", margin: "10px 0",
-  },
-  panelBtn: {
-    display: "flex", alignItems: "center", gap: "8px",
-    padding: "8px 10px", borderRadius: "8px",
-    border: "none", background: "transparent",
-    color: "#4a3728", fontSize: "13px", fontWeight: "600",
-    cursor: "pointer", textAlign: "left", width: "100%",
-    transition: "background 0.15s",
-  },
-  sizeRow: {
-    display: "flex", alignItems: "center", justifyContent: "space-between",
-    gap: "8px",
-  },
-  sizeBtn: {
-    width: "28px", height: "28px", borderRadius: "8px",
-    border: "1px solid #e0d5b8", background: "#fff",
-    color: "#4a3728", fontSize: "15px", fontWeight: "700",
-    cursor: "pointer", lineHeight: 1,
-    display: "flex", alignItems: "center", justifyContent: "center",
-  },
-  sizeBtnDisabled: {
-    opacity: 0.4, cursor: "not-allowed",
-  },
-  sizeValue: {
-    fontSize: "13px", fontWeight: "700", color: "#2a1f0e",
-    minWidth: "36px", textAlign: "center",
   },
 };
 

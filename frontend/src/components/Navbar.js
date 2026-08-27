@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { MyHandContext } from "../context/MyHandContext";
 import HandPanel from "./HandPanel";
 import { Link, useLocation } from "react-router-dom";
@@ -8,17 +8,40 @@ export default function Navbar() {
     const { myHand } = useContext(MyHandContext);
     const [isOpen, setIsOpen] = useState(false);
     const [isCompact, setIsCompact] = useState(false);
+    const [isPrepOpen, setIsPrepOpen] = useState(false);
+    const prepRef = useRef(null);
     const participantId = getParticipantId();
 
     const location = useLocation();
     const currentPath = location.pathname;
 
+    // 「みんなの本棚」→「P01の本棚」のように、リンク先がそのページ自身だけでなく
+    // 配下のページ（/Browse/:id、BrowseLayoutの子ルート）も含む場合がある。
+    // 個別の本棚を見ている間も実質「みんなの本棚」の中にいるので、その間は
+    // ナビバーから消す（現在地と同じページへのリンクを消すのと同じ扱いにする）。
+    const isCurrentSection = (linkPath) =>
+        linkPath === currentPath ||
+        (linkPath === "/Browse" && currentPath.startsWith("/Browse/"));
+
+    // 中核の画面はここ。知識グラフはいったん非表示にしている
+    // （ページ・ルート自体は残したまま、ナビからのみ外す）。
     const links = [
         { path: "/", label: "My本棚", icon: (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="3" width="7" height="18"/><rect x="9" y="3" width="7" height="18"/><rect x="16" y="8" width="6" height="13"/>
             </svg>
         )},
+        { path: "/Browse", label: "みんなの本棚", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        )},
+    ];
+
+    // 登録・ギャラリーは便宜的な機能（実験の準備作業）なので、単独のリンクとして
+    // 並べず「実験準備」1つにまとめてドロップダウンに収める。
+    const prepLinks = [
         { path: "/Gallery", label: "ギャラリー", icon: (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
@@ -29,13 +52,8 @@ export default function Navbar() {
                 <path d="M12 5v14M5 12h14"/>
             </svg>
         )},
-        { path: "/KnowledgeGraph", label: "知識グラフ", icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="5" cy="12" r="2"/><circle cx="19" cy="5" r="2"/><circle cx="19" cy="19" r="2"/>
-                <line x1="7" y1="11" x2="17" y2="6"/><line x1="7" y1="13" x2="17" y2="18"/>
-            </svg>
-        )},
     ];
+    const isPrepSectionActive = prepLinks.some((link) => isCurrentSection(link.path));
 
     useEffect(() => {
         const handleScroll = () => {
@@ -45,6 +63,18 @@ export default function Navbar() {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    // 「実験準備」ドロップダウン：外側クリックとページ遷移で閉じる
+    useEffect(() => {
+        if (!isPrepOpen) return;
+        const handleClickOutside = (e) => {
+            if (prepRef.current && !prepRef.current.contains(e.target)) setIsPrepOpen(false);
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isPrepOpen]);
+
+    useEffect(() => { setIsPrepOpen(false); }, [currentPath]);
 
     return (
         <>
@@ -80,9 +110,9 @@ export default function Navbar() {
             >
                 {/* 左側リンク一覧 */}
                 <div style={{ display: "flex", gap: "10px" }}>
-                    {links
-                        .filter((link) => link.path !== currentPath)
-                        .map((link) => (
+                    {links.map((link) => {
+                        const isActive = isCurrentSection(link.path);
+                        return (
                             <Link
                                 key={link.path}
                                 to={link.path}
@@ -90,24 +120,120 @@ export default function Navbar() {
                                     textDecoration: "none",
                                     padding: "6px 14px",
                                     borderRadius: "999px",
-                                    color: "#333",
+                                    color: isActive ? "#fff" : "#333",
+                                    background: isActive ? "#c9a84c" : "transparent",
                                     fontSize: "14px",
-                                    fontWeight: "500",
+                                    fontWeight: isActive ? "700" : "500",
                                     transition: "all 0.2s ease",
                                     display: "flex",
                                     alignItems: "center",
                                     gap: "6px",
                                 }}
                                 onMouseEnter={(e) => {
-                                    e.target.style.backgroundColor = "rgba(0,0,0,0.05)";
+                                    if (!isActive) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
                                 }}
                                 onMouseLeave={(e) => {
-                                    e.target.style.backgroundColor = "transparent";
+                                    if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
                                 }}
                             >
                                 {link.icon} {link.label}
                             </Link>
-                        ))}
+                        );
+                    })}
+
+                    {/* 実験準備（登録・ギャラリー）：便宜的な機能なのでまとめて1つの
+                        ドロップダウンに収め、中核の画面と並べない。今いる場所が
+                        この中にあるときは、ボタン自体も色付けして現在地を示す。 */}
+                    <div ref={prepRef} style={{ position: "relative" }}>
+                        <button
+                            type="button"
+                            onClick={() => setIsPrepOpen((v) => !v)}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "6px 14px",
+                                borderRadius: "999px",
+                                border: "none",
+                                background: isPrepSectionActive ? "#c9a84c" : (isPrepOpen ? "rgba(0,0,0,0.08)" : "transparent"),
+                                color: isPrepSectionActive ? "#fff" : "#333",
+                                fontSize: "14px",
+                                fontWeight: isPrepSectionActive ? "700" : "500",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!isPrepSectionActive && !isPrepOpen) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isPrepSectionActive && !isPrepOpen) e.currentTarget.style.backgroundColor = "transparent";
+                            }}
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 2v6.3L4.6 17a2 2 0 0 0 1.8 3h11.2a2 2 0 0 0 1.8-3L15 8.3V2"/>
+                                <path d="M9 2h6"/>
+                                <path d="M7 14h10"/>
+                            </svg>
+                            実験準備
+                            <svg
+                                width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                                style={{ transform: isPrepOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+                            >
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+
+                        {isPrepOpen && (
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: "calc(100% + 8px)",
+                                    left: 0,
+                                    background: "#fff",
+                                    borderRadius: "14px",
+                                    boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+                                    border: "1px solid rgba(0,0,0,0.06)",
+                                    padding: "6px",
+                                    minWidth: "150px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "2px",
+                                    zIndex: 5001,
+                                }}
+                            >
+                                {prepLinks.map((link) => {
+                                    const isActive = isCurrentSection(link.path);
+                                    return (
+                                        <Link
+                                            key={link.path}
+                                            to={link.path}
+                                            onClick={() => setIsPrepOpen(false)}
+                                            style={{
+                                                textDecoration: "none",
+                                                padding: "8px 12px",
+                                                borderRadius: "10px",
+                                                color: isActive ? "#fff" : "#333",
+                                                background: isActive ? "#c9a84c" : "transparent",
+                                                fontSize: "13.5px",
+                                                fontWeight: isActive ? "700" : "500",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "8px",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (!isActive) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.06)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
+                                            }}
+                                        >
+                                            {link.icon} {link.label}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* 右上：被験者の切り替えと手元（カート） */}

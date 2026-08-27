@@ -15,6 +15,11 @@ from fastapi import Header, HTTPException
 # ヘッダが無いときのフォールバック。既存の単一ユーザ時代のデータはここに属する。
 DEFAULT_PARTICIPANT_ID = "P00"
 
+# 「他の参加者の本棚を観察する」画面の一覧に使う参加者ID全体。
+# P00はプロトタイプ（開発用データ）として一覧にも含める。
+PROTOTYPE_PARTICIPANT_ID = "P00"
+ALL_PARTICIPANT_IDS = [PROTOTYPE_PARTICIPANT_ID] + [f"P{i:02d}" for i in range(1, 21)]
+
 PARTICIPANT_HEADER = "X-Participant-Id"
 
 # 被験者IDはNeo4jのノードIDやSQLiteのキーに直接埋め込むため、扱いやすい文字に限定する

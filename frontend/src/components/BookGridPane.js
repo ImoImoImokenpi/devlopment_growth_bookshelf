@@ -4,7 +4,7 @@
 // 両方から、カードグリッドの見た目とソートだけを共有するための
 // 純粋な表示コンポーネント。データの取得方法・クリック時の挙動は
 // 呼び出し側（OwnBookGrid.js / explore/ReadOnlyBookGrid.js）に任せる。
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const API = "http://localhost:8000";
 
@@ -15,7 +15,7 @@ const SORTS = {
   registered_at: { label: "登録日", key: b => b.registered_at || "" },
 };
 
-export default function BookGridPane({ books, focusIsbn, onFocus, emptyMessage = "棚に本がありません。" }) {
+export default function BookGridPane({ books, focusIsbn, onFocus, highlightIsbns, emptyMessage = "棚に本がありません。" }) {
   const [sortKey, setSortKey] = useState("title");
   const [sortDir, setSortDir] = useState("asc");
 
@@ -27,6 +27,16 @@ export default function BookGridPane({ books, focusIsbn, onFocus, emptyMessage =
     });
     return sortDir === "asc" ? sorted : sorted.reverse();
   }, [books, sortKey, sortDir]);
+
+  const highlightSet = useMemo(() => new Set(highlightIsbns || []), [highlightIsbns]);
+
+  // 対話側でハイライトされた本が画面外だと何の話か分からないので、
+  // 先頭の1冊まで自動スクロールして視界に入れる。
+  useEffect(() => {
+    if (!highlightIsbns || highlightIsbns.length === 0) return;
+    const el = document.getElementById(`grid-book-${CSS.escape(highlightIsbns[0])}`);
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightIsbns]);
 
   return (
     <div>
@@ -57,6 +67,7 @@ export default function BookGridPane({ books, focusIsbn, onFocus, emptyMessage =
               key={book.isbn}
               book={book}
               isFocused={book.isbn === focusIsbn}
+              isHighlighted={highlightSet.has(book.isbn) && book.isbn !== focusIsbn}
               onClick={() => onFocus?.(book.isbn)}
             />
           ))}
@@ -66,7 +77,7 @@ export default function BookGridPane({ books, focusIsbn, onFocus, emptyMessage =
   );
 }
 
-function GridBook({ book, isFocused, onClick }) {
+function GridBook({ book, isFocused, isHighlighted, onClick }) {
   const proxySrc = `${API}/register/cover/${book.isbn}`;
   const [src, setSrc] = useState(book.cover || proxySrc);
   const [failed, setFailed] = useState(false);
@@ -78,7 +89,12 @@ function GridBook({ book, isFocused, onClick }) {
 
   return (
     <div
-      style={{ ...s.card, ...(isFocused ? s.cardFocused : {}) }}
+      id={`grid-book-${book.isbn}`}
+      style={{
+        ...s.card,
+        ...(isHighlighted ? s.cardHighlighted : {}),
+        ...(isFocused ? s.cardFocused : {}),
+      }}
       title={book.title}
       onClick={onClick}
     >
@@ -113,6 +129,7 @@ const s = {
     gap: 18,
   },
   card: { display: "flex", flexDirection: "column", gap: 4, cursor: "pointer", borderRadius: 6, padding: 4 },
+  cardHighlighted: { outline: "2px solid #c9a84c", outlineOffset: 2, background: "#fbf6e4" },
   cardFocused: { outline: "2px solid #ff9d3d", outlineOffset: 2 },
   thumbWrap: {
     width: "100%", aspectRatio: "3 / 4",

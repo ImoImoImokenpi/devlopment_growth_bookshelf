@@ -10,6 +10,8 @@ export default function Navbar() {
     const [isCompact, setIsCompact] = useState(false);
     const [isPrepOpen, setIsPrepOpen] = useState(false);
     const prepRef = useRef(null);
+    const [isMyShelfOpen, setIsMyShelfOpen] = useState(false);
+    const myShelfRef = useRef(null);
     const participantId = getParticipantId();
 
     const location = useLocation();
@@ -26,18 +28,51 @@ export default function Navbar() {
     // 中核の画面はここ。知識グラフはいったん非表示にしている
     // （ページ・ルート自体は残したまま、ナビからのみ外す）。
     const links = [
-        { path: "/", label: "My本棚", icon: (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="3" width="7" height="18"/><rect x="9" y="3" width="7" height="18"/><rect x="16" y="8" width="6" height="13"/>
-            </svg>
-        )},
         { path: "/Browse", label: "みんなの本棚", icon: (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
         )},
+        // 興味・関心質問（フェーズ2c）。配置画面とのアンカリングを避けるため、
+        // 「My本棚」ドロップダウンにはまとめず、独立した導線として置く。
+        { path: "/InterestSurvey", label: "興味・関心", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+        )},
+        // 研究者専用の画面。参加者向けの導線（My本棚・みんなの本棚）とは
+        // 性質が違うため、実験準備ドロップダウンにはまとめず独立させる。
+        { path: "/ExperimentAdmin", label: "実験管理", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+        )},
+        // 新旧UI比較実験の研究者向け管理画面。参加者/観察者は /Uiab から直接
+        // アクセスする別導線なので、ここには参加者向けリンクは置かない。
+        { path: "/UiabAdmin", label: "新旧UI実験管理", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+            </svg>
+        )},
     ];
+
+    // 「My本棚」は本棚そのものと、その構造をスタイル分析した画面の2つを
+    // ドロップダウンにまとめる（実験準備と同じ見せ方）。
+    const myShelfLinks = [
+        { path: "/", label: "本棚", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="7" height="18"/><rect x="9" y="3" width="7" height="18"/><rect x="16" y="8" width="6" height="13"/>
+            </svg>
+        )},
+        { path: "/MyStyleAnalysis", label: "スタイル分析", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 5-8"/>
+            </svg>
+        )},
+    ];
+    const isMyShelfSectionActive = myShelfLinks.some((link) => isCurrentSection(link.path));
 
     // 登録・ギャラリーは便宜的な機能（実験の準備作業）なので、単独のリンクとして
     // 並べず「実験準備」1つにまとめてドロップダウンに収める。
@@ -50,6 +85,11 @@ export default function Navbar() {
         { path: "/Register", label: "登録", icon: (
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 5v14M5 12h14"/>
+            </svg>
+        )},
+        { path: "/StyleProjection", label: "投影スタイル分析", icon: (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 5-8"/>
             </svg>
         )},
     ];
@@ -74,7 +114,17 @@ export default function Navbar() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isPrepOpen]);
 
-    useEffect(() => { setIsPrepOpen(false); }, [currentPath]);
+    // 「My本棚」ドロップダウン：外側クリックとページ遷移で閉じる
+    useEffect(() => {
+        if (!isMyShelfOpen) return;
+        const handleClickOutside = (e) => {
+            if (myShelfRef.current && !myShelfRef.current.contains(e.target)) setIsMyShelfOpen(false);
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isMyShelfOpen]);
+
+    useEffect(() => { setIsPrepOpen(false); setIsMyShelfOpen(false); }, [currentPath]);
 
     return (
         <>
@@ -110,6 +160,96 @@ export default function Navbar() {
             >
                 {/* 左側リンク一覧 */}
                 <div style={{ display: "flex", gap: "10px" }}>
+                    {/* My本棚：本棚そのものと、その構造をスタイル分析した画面をドロップダウンにまとめる */}
+                    <div ref={myShelfRef} style={{ position: "relative" }}>
+                        <button
+                            type="button"
+                            onClick={() => setIsMyShelfOpen((v) => !v)}
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                                padding: "6px 14px",
+                                borderRadius: "999px",
+                                border: "none",
+                                background: isMyShelfSectionActive ? "#c9a84c" : (isMyShelfOpen ? "rgba(0,0,0,0.08)" : "transparent"),
+                                color: isMyShelfSectionActive ? "#fff" : "#333",
+                                fontSize: "14px",
+                                fontWeight: isMyShelfSectionActive ? "700" : "500",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                                if (!isMyShelfSectionActive && !isMyShelfOpen) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.05)";
+                            }}
+                            onMouseLeave={(e) => {
+                                if (!isMyShelfSectionActive && !isMyShelfOpen) e.currentTarget.style.backgroundColor = "transparent";
+                            }}
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="2" y="3" width="7" height="18"/><rect x="9" y="3" width="7" height="18"/><rect x="16" y="8" width="6" height="13"/>
+                            </svg>
+                            My本棚
+                            <svg
+                                width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+                                style={{ transform: isMyShelfOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+                            >
+                                <polyline points="6 9 12 15 18 9"/>
+                            </svg>
+                        </button>
+
+                        {isMyShelfOpen && (
+                            <div
+                                style={{
+                                    position: "absolute",
+                                    top: "calc(100% + 8px)",
+                                    left: 0,
+                                    background: "#fff",
+                                    borderRadius: "14px",
+                                    boxShadow: "0 8px 30px rgba(0,0,0,0.15)",
+                                    border: "1px solid rgba(0,0,0,0.06)",
+                                    padding: "6px",
+                                    minWidth: "150px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: "2px",
+                                    zIndex: 5001,
+                                }}
+                            >
+                                {myShelfLinks.map((link) => {
+                                    const isActive = isCurrentSection(link.path);
+                                    return (
+                                        <Link
+                                            key={link.path}
+                                            to={link.path}
+                                            onClick={() => setIsMyShelfOpen(false)}
+                                            style={{
+                                                textDecoration: "none",
+                                                padding: "8px 12px",
+                                                borderRadius: "10px",
+                                                color: isActive ? "#fff" : "#333",
+                                                background: isActive ? "#c9a84c" : "transparent",
+                                                fontSize: "13.5px",
+                                                fontWeight: isActive ? "700" : "500",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "8px",
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                if (!isActive) e.currentTarget.style.backgroundColor = "rgba(0,0,0,0.06)";
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
+                                            }}
+                                        >
+                                            {link.icon} {link.label}
+                                        </Link>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
+
                     {links.map((link) => {
                         const isActive = isCurrentSection(link.path);
                         return (

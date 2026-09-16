@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from models import ShelfLayout, ShelfDesign, RegisteredBook
-from admin_neo4j.neo4j_crud import groups_from_neo4j
+from graph.main_kg.neo4j_crud import groups_from_neo4j
 import logging
 
 logger = logging.getLogger(__name__)

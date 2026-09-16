@@ -53,7 +53,7 @@ function resolveSpineWidth(book) {
   return book?.pages ? Math.min(100, Math.max(1, book.pages * 0.08)) : 20;
 }
 
-export default function ReadOnlySpineShelf({ participantId, focusIsbn, onFocus }) {
+export default function ReadOnlySpineShelf({ participantId, focusIsbn, onFocus, highlightIsbns }) {
   const [bookshelf, setBookshelf] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -180,7 +180,25 @@ export default function ReadOnlySpineShelf({ participantId, focusIsbn, onFocus }
       }
     });
 
-    svg.selectAll(".ro-spine-hl").remove();
+    svg.selectAll(".ro-spine-hl, .ro-spine-group-hl").remove();
+
+    // 複数冊まとめての強調（分析パネルでグループ・孤立本を選んだときなど）。
+    // 1冊だけの強い強調(focusIsbn)より弱いトーンにして重なりを区別する。
+    if (highlightIsbns && highlightIsbns.length > 0) {
+      const highlightSet = new Set(highlightIsbns);
+      booksWithPosition
+        .filter(b => highlightSet.has(b.isbn) && b.isbn !== focusIsbn)
+        .forEach(b => {
+          const top = b.y + (MAX_BOOK_HEIGHT - resolveSpineHeight(b));
+          svg.append("rect").attr("class", "ro-spine-group-hl")
+            .attr("x", b.x - 2).attr("y", top - 2)
+            .attr("width", resolveSpineWidth(b) + 4).attr("height", resolveSpineHeight(b) + 4)
+            .attr("fill", "none").attr("stroke", "#c9a84c").attr("stroke-width", 2).attr("rx", 4)
+            .style("filter", "drop-shadow(0 0 3px #c9a84c88)")
+            .style("pointer-events", "none");
+        });
+    }
+
     if (focusIsbn) {
       const b = booksWithPosition.find(x => x.isbn === focusIsbn);
       if (b) {
@@ -193,7 +211,15 @@ export default function ReadOnlySpineShelf({ participantId, focusIsbn, onFocus }
           .style("pointer-events", "none");
       }
     }
-  }, [booksWithPosition, WIDTH, HEIGHT, shelfCount, unitShelfHeight, focusIsbn, hasBooks, onFocus]);
+  }, [booksWithPosition, WIDTH, HEIGHT, shelfCount, unitShelfHeight, focusIsbn, hasBooks, onFocus, highlightIsbns]);
+
+  // 対話側でハイライトされた本が画面外にあると「どれの話か」が伝わらないため、
+  // ハイライト先頭の本まで自動的にスクロールして視界に入れる。
+  useEffect(() => {
+    if (!highlightIsbns || highlightIsbns.length === 0) return;
+    const target = svgRef.current?.querySelector(`#ro-spine-${CSS.escape(highlightIsbns[0])}`);
+    target?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+  }, [highlightIsbns]);
 
   if (isLoading) return <p style={s.status}>読み込み中…</p>;
   if (error) return <p style={s.statusError}>{error}</p>;

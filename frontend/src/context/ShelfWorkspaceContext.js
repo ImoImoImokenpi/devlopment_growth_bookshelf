@@ -1,14 +1,22 @@
-// 本棚（中央）と発見と対話（左）・本詳細（右）で共有する状態。
+// 本棚（中央）と本詳細（右）・グループ管理（左）で共有する状態。
 //
 // ペイン間で同じものを見ている必要がある：
-//   - どの本が選ばれているか      → 意味づけ入力の対象
-//   - どの発見が未確定か          → 本棚上の光の線、質問カード、まとめて確認
-//   - どの本を強調するか          → 対話で言及された本を本棚側で光らせる
+//   - どの本が選ばれているか      → 意味づけ入力の対象／グループ作成の対象
+//   - どの本を強調するか          → 関連本の強調で本棚側を光らせる
+//   - 通常モードかグルーピングモードか → 各ペインの操作可否を切り替える
 //
 // これらをどれか一つのコンポーネントに持たせると、他から触れなくなる。
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useCallback, useEffect, useMemo, useState } from "react";
+import { CONCEPT_COLORS } from "../utils/graphConfig";
 
 const API = "http://localhost:8000";
+
+// グループのハイライト色は毎回ランダムに選ぶ（同じ色ばかりだと見飽きるため）。
+// 直前の色は避けて、切り替えるたびにちゃんと変わったと分かるようにする。
+function pickGroupHighlightColor(excludeColor) {
+  const options = excludeColor ? CONCEPT_COLORS.filter(c => c !== excludeColor) : CONCEPT_COLORS;
+  return options[Math.floor(Math.random() * options.length)];
+}
 
 export const ShelfWorkspaceContext = createContext(null);
 
@@ -19,7 +27,25 @@ export function useShelfWorkspace() {
 }
 
 export function ShelfWorkspaceProvider({ children }) {
+  // ── モード（通常／グルーピング）──
+  // 通常モード: 棚の座標変更・詳細パネルの閲覧のみ。
+  // グルーピングモード: 複数選択・グループ作成・左パネルでのグループ管理。
+  const [mode, setModeRaw] = useState("normal"); // "normal" | "grouping"
+
+  const setMode = useCallback((next) => {
+    setModeRaw(prev => {
+      if (prev === next) return prev;
+      fetch(`${API}/knowledge_graph/mode-switch-event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: next }),
+      }).catch(err => console.error("モード切替のログ記録に失敗しました", err));
+      return next;
+    });
+  }, []);
+
   // ── 選択（設計書4章：1冊タップ / 範囲選択）──
+  // 通常モードでは使わない（グルーピングモードの複数選択専用）。
   const [selectedIsbns, setSelectedIsbns] = useState([]);
 
   // 1冊タップで開く「この本について」の対象（設計書4章①）。
@@ -48,62 +74,121 @@ export function ShelfWorkspaceProvider({ children }) {
     return () => { cancelled = true; };
   }, [focusIsbn]);
 
-
-  // ── 発見（設計書3.3）──
-  const [discoveries, setDiscoveries] = useState([]);
-  const [isLoadingDiscoveries, setIsLoadingDiscoveries] = useState(false);
-
   // ── 強調（対話や提案が根拠にした本）──
   const [highlightIsbns, setHighlightIsbns] = useState([]);
 
-  // 意味づけ単位の強調。右ペインの意味づけにカーソルを合わせている間だけ、
-  // その意味づけ固有の色で本棚を光らせる。
-  // 色を棚まで運ぶ必要があるので、ISBNの配列とは別の入れ物にしている。
-  const [conceptHighlight, setConceptHighlight] = useState(null); // { color, isbns } | null
+  // 意味づけ／グループ単位の強調。キー "hover" は右ペインでのホバー強調
+  // （1件だけ、他と共存しても問題ない）、キー "group" はグルーピングモードの
+  // 左パネルで選んでいるグループの永続ハイライト（同時に1つだけ。別のグループを
+  // 選ぶと切り替わる。違うグループを同時に選べると、どの本がどのグループに
+  // 属すのか棚の上で読み取れなくなるため）。
+  // { [key]: { color, isbns } }
+  const [conceptHighlights, setConceptHighlights] = useState({});
 
-  // 発見バブルの「さらに話す」から左ペインの対話へ話題を引き継ぐための種
-  // （設計書6.2の2段階構成：一次応答 → 自由記述への展開）
-  const [chatSeed, setChatSeed] = useState(null); // { question, discoveryId } | null
+  // 旧: 単一のホバー強調用インターフェース。BookFocusPanel はこのままの形で使う。
+  const setConceptHighlight = useCallback((entry) => {
+    setConceptHighlights(prev => {
+      if (!entry) {
+        if (!("hover" in prev)) return prev;
+        const next = { ...prev };
+        delete next.hover;
+        return next;
+      }
+      return { ...prev, hover: entry };
+    });
+  }, []);
 
-  // 対話ストリームがAIの返信を待っている間かどうか。DialoguePanelが立てる。
-  // 発見に関する会話（さらに話す）と自由な会話が同じ1本のストリームに
-  // 同時に流れ込むと、返信が来る順番と表示順がずれて誰の発言への返信か
-  // 分からなくなる。返信待ち中は発見一覧側の「さらに話す」を押せなくして、
-  // 2つの会話が交錯しないようにする。
-  const [isChatBusy, setIsChatBusy] = useState(false);
+  // モードが切り替わったら、前のモードの選択・フォーカス・ハイライト状態を
+  // 持ち越さない（通常モードに戻ったのに選択やグループのハイライトが残っている、
+  // グルーピングモードに入ったのに詳細パネルのフォーカスが残っている、といった
+  // 食い違いを防ぐ）。グルーピングモードで左パネルからオンにした永続ハイライトは、
+  // 通常モードに戻った時点で全て消す。
+  // "boundary"（フェーズ2(b): 区切り確認モード）も同様に、詳細パネルが
+  // 開いたまま棚のタップが区切り確認用に奪われる、といった食い違いを避ける。
+  useEffect(() => {
+    setSelectedIsbns([]);
+    if (mode === "grouping" || mode === "boundary") {
+      setFocusIsbn(null);
+    } else {
+      setConceptHighlights({});
+    }
+  }, [mode]);
+
+  const _logGroupHighlightEvent = (groupId, action) => {
+    fetch(`${API}/knowledge_graph/groups/${groupId}/highlight-event`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action }),
+    }).catch(err => console.error("ハイライトログの記録に失敗しました", err));
+  };
+
+  // グルーピングモードの左パネル用：グループのハイライトをオン/オフする。
+  // 同時に光らせるのは1グループだけ（別のグループを選ぶとそちらに切り替わる）。
+  // hover とは別キー（"group"）で管理する。
+  const toggleGroupHighlight = useCallback((groupId, isbns) => {
+    setConceptHighlights(prev => {
+      const current = prev.group;
+      const next = { ...prev };
+      if (current) {
+        delete next.group;
+        _logGroupHighlightEvent(current.groupId, "off");
+        if (current.groupId === groupId) {
+          // 同じグループをもう一度選んだ＝オフにする
+          return next;
+        }
+      }
+      next.group = { groupId, color: pickGroupHighlightColor(current?.color), isbns };
+      _logGroupHighlightEvent(groupId, "on");
+      return next;
+    });
+  }, []);
+
+  // グループそのものが無くなった（削除・統合で消えた）ときに、ハイライトが
+  // 付けっぱなしのまま残らないよう明示的に消す。今ハイライト中のグループが
+  // これでなければ何もしない（常に「消す」だけの操作で、トグルはしない）。
+  const clearGroupHighlight = useCallback((groupId) => {
+    setConceptHighlights(prev => {
+      if (prev.group?.groupId !== groupId) return prev;
+      const next = { ...prev };
+      delete next.group;
+      return next;
+    });
+  }, []);
+
+  // 棚のタップから、今ハイライト中のグループへの追加／除外をした直後に呼ぶ。
+  // サーバー側の反映を待たずに、光っている本の集合をその場で書き換える
+  // （そうしないと、次にグループ一覧が取り直されるまでリングが古いままになる）。
+  const setGroupHighlightMembers = useCallback((groupId, isbns) => {
+    setConceptHighlights(prev => {
+      if (prev.group?.groupId !== groupId) return prev;
+      return { ...prev, group: { ...prev.group, isbns } };
+    });
+  }, []);
 
   // ── 育成インジケータ（設計書6.4）──
   const [growth, setGrowth] = useState({ level: 0 });
 
-  // 発見への「はい」「一部ちがう」や、対話の要約確認で知識グラフに意味づけが
-  // 書き戻されたとき、右ペイン（本詳細）の意味づけ一覧に取り直しを促すための
-  // バージョン番号。書き戻す経路が複数あるので、関数として外に出す。
+  // 発見への回答や意味づけの編集で知識グラフに書き戻されたとき、右ペイン
+  // （本詳細）の意味づけ一覧に取り直しを促すためのバージョン番号。
+  // 書き戻す経路が複数あるので、関数として外に出す。
   const [conceptsVersion, setConceptsVersion] = useState(0);
   const bumpConceptsVersion = useCallback(() => setConceptsVersion(v => v + 1), []);
+
+  // グループ（=Concept）一覧の再取得を促すバージョン番号。左パネルはこれが
+  // 変わるたびにグループ一覧を取り直す。
+  const [groupsVersion, setGroupsVersion] = useState(0);
+  const bumpGroupsVersion = useCallback(() => setGroupsVersion(v => v + 1), []);
+
+  // ── Undoトースト（グループ削除・統合など元に戻しにくい操作の直後に表示）──
+  // { message, actionLabel, onAction } | null
+  const [toast, setToast] = useState(null);
+  const showToast = useCallback((next) => setToast(next), []);
+  const dismissToast = useCallback(() => setToast(null), []);
 
   // ── 本棚のサイズ感（設定パネルの「本棚サイズの調整」）──
   // 画面幅に対する本棚ペインの割合。段が増えても縮まないよう固定幅にしたが、
   // 画面いっぱいだと圧迫感が出るので、ユーザーが自分で調整できるようにする。
   const [shelfWidthPct, setShelfWidthPct] = useState(40); // 30〜50の範囲
-
-  // ── 左ペイン「棚を見て気づいたこと」の開閉 ──
-  // 本詳細（右）と違い特定の本に紐づかない常設の相棒機能だが、本棚の幅を
-  // 圧迫するため初期状態はしまっておく。ユーザーがいつでも開ける。
-  const [isDialogueOpen, setIsDialogueOpen] = useState(false);
-
-  const refreshDiscoveries = useCallback(async () => {
-    setIsLoadingDiscoveries(true);
-    try {
-      const res = await fetch(`${API}/knowledge_graph/discoveries`);
-      if (!res.ok) return;
-      const json = await res.json();
-      setDiscoveries(json.discoveries || []);
-    } catch (err) {
-      console.error("発見の取得に失敗しました", err);
-    } finally {
-      setIsLoadingDiscoveries(false);
-    }
-  }, []);
 
   const refreshGrowth = useCallback(async () => {
     try {
@@ -115,129 +200,30 @@ export function ShelfWorkspaceProvider({ children }) {
     }
   }, []);
 
-  // 発見の初回取得が終わるまでは自動分析を走らせない（既にある未回答の発見を
-  // 見る前に二重で分析してしまうのを防ぐため）。
-  const [hasLoadedDiscoveriesOnce, setHasLoadedDiscoveriesOnce] = useState(false);
-
   useEffect(() => {
-    refreshDiscoveries().finally(() => setHasLoadedDiscoveriesOnce(true));
     refreshGrowth();
-  }, [refreshDiscoveries, refreshGrowth]);
-
-  // ── 棚を読み直して新しい発見を生む（設計書5章の発見エンジンを起動する）──
-  // ボタン操作はなく、未回答の発見が尽きるたびに自動で棚を読み直す
-  // （下のuseEffect参照）。ユーザー操作を待たず勝手に提案してくる、という
-  // 挙動そのものが「発見と対話」の売りなので、手動トリガーは持たせない。
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisError, setAnalysisError] = useState(null);
-
-  const runAnalysis = useCallback(async ({ silent = false } = {}) => {
-    setIsAnalyzing(true);
-    if (!silent) setAnalysisError(null);
-    try {
-      const res = await fetch(`${API}/knowledge_graph/analyze`, { method: "POST" });
-      const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.detail || "棚を読み取れませんでした");
-      await refreshDiscoveries();
-      await refreshGrowth();
-    } catch (err) {
-      // 自動実行時（棚が空、LLM一時エラーなど）はユーザーに逐一見せず、次のクールダウン明けに
-      // また静かに試す。
-      if (!silent) setAnalysisError(err.message);
-      console.error("棚の自動分析に失敗しました", err);
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }, [refreshDiscoveries, refreshGrowth]);
-
-  /**
-   * 発見への一次応答（設計書6.2：Yes / No / 一部訂正）。
-   * status: "confirmed" | "rejected" | "modified"
-   */
-  const answerDiscovery = useCallback(async (discoveryId, status, extra = {}) => {
-    // 応答は即座に画面へ反映する（往復を待たせると本棚の手触りが鈍る）
-    setDiscoveries(list =>
-      list.map(d => (d.discovery_id === discoveryId ? { ...d, status, ...extra } : d))
-    );
-    try {
-      const res = await fetch(`${API}/knowledge_graph/discovery/${discoveryId}/feedback`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          status,
-          surprise_score: extra.surprise_score ?? null,
-          agreement_score: extra.agreement_score ?? null,
-          comment: extra.comment ?? null,
-        }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      refreshGrowth();
-      // 「はい」「一部ちがう」は知識グラフに意味づけとして書き戻されるため、
-      // 右ペイン（本詳細）が同じ本を開いていれば意味づけ一覧を取り直させる。
-      if (status === "confirmed" || status === "modified") {
-        bumpConceptsVersion();
-      }
-    } catch (err) {
-      console.error("フィードバックの記録に失敗しました", err);
-      // 失敗したら元に戻す。研究データなので、記録できていないものを
-      // 記録済みに見せてはいけない。
-      setDiscoveries(list =>
-        list.map(d => (d.discovery_id === discoveryId ? { ...d, status: "pending" } : d))
-      );
-    }
-  }, [refreshGrowth, bumpConceptsVersion]);
-
-  // 優先度順（＝関連する本の数が多いほど大きなパターンとみなして上に出す）。
-  // 同数のときは新しい発見を先に見せる（discoveries は createdAt DESC で来る）。
-  const pendingDiscoveries = useMemo(
-    () => discoveries
-      .filter(d => d.status === "pending")
-      .slice()
-      .sort((a, b) => (b.related_book_ids?.length || 0) - (a.related_book_ids?.length || 0)),
-    [discoveries]
-  );
-
-  // 未回答の発見が0件になるたび、自動で棚を読み直して新しい発見を提案する。
-  // 分析に失敗しても（棚が空、LLM一時エラーなど）pendingDiscoveries.length は
-  // 0のまま変わらないため、isAnalyzing の変化だけでeffectが再実行されてしまい
-  // 無限に叩き続けかねない。クールダウンで間隔をあける。
-  const AUTO_ANALYSIS_COOLDOWN_MS = 30_000;
-  const lastAutoAnalysisAtRef = useRef(0);
-
-  useEffect(() => {
-    if (!hasLoadedDiscoveriesOnce) return;
-    if (isLoadingDiscoveries || isAnalyzing) return;
-    if (pendingDiscoveries.length > 0) return;
-    const now = Date.now();
-    if (now - lastAutoAnalysisAtRef.current < AUTO_ANALYSIS_COOLDOWN_MS) return;
-    lastAutoAnalysisAtRef.current = now;
-    runAnalysis({ silent: true });
-  }, [hasLoadedDiscoveriesOnce, pendingDiscoveries.length, isLoadingDiscoveries, isAnalyzing, runAnalysis]);
+  }, [refreshGrowth]);
 
   const value = useMemo(() => ({
+    mode, setMode,
     selectedIsbns, setSelectedIsbns,
     focusIsbn, setFocusIsbn,
     focusDetail, isFocusLoading,
-    discoveries, pendingDiscoveries,
-    isLoadingDiscoveries, refreshDiscoveries,
-    answerDiscovery,
     highlightIsbns, setHighlightIsbns,
-    conceptHighlight, setConceptHighlight,
+    conceptHighlights, setConceptHighlight, toggleGroupHighlight, clearGroupHighlight, setGroupHighlightMembers,
     growth, refreshGrowth,
     conceptsVersion, bumpConceptsVersion,
-    chatSeed, setChatSeed,
-    isChatBusy, setIsChatBusy,
-    runAnalysis, isAnalyzing, analysisError,
+    groupsVersion, bumpGroupsVersion,
+    toast, showToast, dismissToast,
     shelfWidthPct, setShelfWidthPct,
-    isDialogueOpen, setIsDialogueOpen,
   }), [
+    mode, setMode,
     selectedIsbns, focusIsbn, focusDetail, isFocusLoading,
-    discoveries, pendingDiscoveries,
-    isLoadingDiscoveries, refreshDiscoveries,
-    answerDiscovery, highlightIsbns, conceptHighlight,
+    highlightIsbns, conceptHighlights, setConceptHighlight, toggleGroupHighlight, clearGroupHighlight, setGroupHighlightMembers,
     growth, refreshGrowth, conceptsVersion, bumpConceptsVersion,
-    chatSeed, isChatBusy, runAnalysis, isAnalyzing, analysisError,
-    shelfWidthPct, isDialogueOpen,
+    groupsVersion, bumpGroupsVersion,
+    toast, showToast, dismissToast,
+    shelfWidthPct,
   ]);
 
   return (

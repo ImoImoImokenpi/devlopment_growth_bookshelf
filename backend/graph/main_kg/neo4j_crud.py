@@ -5,13 +5,13 @@
   - 客観データ  Book / Author / Publisher / NDC       → 全被験者で共有
   - 所有関係    (:Participant)-[:OWNS]->(:Book)       → 誰の蔵書か
   - 主観データ  Concept / Impression / ShelfPosition /
-                SHELF_NEXT / PlacementEvent / Discovery → participantId で分離
+                SHELF_NEXT / PlacementEvent          → participantId で分離
 
 読み出しは必ず OWNS か participantId を通すこと。ここを1箇所でも通し忘れると
 他の被験者の本や意味づけが混ざり、研究データとして使えなくなる。
 そのため participant_id は既定値を持たせず、呼び出し側に必ず渡させる。
 """
-from admin_neo4j.neo4j_driver import get_session
+from graph.main_kg.neo4j_driver import get_session
 from collections import defaultdict
 from datetime import datetime
 import uuid
@@ -53,19 +53,34 @@ class BookshelfNeo4j:
         return f"{participant_id}:r{shelf_index}c{column_index}"
 
     @staticmethod
-    def ensure_participant(participant_id: str) -> None:
-        with get_session() as session:
-            session.run(
-                "MERGE (p:Participant {participantId: $pid}) "
-                "ON CREATE SET p.createdAt = datetime()",
-                pid=participant_id,
-            )
+    def _create_event(session, label: str, participant_id: str, by_rel: str, extra_props: dict | None = None) -> str:
+        """操作ログイベントノードを1つ作り、Participantへ by_rel でつなぐ。
+        PlacementEvent（棚レイアウト更新チェーン内で個別実装）と同じ形
+        （eventId/participantId/timestamp/createdAt）に揃えるための共通ヘルパー。
+        対象（本・グループ等）への関係は呼び出し側が個別に張る。
+        label/by_rel は呼び出し側が固定文字列でしか渡さない前提（f-stringで埋め込むが、
+        ユーザー入力が混ざることはない）。"""
+        event_id = f"evt_{label.lower()}_{participant_id}_{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+        session.run(
+            f"""
+            CREATE (e:{label} {{
+                eventId: $event_id, participantId: $pid,
+                timestamp: datetime(), createdAt: datetime()
+            }})
+            SET e += $extra
+            WITH e
+            MATCH (p:Participant {{participantId: $pid}})
+            MERGE (e)-[:{by_rel}]->(p)
+            """,
+            event_id=event_id, pid=participant_id, extra=extra_props or {},
+        )
+        return event_id
 
     # ============================================================
     # 書籍登録
     # ============================================================
 
-    def add_book_with_meaning(self, book_obj, participant_id: str, meaning_text: str = None):
+    def add_book_with_meaning(self, book_obj, participant_id: str):
         """
         SQLAlchemyのオブジェクト(MyHand/MyBookshelf) または dict を受け取り、
         Neo4jのナレッジグラフを更新・作成する。
@@ -106,6 +121,7 @@ class BookshelfNeo4j:
                     b.pages = $pages,
                     b.size_label = $size_label,
                     b.description = $description,
+                    b.spine_color = $spine_color,
                     b.updatedAt = datetime()
 
                 // 蔵書の所有者を登録する（これが被験者ごとのグラフの入口になる）
@@ -113,7 +129,7 @@ class BookshelfNeo4j:
                 MERGE (p:Participant {participantId: $pid})
                     ON CREATE SET p.createdAt = datetime()
                 MERGE (p)-[own:OWNS]->(b)
-                    ON CREATE SET own.addedAt = datetime()
+                    ON CREATE SET own.addedAt = datetime(), own.possessedSince = date()
 
                 WITH b
                 FOREACH (code IN CASE WHEN $ndc_l1 IS NOT NULL THEN [$ndc_l1] ELSE [] END |
@@ -149,11 +165,6 @@ class BookshelfNeo4j:
                 WHERE $ndc_l3 IS NOT NULL AND $ndc_full <> $ndc_l3
                 MATCH (n3:NDC {code: $ndc_l3})
                 MERGE (nf)-[:BROADER]->(n3)
-
-                WITH b
-                WHERE $meaning IS NOT NULL AND $meaning <> ""
-                CREATE (m:Meaning {text: $meaning, participantId: $pid, createdAt: datetime()})
-                MERGE (b)-[:HAS_MEANING]->(m)
                 """,
                 pid=participant_id,
                 isbn=get_val("isbn"),
@@ -167,11 +178,11 @@ class BookshelfNeo4j:
                 pages=get_val("pages"),
                 size_label=get_val("size_label"),
                 description=get_val("description"),
+                spine_color=get_val("spine_color"),
                 ndc_full=ndc_full,
                 ndc_l1=ndc_l1,
                 ndc_l2=ndc_l2,
                 ndc_l3=ndc_l3,
-                meaning=meaning_text,
             )
 
             if author_list:
@@ -196,6 +207,19 @@ class BookshelfNeo4j:
                     isbn=get_val("isbn"),
                     publisher=publisher,
                 )
+
+    def update_book_attributes(self, isbn: str, fields: dict) -> None:
+        """高さ・色などの手動補正をNeo4jのBookノードにも反映する。
+        add_book_with_meaning と違い、Participant/OWNSには触れない
+        （補正は所有関係と無関係な、本そのものの物理属性の書き換えのため）。"""
+        if not fields:
+            return
+        with get_session() as session:
+            session.run(
+                "MATCH (b:Book {isbn: $isbn}) SET b += $fields, b.updatedAt = datetime()",
+                isbn=isbn,
+                fields=fields,
+            )
 
     def remove_book_ownership(self, isbn: str, participant_id: str) -> None:
         """棚から本を外したときに所有関係を解除する。
@@ -293,39 +317,38 @@ class BookshelfNeo4j:
                 confidence=confidence,
                 strength=strength,
             ).single()
-            return row["conceptId"] if row else None
+            concept_id = row["conceptId"] if row else None
 
-    def confirm_concept_edge(self, edge_id: str, participant_id: str, confirmed: bool) -> bool:
-        """推測エッジ(confidence: inferred)をユーザーの応答で確定／否定する。
-        設計書4章③の「弱い推測エッジ」を対話で昇格させるための操作。"""
-        with get_session() as session:
-            row = session.run(
-                """
-                MATCH (:Book)-[r:CONCEPT {edgeId: $edge_id, participantId: $pid}]->(:Concept)
-                SET r.confidence       = CASE WHEN $confirmed THEN 'confirmed' ELSE 'rejected' END,
-                    r.strength         = CASE WHEN $confirmed THEN 1.0 ELSE 0.0 END,
-                    r.lastReinforcedAt = datetime()
-                RETURN r.edgeId AS edgeId
-                """,
-                edge_id=edge_id,
-                pid=participant_id,
-                confirmed=confirmed,
-            ).single()
-            return row is not None
+            if concept_id:
+                event_id = self._create_event(session, "GroupCreateEvent", participant_id, "CREATED_BY")
+                session.run(
+                    """
+                    MATCH (e:GroupCreateEvent {eventId: $event_id})
+                    MATCH (c:Concept {conceptId: $concept_id})
+                    MERGE (e)-[:CREATED_GROUP]->(c)
+                    WITH e
+                    UNWIND $isbns AS isbn
+                    MATCH (b:Book {isbn: isbn})
+                    MERGE (e)-[:INCLUDED_BOOK]->(b)
+                    """,
+                    event_id=event_id, concept_id=concept_id, isbns=isbns,
+                )
+
+            return concept_id
 
     def delete_concept_edge(self, edge_id: str, participant_id: str) -> bool:
-        """本と意味づけ(Concept)の結び付きを1件消す（本詳細パネルの「消す」）。
-        他に結び付く本がなくなったConceptノードは道連れに片付ける
-        （participantId+textで一意なので、他の意味づけと誤って消す心配はない）。"""
+        """意味づけ(Concept)そのものを削除する（本詳細パネルの「消す」）。
+        Conceptはparticipantid+textで一意な「その意味づけ自体」を表すノードなので、
+        edge_idから辿れるConceptをDETACH DELETEすれば、それを共有する本すべてから
+        まとめて消える（1冊だけの結び付きを外す操作ではない。フロント側は削除前に
+        related_isbnsの件数を見て確認ダイアログを出す）。
+        グルーピングモードの左パネルからの削除は conceptId で呼べる delete_group を使うこと。
+        こちらは互換のため残している。"""
         with get_session() as session:
             row = session.run(
                 """
-                MATCH (:Book)-[r:CONCEPT {edgeId: $edge_id, participantId: $pid}]->(c:Concept)
-                DELETE r
-                WITH c
-                OPTIONAL MATCH (c)<-[remaining:CONCEPT]-()
-                WITH c, count(remaining) AS remainingCount
-                FOREACH (_ IN CASE WHEN remainingCount = 0 THEN [1] ELSE [] END | DETACH DELETE c)
+                MATCH (:Book)-[:CONCEPT {edgeId: $edge_id, participantId: $pid}]->(c:Concept)
+                DETACH DELETE c
                 RETURN true AS deleted
                 """,
                 edge_id=edge_id,
@@ -333,31 +356,334 @@ class BookshelfNeo4j:
             ).single()
             return row is not None
 
-    def count_concept_nodes(self, participant_id: str) -> int:
-        """その被験者が自由に付けた意味づけ（Concept）の累計数。
-        本棚からの「強制対話」の閾値判定に使う。"""
-        with get_session() as session:
-            return session.run(
-                "MATCH (c:Concept {participantId: $pid}) RETURN count(c) AS count",
-                pid=participant_id,
-            ).single()["count"]
+    # ============================================================
+    # グループ管理（グルーピングモード用）
+    #
+    # 「グループ」は新規のノード種別ではなく、既存の Concept（意味づけ）を
+    # そのまま使う。左パネルの一覧・リネーム・統合・メンバー追加削除・削除は
+    # すべて Concept ノードと CONCEPT リレーションへの操作として実装する。
+    # ============================================================
 
-    def get_latest_concept_topic(self, participant_id: str) -> dict | None:
-        """直近で追加されたConceptと、それに紐づく本を返す。
-        強制対話の開始トピックに使う。"""
+    def list_participant_groups(self, participant_id: str) -> list[dict]:
+        """参加者が持つ全グループ(=Concept)を、所属冊数・メンバー一覧付きで返す。
+        グルーピングモードの左パネルの一覧表示に使う。"""
         with get_session() as session:
             result = session.run(
                 """
-                MATCH (c:Concept {participantId: $pid})<-[:CONCEPT {participantId: $pid}]-(b:Book)
-                WITH c, collect(DISTINCT b.isbn) AS isbns, collect(DISTINCT b.title) AS titles,
-                     count(DISTINCT b) AS book_count
-                RETURN c.text AS concept, isbns, titles, book_count
-                ORDER BY c.createdAt DESC
-                LIMIT 1
+                MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)
+                      -[r:CONCEPT {participantId: $pid}]->(c:Concept {participantId: $pid})
+                WITH c, collect({isbn: b.isbn, title: b.title, cover: b.cover, edge_id: r.edgeId}) AS members
+                RETURN c.conceptId AS concept_id, c.text AS text, toString(c.createdAt) AS created_at,
+                       size(members) AS book_count, members
+                ORDER BY c.text
                 """,
                 pid=participant_id,
+            )
+            return [dict(r) for r in result]
+
+    def remove_group_member(self, concept_id: str, isbn: str, participant_id: str) -> bool:
+        """グループから本を1冊だけ外す。delete_concept_edgeと違い、他の本には影響しない。
+        外した結果メンバーが0冊になった場合は、そのConceptごと片付ける。"""
+        with get_session() as session:
+            row = session.run(
+                """
+                MATCH (b:Book {isbn: $isbn})-[r:CONCEPT {participantId: $pid}]->
+                      (c:Concept {conceptId: $concept_id, participantId: $pid})
+                DELETE r
+                WITH c
+                OPTIONAL MATCH (c)<-[remaining:CONCEPT {participantId: $pid}]-(:Book)
+                WITH c, count(remaining) AS n
+                FOREACH (_ IN CASE WHEN n = 0 THEN [1] ELSE [] END | DETACH DELETE c)
+                RETURN true AS ok
+                """,
+                concept_id=concept_id, isbn=isbn, pid=participant_id,
             ).single()
-            return dict(result) if result else None
+            if row is None:
+                return False
+
+            event_id = self._create_event(
+                session, "GroupEditEvent", participant_id, "EDITED_BY",
+                {"action": "remove_member", "conceptId": concept_id, "isbn": isbn},
+            )
+            session.run(
+                """
+                MATCH (e:GroupEditEvent {eventId: $event_id})
+                MATCH (b:Book {isbn: $isbn})
+                MERGE (e)-[:AFFECTED_BOOK]->(b)
+                WITH e
+                OPTIONAL MATCH (c:Concept {conceptId: $concept_id})
+                FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
+                    MERGE (e)-[:EDITED_GROUP]->(c)
+                )
+                """,
+                event_id=event_id, isbn=isbn, concept_id=concept_id,
+            )
+            return True
+
+    def add_group_members(self, concept_id: str, isbns: list[str], participant_id: str) -> int:
+        """既存グループ(conceptId起点)に本を追加する。save_concept と同じ再強化ロジック。
+        棚からグループへドラッグして追加する操作に使う。"""
+        with get_session() as session:
+            row = session.run(
+                """
+                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
+                UNWIND $isbns AS isbn
+                MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book {isbn: isbn})
+                MERGE (b)-[r:CONCEPT {participantId: $pid}]->(c)
+                    ON CREATE SET
+                        r.edgeId         = randomUUID(),
+                        r.createdAt      = datetime(),
+                        r.reinforceCount = 1,
+                        r.strength       = 1.0
+                    ON MATCH SET
+                        r.reinforceCount = coalesce(r.reinforceCount, 1) + 1,
+                        r.strength       = CASE WHEN coalesce(r.strength, 0.0) + 0.2 > 1.0
+                                                THEN 1.0
+                                                ELSE coalesce(r.strength, 0.0) + 0.2 END
+                SET r.origin           = "user_initiated",
+                    r.confidence       = "confirmed",
+                    r.lastReinforcedAt = datetime()
+                RETURN count(r) AS n
+                """,
+                concept_id=concept_id, isbns=isbns, pid=participant_id,
+            ).single()
+            n = row["n"] if row else 0
+
+            if n:
+                event_id = self._create_event(
+                    session, "GroupEditEvent", participant_id, "EDITED_BY",
+                    {"action": "add_member", "conceptId": concept_id},
+                )
+                session.run(
+                    """
+                    MATCH (e:GroupEditEvent {eventId: $event_id})
+                    MATCH (c:Concept {conceptId: $concept_id})
+                    MERGE (e)-[:EDITED_GROUP]->(c)
+                    WITH e
+                    UNWIND $isbns AS isbn
+                    MATCH (b:Book {isbn: isbn})
+                    MERGE (e)-[:AFFECTED_BOOK]->(b)
+                    """,
+                    event_id=event_id, concept_id=concept_id, isbns=isbns,
+                )
+            return n
+
+    def remove_group_members(self, concept_id: str, isbns: list[str], participant_id: str) -> int:
+        """グループから本を複数まとめて外す。remove_group_member の複数冊版。
+        棚でグループハイライト中に複数選択してまとめて除外する操作に使う。"""
+        with get_session() as session:
+            row = session.run(
+                """
+                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
+                UNWIND $isbns AS isbn
+                OPTIONAL MATCH (b:Book {isbn: isbn})-[r:CONCEPT {participantId: $pid}]->(c)
+                DELETE r
+                WITH c, count(r) AS removed
+                OPTIONAL MATCH (c)<-[remaining:CONCEPT {participantId: $pid}]-(:Book)
+                WITH c, removed, count(remaining) AS n
+                FOREACH (_ IN CASE WHEN n = 0 THEN [1] ELSE [] END | DETACH DELETE c)
+                RETURN removed
+                """,
+                concept_id=concept_id, isbns=isbns, pid=participant_id,
+            ).single()
+            removed = row["removed"] if row else 0
+
+            if removed:
+                event_id = self._create_event(
+                    session, "GroupEditEvent", participant_id, "EDITED_BY",
+                    {"action": "remove_member", "conceptId": concept_id},
+                )
+                session.run(
+                    """
+                    MATCH (e:GroupEditEvent {eventId: $event_id})
+                    OPTIONAL MATCH (c:Concept {conceptId: $concept_id})
+                    FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
+                        MERGE (e)-[:EDITED_GROUP]->(c)
+                    )
+                    WITH e
+                    UNWIND $isbns AS isbn
+                    MATCH (b:Book {isbn: isbn})
+                    MERGE (e)-[:AFFECTED_BOOK]->(b)
+                    """,
+                    event_id=event_id, concept_id=concept_id, isbns=isbns,
+                )
+            return removed
+
+    def _merge_concepts(self, session, participant_id: str, source_concept_ids: list[str], target_text: str) -> dict | None:
+        """リネーム・統合の共通下請け。target_text へ get-or-create した Concept に、
+        各 source の CONCEPT エッジを付け替え、空になった source は削除する。
+        呼び出し側のセッション内で実行する（イベント記録とトランザクションを揃えるため）。"""
+        target_row = session.run(
+            """
+            MERGE (target:Concept {participantId: $pid, text: $target_text})
+                ON CREATE SET target.conceptId = randomUUID(), target.createdAt = datetime()
+            RETURN target.conceptId AS concept_id
+            """,
+            pid=participant_id, target_text=target_text,
+        ).single()
+        if not target_row:
+            return None
+        target_concept_id = target_row["concept_id"]
+
+        for source_id in source_concept_ids:
+            if source_id == target_concept_id:
+                continue
+            session.run(
+                """
+                MATCH (target:Concept {conceptId: $target_concept_id})
+                MATCH (source:Concept {conceptId: $source_id, participantId: $pid})
+                OPTIONAL MATCH (b:Book)-[r:CONCEPT {participantId: $pid}]->(source)
+                FOREACH (_ IN CASE WHEN b IS NOT NULL THEN [1] ELSE [] END |
+                    MERGE (b)-[nr:CONCEPT {participantId: $pid}]->(target)
+                        ON CREATE SET
+                            nr.edgeId         = coalesce(r.edgeId, randomUUID()),
+                            nr.createdAt      = coalesce(r.createdAt, datetime()),
+                            nr.reinforceCount = coalesce(r.reinforceCount, 1),
+                            nr.strength       = coalesce(r.strength, 1.0),
+                            nr.origin         = coalesce(r.origin, "user_initiated"),
+                            nr.confidence     = coalesce(r.confidence, "confirmed")
+                        ON MATCH SET
+                            nr.reinforceCount = coalesce(nr.reinforceCount, 1) + coalesce(r.reinforceCount, 1),
+                            nr.strength       = CASE WHEN coalesce(nr.strength, 0.0) >= coalesce(r.strength, 0.0)
+                                                    THEN nr.strength ELSE r.strength END
+                )
+                WITH source, r
+                WHERE r IS NOT NULL
+                DELETE r
+                """,
+                target_concept_id=target_concept_id, source_id=source_id, pid=participant_id,
+            )
+            session.run(
+                """
+                MATCH (source:Concept {conceptId: $source_id, participantId: $pid})
+                WHERE NOT (source)<-[:CONCEPT {participantId: $pid}]-(:Book)
+                DETACH DELETE source
+                """,
+                source_id=source_id, pid=participant_id,
+            )
+
+        count_row = session.run(
+            """
+            MATCH (target:Concept {conceptId: $target_concept_id})
+            OPTIONAL MATCH (target)<-[:CONCEPT {participantId: $pid}]-(b:Book)
+            RETURN target.text AS text, count(DISTINCT b) AS book_count
+            """,
+            target_concept_id=target_concept_id, pid=participant_id,
+        ).single()
+        return {
+            "concept_id": target_concept_id,
+            "text": count_row["text"] if count_row else target_text,
+            "book_count": count_row["book_count"] if count_row else 0,
+        }
+
+    def rename_group(self, concept_id: str, new_text: str, participant_id: str) -> dict | None:
+        """グループ名を変更する。既存の別グループと同名になる場合は実質的な統合になる
+        （merge_concepts と同じ下請けを使うため）。"""
+        with get_session() as session:
+            result = self._merge_concepts(session, participant_id, [concept_id], new_text)
+            if result:
+                event_id = self._create_event(
+                    session, "GroupEditEvent", participant_id, "EDITED_BY",
+                    {"action": "rename", "newText": new_text},
+                )
+                session.run(
+                    """
+                    MATCH (e:GroupEditEvent {eventId: $event_id})
+                    MATCH (c:Concept {conceptId: $concept_id})
+                    MERGE (e)-[:EDITED_GROUP]->(c)
+                    """,
+                    event_id=event_id, concept_id=result["concept_id"],
+                )
+            return result
+
+    def merge_groups(self, source_concept_ids: list[str], target_text: str, participant_id: str) -> dict | None:
+        """2つ以上のグループをドラッグ&ドロップ等で統合する。"""
+        with get_session() as session:
+            # 統合元へのリレーションは、統合処理で source が消える前に張る必要がある。
+            event_id = self._create_event(
+                session, "GroupMergeEvent", participant_id, "MERGED_BY",
+                {"targetText": target_text},
+            )
+            session.run(
+                """
+                MATCH (e:GroupMergeEvent {eventId: $event_id})
+                UNWIND $source_ids AS sid
+                MATCH (source:Concept {conceptId: sid, participantId: $pid})
+                MERGE (e)-[:MERGE_SOURCE]->(source)
+                """,
+                event_id=event_id, source_ids=source_concept_ids, pid=participant_id,
+            )
+
+            result = self._merge_concepts(session, participant_id, source_concept_ids, target_text)
+            if result:
+                session.run(
+                    """
+                    MATCH (e:GroupMergeEvent {eventId: $event_id})
+                    MATCH (target:Concept {conceptId: $target_concept_id})
+                    MERGE (e)-[:MERGE_RESULT]->(target)
+                    """,
+                    event_id=event_id, target_concept_id=result["concept_id"],
+                )
+            return result
+
+    def delete_group(self, concept_id: str, participant_id: str) -> dict | None:
+        """グループを削除する（=対象Conceptを全所属本から一括で外す）。
+        削除前に本文とメンバーisbnをイベントへスナップショットしておく
+        （対象ノードが消えた後もログとUndo用に情報を残すため）。"""
+        with get_session() as session:
+            snapshot = session.run(
+                """
+                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
+                OPTIONAL MATCH (c)<-[:CONCEPT {participantId: $pid}]-(b:Book)
+                RETURN c.text AS text, collect(DISTINCT b.isbn) AS member_isbns
+                """,
+                concept_id=concept_id, pid=participant_id,
+            ).single()
+            if not snapshot:
+                return None
+
+            self._create_event(
+                session, "GroupDeleteEvent", participant_id, "DELETED_BY",
+                {"conceptId": concept_id, "text": snapshot["text"], "memberIsbns": snapshot["member_isbns"]},
+            )
+
+            session.run(
+                """
+                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
+                DETACH DELETE c
+                """,
+                concept_id=concept_id, pid=participant_id,
+            )
+            return {
+                "concept_id": concept_id,
+                "text": snapshot["text"],
+                "member_isbns": snapshot["member_isbns"],
+            }
+
+    def log_group_highlight_event(self, concept_id: str, action: str, participant_id: str) -> None:
+        """左パネルからのハイライト操作を記録する（表示のオン/オフ）。"""
+        with get_session() as session:
+            event_id = self._create_event(
+                session, "GroupHighlightEvent", participant_id, "HIGHLIGHTED_BY",
+                {"action": action, "conceptId": concept_id},
+            )
+            session.run(
+                """
+                MATCH (e:GroupHighlightEvent {eventId: $event_id})
+                OPTIONAL MATCH (c:Concept {conceptId: $concept_id})
+                FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
+                    MERGE (e)-[:HIGHLIGHTED_GROUP]->(c)
+                )
+                """,
+                event_id=event_id, concept_id=concept_id,
+            )
+
+    def log_mode_switch_event(self, mode: str, participant_id: str) -> None:
+        """通常モード⇄グルーピングモードの切り替えを記録する。"""
+        with get_session() as session:
+            self._create_event(
+                session, "ModeSwitchEvent", participant_id, "SWITCHED_BY", {"mode": mode},
+            )
 
     # ============================================================
     # 感想（Impression）
@@ -385,7 +711,7 @@ class BookshelfNeo4j:
             if latest and (latest["text"] or "") == (text or ""):
                 return
 
-            session.run(
+            impression_row = session.run(
                 """
                 MATCH (b:Book {isbn: $isbn})
                 CREATE (i:Impression {
@@ -395,28 +721,27 @@ class BookshelfNeo4j:
                     createdAt:     datetime()
                 })
                 MERGE (b)-[:HAS_IMPRESSION]->(i)
+                RETURN i.impressionId AS impression_id
                 """,
                 isbn=isbn,
                 pid=participant_id,
                 text=text,
-            )
+            ).single()
 
-    def get_book_impressions(self, isbn: str, participant_id: str) -> list[dict]:
-        """1冊の感想を新しい順に返す（設計書3.1の personal_notes[] に相当）。"""
-        with get_session() as session:
-            return [
-                dict(r)
-                for r in session.run(
-                    """
-                    MATCH (:Book {isbn: $isbn})-[:HAS_IMPRESSION]->(i:Impression {participantId: $pid})
-                    RETURN i.impressionId AS note_id, i.text AS text,
-                           toString(i.createdAt) AS created_at
-                    ORDER BY i.createdAt DESC
-                    """,
-                    isbn=isbn,
-                    pid=participant_id,
-                )
-            ]
+            event_id = self._create_event(session, "CommentEvent", participant_id, "COMMENTED_BY")
+            session.run(
+                """
+                MATCH (e:CommentEvent {eventId: $event_id})
+                MATCH (b:Book {isbn: $isbn})
+                MERGE (e)-[:ABOUT_BOOK]->(b)
+                WITH e
+                MATCH (i:Impression {impressionId: $impression_id})
+                MERGE (e)-[:ABOUT_IMPRESSION]->(i)
+                """,
+                event_id=event_id,
+                isbn=isbn,
+                impression_id=impression_row["impression_id"] if impression_row else None,
+            )
 
     def get_book_basic(self, isbn: str, participant_id: str) -> dict | None:
         """コンパクトな詳細パネル用：書誌情報と最新の感想のみを返す軽量クエリ。"""
@@ -427,17 +752,35 @@ class BookshelfNeo4j:
                 OPTIONAL MATCH (b)-[:HAS_IMPRESSION]->(i:Impression {participantId: $pid})
                 WITH b, i ORDER BY i.createdAt DESC
                 WITH b, head(collect(i)) AS latest
+                OPTIONAL MATCH (:Participant {participantId: $pid})-[own:OWNS]->(b)
                 RETURN
                     b.isbn AS isbn, b.title AS title, b.authors AS authors,
                     b.publisher AS publisher, b.published_year AS published_year,
                     b.cover AS cover, b.spine_image AS spine_image,
                     coalesce(b.description, '') AS description,
-                    coalesce(latest.text, '')   AS impression
+                    coalesce(latest.text, '')   AS impression,
+                    toString(own.possessedSince) AS possessed_since
                 """,
                 isbn=isbn,
                 pid=participant_id,
             ).single()
             return dict(row) if row else None
+
+    def set_possessed_since(self, isbn: str, participant_id: str, possessed_since: str) -> bool:
+        """「所持している日数」の褪せ表現の元になる日付を手動で設定する。
+        OWNS関係のプロパティなので、同じ本でも参加者ごとに別の日付を持てる。"""
+        with get_session() as session:
+            row = session.run(
+                """
+                MATCH (:Participant {participantId: $pid})-[own:OWNS]->(:Book {isbn: $isbn})
+                SET own.possessedSince = date($possessed_since)
+                RETURN true AS ok
+                """,
+                pid=participant_id,
+                isbn=isbn,
+                possessed_since=possessed_since,
+            ).single()
+            return row is not None
 
     # ============================================================
     # 棚レイアウト更新
@@ -653,101 +996,6 @@ class BookshelfNeo4j:
                 current_keys=current_keys,
             )
 
-    # ============================================================
-    # 分析クエリ（研究目的：知識体系の広がりと成長の分析）
-    # ============================================================
-
-    def query_high_memory_books(self, participant_id: str, threshold: float = 0.8) -> list[dict]:
-        """
-        memoryWeight が高い位置にある本を取得。
-        「重要視されている知識」の分析クエリ。
-        """
-        with get_session() as session:
-            result = session.run(
-                """
-                MATCH (pos:ShelfPosition {participantId: $pid})-[:LOCATES]->(b:Book)
-                WHERE pos.memoryWeight >= $threshold
-                OPTIONAL MATCH (b)-[:CLASSIFIED_AS]->(n:NDC)
-                RETURN
-                    b.title          AS title,
-                    b.isbn           AS isbn,
-                    n.code           AS ndc,
-                    pos.posId        AS position,
-                    pos.memoryWeight AS weight
-                ORDER BY pos.memoryWeight DESC
-                """,
-                pid=participant_id,
-                threshold=threshold,
-            )
-            return [dict(r) for r in result]
-
-    def query_placement_history(self, isbn: str, participant_id: str) -> list[dict]:
-        """
-        1冊の本の配置変遷履歴を時系列で取得。
-        「知識成長の追跡」クエリ。
-        """
-        with get_session() as session:
-            result = session.run(
-                """
-                MATCH (e:PlacementEvent {participantId: $pid})-[:PLACED_BOOK]->(b:Book {isbn: $isbn})
-                MATCH (e)-[:PLACED_AT]->(pos:ShelfPosition)
-                OPTIONAL MATCH (e)-[:PREVIOUS_POSITION]->(prev:ShelfPosition)
-                RETURN
-                    e.eventId         AS event,
-                    e.timestamp       AS timestamp,
-                    pos.posId         AS to_position,
-                    pos.memoryWeight  AS to_weight,
-                    prev.posId        AS from_position,
-                    prev.memoryWeight AS from_weight
-                ORDER BY e.timestamp ASC
-                """,
-                pid=participant_id,
-                isbn=isbn,
-            )
-            return [dict(r) for r in result]
-
-    def query_knowledge_growth(self, participant_id: str) -> list[dict]:
-        """
-        NDC分類の広がりを集計。本棚の変遷から知識体系の成長を分析する。
-        """
-        with get_session() as session:
-            result = session.run(
-                """
-                MATCH (:Participant {participantId: $pid})-[own:OWNS]->(b:Book)-[:CLASSIFIED_AS]->(n:NDC)
-                WHERE n.level = 1
-                RETURN
-                    n.code                 AS ndc_l1,
-                    count(DISTINCT b.isbn) AS book_count,
-                    min(own.addedAt)       AS first_added,
-                    max(own.addedAt)       AS last_added
-                ORDER BY ndc_l1
-                """,
-                pid=participant_id,
-            )
-            return [dict(r) for r in result]
-
-    def query_co_occurrence_pairs(self, participant_id: str, min_count: int = 2) -> list[dict]:
-        """繰り返し隣り合わせに置き直されている本のペア。
-        設計書5章「高頻度で同時に動かされる本のペア検出」＝未言語化パターンの材料。"""
-        with get_session() as session:
-            return [
-                dict(r)
-                for r in session.run(
-                    """
-                    MATCH (a:Book)-[r:SHELF_NEXT {participantId: $pid}]->(b:Book)
-                    WHERE coalesce(r.coOccurrenceCount, 0) >= $min_count
-                    RETURN a.isbn AS source_isbn, a.title AS source_title,
-                           b.isbn AS target_isbn, b.title AS target_title,
-                           r.coOccurrenceCount AS co_occurrence_count,
-                           coalesce(r.isCurrent, false) AS is_current
-                    ORDER BY r.coOccurrenceCount DESC
-                    LIMIT 20
-                    """,
-                    pid=participant_id,
-                    min_count=min_count,
-                )
-            ]
-
     def get_graph_overview(self, participant_id: str, shelf_isbns: list[str] | None = None) -> dict:
         """
         ナレッジグラフ全体を俯瞰するための統計スナップショット。
@@ -921,97 +1169,6 @@ class BookshelfNeo4j:
                 for r in session.run(query, pid=participant_id, shelf_isbns=shelf_isbns):
                     edges.append({"source": r["source"], "target": r["target"], "type": edge_type})
         return edges
-
-    # ============================================================
-    # 複数冊(本棚のAI分析の提案など)を対象にした部分グラフの抽出
-    # ============================================================
-
-    def get_subgraph_for_isbns(self, isbns: list[str], participant_id: str) -> dict:
-        """
-        与えられた本(複数冊)同士の、意味づけ(Concept)・著者・出版社・NDC分類・
-        本棚での隣接、というつながりだけを抜き出した部分グラフを返す。
-        AI分析の提案に対応する本たちの「知識グラフ上でのつながり」を可視化する用途。
-        """
-        if not isbns:
-            return {"nodes": [], "links": []}
-
-        with get_session() as session:
-            book_rows = session.run(
-                """
-                MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)
-                WHERE b.isbn IN $isbns
-                RETURN b.isbn AS isbn, b.title AS title, b.cover AS cover,
-                       b.spine_image AS spine_image, b.authors AS authors
-                """,
-                pid=participant_id,
-                isbns=isbns,
-            )
-            nodes: dict[str, dict] = {}
-            for r in book_rows:
-                nodes[f"book_{r['isbn']}"] = {"id": f"book_{r['isbn']}", "type": "Book", **dict(r)}
-
-            links: list[dict] = []
-
-            def _add_group_links(query: str, mid_prefix: str, mid_type: str, mid_label_key: str, link_type: str):
-                for r in session.run(query, isbns=isbns, pid=participant_id):
-                    mid_id = f"{mid_prefix}_{r['mid']}"
-                    nodes.setdefault(mid_id, {"id": mid_id, "type": mid_type, **{mid_label_key: r["mid_label"]}})
-                    links.append({"source": f"book_{r['a_isbn']}", "target": mid_id, "type": link_type})
-                    links.append({"source": f"book_{r['b_isbn']}", "target": mid_id, "type": link_type})
-
-            _add_group_links(
-                """
-                MATCH (a:Book)-[:CONCEPT {participantId: $pid}]->(c:Concept {participantId: $pid})
-                      <-[:CONCEPT {participantId: $pid}]-(b:Book)
-                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
-                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, c.conceptId AS mid, c.text AS mid_label
-                """,
-                "concept", "Concept", "text", "CONCEPT",
-            )
-            _add_group_links(
-                """
-                MATCH (me:Participant {participantId: $pid})
-                MATCH (a:Book)-[:WRITTEN_BY]->(x:Author)<-[:WRITTEN_BY]-(b:Book)
-                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
-                  AND (me)-[:OWNS]->(a) AND (me)-[:OWNS]->(b)
-                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, id(x) AS mid, x.name AS mid_label
-                """,
-                "author", "Author", "name", "WRITTEN_BY",
-            )
-            _add_group_links(
-                """
-                MATCH (me:Participant {participantId: $pid})
-                MATCH (a:Book)-[:PUBLISHED_BY]->(x:Publisher)<-[:PUBLISHED_BY]-(b:Book)
-                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
-                  AND (me)-[:OWNS]->(a) AND (me)-[:OWNS]->(b)
-                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, id(x) AS mid, x.name AS mid_label
-                """,
-                "publisher", "Publisher", "name", "PUBLISHED_BY",
-            )
-            _add_group_links(
-                """
-                MATCH (me:Participant {participantId: $pid})
-                MATCH (a:Book)-[:CLASSIFIED_AS]->(x:NDC)<-[:CLASSIFIED_AS]-(b:Book)
-                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
-                  AND (me)-[:OWNS]->(a) AND (me)-[:OWNS]->(b)
-                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn, id(x) AS mid, x.code AS mid_label
-                """,
-                "ndc", "NDC", "code", "CLASSIFIED_AS",
-            )
-
-            for r in session.run(
-                """
-                MATCH (a:Book)-[r:SHELF_NEXT {participantId: $pid}]-(b:Book)
-                WHERE a.isbn IN $isbns AND b.isbn IN $isbns AND a.isbn < b.isbn
-                  AND coalesce(r.isCurrent, true) = true
-                RETURN DISTINCT a.isbn AS a_isbn, b.isbn AS b_isbn
-                """,
-                pid=participant_id,
-                isbns=isbns,
-            ):
-                links.append({"source": f"book_{r['a_isbn']}", "target": f"book_{r['b_isbn']}", "type": "SHELF_NEXT"})
-
-            return {"nodes": list(nodes.values()), "links": links}
 
     # ============================================================
     # 本1冊を中心にした関連本の抽出（タップ時の詳細パネル用）
@@ -1203,315 +1360,6 @@ class BookshelfNeo4j:
             )
             return [dict(r) for r in result]
 
-    # ============================================================
-    # グラフ全体の取得（知識グラフ画面用）
-    # ============================================================
-
-    def get_full_graph(self, participant_id: str) -> dict:
-        """その被験者の知識グラフだけを返す。
-        以前は MATCH (n) でDB全体を返していたため、被験者が増えると
-        他人のグラフがそのまま画面に出てしまう。"""
-        with get_session() as session:
-            nodes = [
-                dict(r)
-                for r in session.run(
-                    """
-                    MATCH (me:Participant {participantId: $pid})-[:OWNS]->(b:Book)
-                    OPTIONAL MATCH (b)-[:WRITTEN_BY]->(a:Author)
-                    OPTIONAL MATCH (b)-[:PUBLISHED_BY]->(p:Publisher)
-                    OPTIONAL MATCH (b)-[:CLASSIFIED_AS]->(n:NDC)
-                    OPTIONAL MATCH (b)-[:CONCEPT {participantId: $pid}]->(c:Concept)
-                    WITH collect(DISTINCT b) + collect(DISTINCT a) + collect(DISTINCT p)
-                       + collect(DISTINCT n) + collect(DISTINCT c) AS all_nodes
-                    UNWIND all_nodes AS node
-                    WITH DISTINCT node WHERE node IS NOT NULL
-                    RETURN
-                        id(node)                          AS id,
-                        labels(node)[0]                   AS type,
-                        coalesce(node.isbn, '')           AS isbn,
-                        coalesce(node.title, '')          AS title,
-                        coalesce(node.authors, '')        AS authors,
-                        coalesce(node.publisher, '')      AS publisher,
-                        coalesce(node.published_year, '') AS published_year,
-                        coalesce(node.cover, '')          AS cover,
-                        coalesce(node.spine_image, '')    AS spine_image,
-                        coalesce(node.description, '')    AS description,
-                        coalesce(node.pages, 0)           AS pages,
-                        coalesce(node.height_mm, 0)       AS height_mm,
-                        coalesce(node.name, '')           AS name,
-                        coalesce(node.code, '')           AS code,
-                        coalesce(node.level, 0)           AS level,
-                        coalesce(node.text, '')           AS text
-                    """,
-                    pid=participant_id,
-                )
-            ]
-
-            node_ids = {n["id"] for n in nodes}
-
-            links = [
-                {"source": r["source"], "target": r["target"], "type": r["type"]}
-                for r in session.run(
-                    """
-                    MATCH (me:Participant {participantId: $pid})-[:OWNS]->(b:Book)
-                    MATCH (b)-[r]->(x)
-                    WHERE type(r) IN ['WRITTEN_BY', 'PUBLISHED_BY', 'CLASSIFIED_AS']
-                       OR (type(r) IN ['CONCEPT', 'SHELF_NEXT'] AND r.participantId = $pid)
-                    RETURN DISTINCT id(b) AS source, id(x) AS target, type(r) AS type
-                    """,
-                    pid=participant_id,
-                )
-                if r["source"] in node_ids and r["target"] in node_ids
-            ]
-
-            return {"nodes": nodes, "links": links}
-
-    # ============================================================
-    # Discovery（LLMの発見）── 設計書3.3
-    #
-    # 以前は /analyze の出力をその場で返して捨てていたため、
-    # status も user_feedback も残らず、7.3のフィードバック収集が成立しなかった。
-    # ============================================================
-
-    def save_discoveries(self, discoveries: list[dict], participant_id: str) -> list[dict]:
-        """発見を永続化して discovery_id を振る。
-        discoveries: [{"type", "generated_question", "related_book_ids", "body"}, ...]"""
-        if not discoveries:
-            return []
-
-        saved = []
-        with get_session() as session:
-            for d in discoveries:
-                discovery_id = str(uuid.uuid4())
-                session.run(
-                    """
-                    CREATE (d:Discovery {
-                        discoveryId:       $discovery_id,
-                        participantId:     $pid,
-                        type:              $type,
-                        title:             $title,
-                        generatedQuestion: $question,
-                        body:              $body,
-                        status:            'pending',
-                        createdAt:         datetime()
-                    })
-                    WITH d
-                    UNWIND $isbns AS isbn
-                    MATCH (b:Book {isbn: isbn})
-                    MERGE (d)-[:RELATES_TO]->(b)
-                    """,
-                    discovery_id=discovery_id,
-                    pid=participant_id,
-                    type=d.get("type", "structural"),
-                    title=d.get("title", ""),
-                    question=d.get("generated_question", ""),
-                    body=d.get("body", ""),
-                    isbns=d.get("related_book_ids") or [],
-                )
-                saved.append({**d, "discovery_id": discovery_id, "status": "pending"})
-        return saved
-
-    def record_discovery_feedback(
-        self,
-        discovery_id: str,
-        participant_id: str,
-        status: str,
-        surprise_score: float | None = None,
-        agreement_score: float | None = None,
-        comment: str | None = None,
-    ) -> bool:
-        """発見に対する納得度・驚き度を記録する（設計書7.3）。
-
-        「そう」「一部ちがう」と答えられた発見は、ここで初めて実際の意味づけ(Concept)として
-        知識グラフに書き戻す。分析（/analyze）の時点ではまだAIの仮説にすぎず、ユーザーの
-        判断を経て初めて事実になる、という設計にしているため、書き戻しは発見時ではなく
-        回答時に行う。これにより次回以降の分析・育成度・本詳細パネルの意味づけ一覧に反映される。
-        「ちがう」は何も書き戻さない（同じ問いを繰り返さないことは asked_questions 側で担保する）。"""
-        with get_session() as session:
-            row = session.run(
-                """
-                MATCH (d:Discovery {discoveryId: $discovery_id, participantId: $pid})
-                SET d.status          = $status,
-                    d.surpriseScore   = $surprise,
-                    d.agreementScore  = $agreement,
-                    d.userComment     = $comment,
-                    d.respondedAt     = datetime()
-                RETURN d.discoveryId AS id, d.title AS title, d.generatedQuestion AS question
-                """,
-                discovery_id=discovery_id,
-                pid=participant_id,
-                status=status,
-                surprise=surprise_score,
-                agreement=agreement_score,
-                comment=comment,
-            ).single()
-            if row is None:
-                return False
-
-            if status == "modified":
-                # 訂正の一言（comment）こそが正しい意味づけなので、それを優先する。
-                # まだコメント入力前（1段目のボタンだけ押した直後）は comment が空で来るので、
-                # そのときは何も書き戻さず、コメント確定時の呼び出しを待つ。
-                meaning = (comment or "").strip()
-            elif status == "confirmed":
-                meaning = (row["title"] or "").strip()
-                if not meaning:
-                    meaning = (row["question"] or "").strip().rstrip("?？").strip()
-            else:
-                meaning = ""
-
-            if meaning:
-                session.run(
-                    """
-                    MATCH (d:Discovery {discoveryId: $discovery_id, participantId: $pid})-[:RELATES_TO]->(b:Book)
-                    WITH collect(DISTINCT b) AS books
-                    MERGE (c:Concept {participantId: $pid, text: $meaning})
-                        ON CREATE SET c.conceptId = randomUUID(), c.createdAt = datetime()
-                    WITH c, books
-                    UNWIND books AS b
-                    MERGE (b)-[r:CONCEPT {participantId: $pid}]->(c)
-                        ON CREATE SET r.edgeId = randomUUID(), r.createdAt = datetime(), r.reinforceCount = 1
-                        ON MATCH SET r.reinforceCount = coalesce(r.reinforceCount, 1) + 1
-                    SET r.confidence       = 'confirmed',
-                        r.strength         = 1.0,
-                        r.origin           = 'ai_discovery',
-                        r.lastReinforcedAt = datetime()
-                    """,
-                    discovery_id=discovery_id,
-                    pid=participant_id,
-                    meaning=meaning,
-                )
-            return True
-
-    def list_discoveries(self, participant_id: str, status: str | None = None) -> list[dict]:
-        with get_session() as session:
-            return [
-                dict(r)
-                for r in session.run(
-                    """
-                    MATCH (d:Discovery {participantId: $pid})
-                    WHERE $status IS NULL OR d.status = $status
-                    OPTIONAL MATCH (d)-[:RELATES_TO]->(b:Book)
-                    // 集約したあとは ORDER BY から d を参照できないので、
-                    // 先に WITH でまとめてから並べ替える
-                    WITH d, collect(DISTINCT b.isbn) AS related_book_ids
-                    ORDER BY d.createdAt DESC
-                    LIMIT 100
-                    RETURN d.discoveryId       AS discovery_id,
-                           d.type              AS type,
-                           coalesce(d.title, '') AS title,
-                           d.generatedQuestion AS generated_question,
-                           d.body              AS body,
-                           d.status            AS status,
-                           d.surpriseScore     AS surprise_score,
-                           d.agreementScore    AS agreement_score,
-                           d.userComment       AS user_comment,
-                           toString(d.createdAt) AS created_at,
-                           related_book_ids
-                    """,
-                    pid=participant_id,
-                    status=status,
-                )
-            ]
-
-    # ============================================================
-    # 対話履歴（左ペイン「発見と対話」）
-    #
-    # 以前はDialoguePanelのReact stateのみで持っていたため、リロードすると
-    # 消えていた。被験者ごとに機器を共有する研究運用（participant.js参照）
-    # では localStorage だと別の被験者のIDに乗ってしまう恐れがあるため、
-    # Discoveryと同じくバックエンド側にparticipantId付きで永続化する。
-    # ============================================================
-
-    def save_chat_message(
-        self,
-        participant_id: str,
-        role: str,
-        text: str,
-        related_book_ids: list[str] | None = None,
-    ) -> None:
-        with get_session() as session:
-            session.run(
-                """
-                CREATE (m:ChatMessage {
-                    messageId:      $mid,
-                    participantId:  $pid,
-                    role:           $role,
-                    text:           $text,
-                    relatedBookIds: $isbns,
-                    createdAt:      datetime()
-                })
-                """,
-                mid=str(uuid.uuid4()),
-                pid=participant_id,
-                role=role,
-                text=text,
-                isbns=related_book_ids or [],
-            )
-
-    def list_chat_history(self, participant_id: str, limit: int = 300) -> list[dict]:
-        with get_session() as session:
-            return [
-                dict(r)
-                for r in session.run(
-                    """
-                    MATCH (m:ChatMessage {participantId: $pid})
-                    RETURN m.messageId      AS message_id,
-                           m.role           AS role,
-                           m.text           AS text,
-                           m.relatedBookIds AS related_isbns,
-                           toString(m.createdAt) AS created_at
-                    ORDER BY m.createdAt ASC
-                    LIMIT $limit
-                    """,
-                    pid=participant_id,
-                    limit=limit,
-                )
-            ]
-
-    def clear_chat_history(self, participant_id: str) -> None:
-        with get_session() as session:
-            session.run(
-                "MATCH (m:ChatMessage {participantId: $pid}) DETACH DELETE m",
-                pid=participant_id,
-            )
-
-    def write_concept_for_books(
-        self,
-        participant_id: str,
-        meaning: str,
-        isbns: list[str],
-        origin: str = "chat_summary",
-    ) -> None:
-        """雑談の要約をユーザーが確認した上で意味づけとして書き戻す。
-        record_discovery_feedback の書き戻しと同じ形（MERGE Concept→CONCEPT edge）だが、
-        根拠がDiscoveryノードではなく対話そのものなので、対象の本をISBNで直接受け取る。"""
-        meaning = (meaning or "").strip()
-        isbns = [i for i in isbns if i]
-        if not meaning or not isbns:
-            return
-        with get_session() as session:
-            session.run(
-                """
-                MERGE (c:Concept {participantId: $pid, text: $meaning})
-                    ON CREATE SET c.conceptId = randomUUID(), c.createdAt = datetime()
-                WITH c
-                UNWIND $isbns AS isbn
-                MATCH (b:Book {isbn: isbn})
-                MERGE (b)-[r:CONCEPT {participantId: $pid}]->(c)
-                    ON CREATE SET r.edgeId = randomUUID(), r.createdAt = datetime(), r.reinforceCount = 1
-                    ON MATCH SET r.reinforceCount = coalesce(r.reinforceCount, 1) + 1
-                SET r.confidence       = 'confirmed',
-                    r.strength         = 1.0,
-                    r.origin           = $origin,
-                    r.lastReinforcedAt = datetime()
-                """,
-                pid=participant_id,
-                meaning=meaning,
-                isbns=isbns,
-                origin=origin,
-            )
-
     def get_growth_stats(self, participant_id: str) -> dict:
         """知識グラフがどれだけ育っているかの素の数値。
 
@@ -1529,44 +1377,21 @@ class BookshelfNeo4j:
                 OPTIONAL MATCH (:Book)-[r:CONCEPT {participantId: $pid}]->(:Concept)
                 WITH me, books, concepts, count(r) AS concept_edges
                 OPTIONAL MATCH (:Book)-[:HAS_IMPRESSION]->(i:Impression {participantId: $pid})
-                WITH me, books, concepts, concept_edges, count(DISTINCT i) AS impressions
-                OPTIONAL MATCH (d:Discovery {participantId: $pid})
-                WITH books, concepts, concept_edges, impressions,
-                     count(d) AS discoveries,
-                     count(CASE WHEN d.status = 'confirmed' THEN 1 END) AS confirmed
-                RETURN books, concepts, concept_edges, impressions, discoveries, confirmed
+                WITH books, concepts, concept_edges, count(DISTINCT i) AS impressions
+                RETURN books, concepts, concept_edges, impressions
                 """,
                 pid=participant_id,
             ).single()
 
             stats = dict(row) if row else {
-                "books": 0, "concepts": 0, "concept_edges": 0,
-                "impressions": 0, "discoveries": 0, "confirmed": 0,
+                "books": 0, "concepts": 0, "concept_edges": 0, "impressions": 0,
             }
 
             # 「意味づけがどれだけ蓄積されたか」を 0.0〜1.0 に丸めた値。
             # 蔵書数ではなく主観の量で育つようにする（本を並べただけでは育たない）。
-            subjective = stats["concept_edges"] + stats["impressions"] + stats["confirmed"] * 2
+            subjective = stats["concept_edges"] + stats["impressions"]
             stats["level"] = round(min(1.0, subjective / 60.0), 3)
             return stats
-
-    def get_answered_discovery_questions(self, participant_id: str, limit: int = 30) -> list[str]:
-        """すでに提示済みの質問文。同じ問いを繰り返さないためにLLMへ渡す。"""
-        with get_session() as session:
-            return [
-                r["q"]
-                for r in session.run(
-                    """
-                    MATCH (d:Discovery {participantId: $pid})
-                    WHERE d.generatedQuestion IS NOT NULL AND d.generatedQuestion <> ''
-                    RETURN d.generatedQuestion AS q
-                    ORDER BY d.createdAt DESC
-                    LIMIT $limit
-                    """,
-                    pid=participant_id,
-                    limit=limit,
-                )
-            ]
 
 
 # ============================================================
@@ -1578,35 +1403,27 @@ class BookshelfNeo4j:
 
 _neo4j = BookshelfNeo4j()
 
-ensure_participant                = _neo4j.ensure_participant
 add_book_with_meaning             = _neo4j.add_book_with_meaning
+update_book_attributes            = _neo4j.update_book_attributes
 remove_book_ownership             = _neo4j.remove_book_ownership
 groups_from_neo4j                 = _neo4j.groups_from_neo4j
 save_concept                      = _neo4j.save_concept
-confirm_concept_edge              = _neo4j.confirm_concept_edge
 delete_concept_edge               = _neo4j.delete_concept_edge
-count_concept_nodes               = _neo4j.count_concept_nodes
-get_latest_concept_topic          = _neo4j.get_latest_concept_topic
 update_shelf_layout_chain         = _neo4j.update_shelf_layout_chain
-query_high_memory_books           = _neo4j.query_high_memory_books
-query_placement_history           = _neo4j.query_placement_history
-query_knowledge_growth            = _neo4j.query_knowledge_growth
-query_co_occurrence_pairs         = _neo4j.query_co_occurrence_pairs
 get_graph_overview                = _neo4j.get_graph_overview
 get_book_relations                = _neo4j.get_book_relations
 get_book_concepts                 = _neo4j.get_book_concepts
 get_book_basic                    = _neo4j.get_book_basic
+set_possessed_since               = _neo4j.set_possessed_since
 save_book_impression              = _neo4j.save_book_impression
-get_book_impressions              = _neo4j.get_book_impressions
 get_book_edges                    = _neo4j.get_book_edges
-get_subgraph_for_isbns            = _neo4j.get_subgraph_for_isbns
-get_full_graph                    = _neo4j.get_full_graph
-save_discoveries                  = _neo4j.save_discoveries
-record_discovery_feedback         = _neo4j.record_discovery_feedback
-list_discoveries                  = _neo4j.list_discoveries
-get_answered_discovery_questions  = _neo4j.get_answered_discovery_questions
 get_growth_stats                  = _neo4j.get_growth_stats
-save_chat_message                 = _neo4j.save_chat_message
-list_chat_history                 = _neo4j.list_chat_history
-clear_chat_history                = _neo4j.clear_chat_history
-write_concept_for_books           = _neo4j.write_concept_for_books
+list_participant_groups            = _neo4j.list_participant_groups
+remove_group_member                = _neo4j.remove_group_member
+remove_group_members               = _neo4j.remove_group_members
+add_group_members                  = _neo4j.add_group_members
+rename_group                      = _neo4j.rename_group
+merge_groups                      = _neo4j.merge_groups
+delete_group                      = _neo4j.delete_group
+log_group_highlight_event         = _neo4j.log_group_highlight_event
+log_mode_switch_event             = _neo4j.log_mode_switch_event

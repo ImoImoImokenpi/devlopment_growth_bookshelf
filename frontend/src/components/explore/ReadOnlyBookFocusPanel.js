@@ -1,7 +1,7 @@
 // 「他の参加者の本棚を観察する」画面の右ペイン（本詳細・読み取り専用）。
 //
 // 感想・意味づけはその人の主観的な記録なので、観察画面では表示しない
-// （書誌情報のみを見せる）。差異対話（ComparisonDialoguePanel）で扱う
+// （書誌情報のみを見せる）。左ペイン（PreGuessPanel）で扱う
 // 構造的な傾向の話とは別に、1冊単位の個人的な内容を覗けてしまわないようにする。
 import { useEffect, useState } from "react";
 import { withParticipant } from "../../utils/participant";

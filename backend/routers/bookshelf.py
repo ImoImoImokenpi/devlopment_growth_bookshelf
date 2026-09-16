@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel
 from typing import List
 from models import ShelfLayout, ShelfDesign, RegisteredBook
 from sqlalchemy.orm import Session
-from database import get_db
+from database import get_db, SessionLocal
 from participant import resolve_participant_id
-from admin_neo4j.neo4j_driver import get_session
-from admin_neo4j.neo4j_crud import (
+from graph.main_kg.neo4j_driver import get_session
+from graph.main_kg.neo4j_crud import (
     update_shelf_layout_chain, save_concept, remove_book_ownership,
 )
+from graph.style_projection.bookshelf_bridge import sync_from_bookshelf
+from graph.placement_analysis.profile import compute_and_save_placement_profile
 import logging
 
 logger = logging.getLogger(__name__)
@@ -105,13 +107,20 @@ def fetch_bookshelf(
     layout_map = {l.isbn: l for l in layouts}
 
     title_map: dict[str, str] = {}
+    possessed_since_map: dict[str, str | None] = {}
     with get_session() as session:
         result = session.run(
-            "MATCH (b:Book) WHERE b.isbn IN $isbns RETURN b.isbn AS isbn, b.title AS title",
-            isbns=list(layout_map.keys())
+            """
+            MATCH (b:Book) WHERE b.isbn IN $isbns
+            OPTIONAL MATCH (:Participant {participantId: $pid})-[own:OWNS]->(b)
+            RETURN b.isbn AS isbn, b.title AS title, toString(own.possessedSince) AS possessed_since
+            """,
+            isbns=list(layout_map.keys()),
+            pid=participant_id,
         )
         for r in result:
             title_map[r["isbn"]] = r["title"]
+            possessed_since_map[r["isbn"]] = r["possessed_since"]
 
     reg_books = db.query(RegisteredBook).filter(RegisteredBook.isbn.in_(list(layout_map.keys()))).all()
     spine_map = {rb.isbn: rb.spine_image for rb in reg_books}
@@ -144,6 +153,7 @@ def fetch_bookshelf(
             "publisher":       publisher_map.get(l.isbn),
             "published_year":  published_year_map.get(l.isbn),
             "registered_at":   registered_at_map.get(l.isbn),
+            "possessed_since": possessed_since_map.get(l.isbn),
         })
 
     return {
@@ -152,9 +162,35 @@ def fetch_bookshelf(
     }
 
 
+def _run_style_projection_sync(participant_id: str) -> None:
+    """配置完了イベントを受けて投影スタイル分析システムへ反映する（バックグラウンド実行）。
+    GDSを使う構造指標の計算はそれなりに時間がかかるので、本棚の保存レスポンスを
+    ブロックしないようレスポンス送出後に走らせる。失敗しても本棚の保存自体は無関係なので、
+    警告ログに留めて無視する。"""
+    db = SessionLocal()
+    try:
+        sync_from_bookshelf(db, participant_id=participant_id)
+    except Exception as e:
+        logger.warning("投影スタイル分析システムへの反映に失敗しました: %s", e)
+    finally:
+        db.close()
+
+
+def _run_placement_analysis_sync(participant_id: str) -> None:
+    """配置完了イベントを受けて本棚の物理配置分析（高さ・色・著者・ジャンル×配置・
+    孤立本・デザイン根拠）を再計算する（バックグラウンド実行）。
+    update_shelf_layout_chain がすでにSHELF_NEXT/ShelfPositionをNeo4jへ反映済みの
+    前提で動くため、この関数の直前で呼ぶこと。失敗しても本棚の保存自体は無関係。"""
+    try:
+        compute_and_save_placement_profile(participant_id)
+    except Exception as e:
+        logger.warning("本棚配置分析システムへの反映に失敗しました: %s", e)
+
+
 @router.post("/sync-layout")
 async def sync_layout(
     body: SyncLayoutRequest,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     participant_id: str = Depends(resolve_participant_id),
 ):
@@ -184,6 +220,9 @@ async def sync_layout(
             for pos in body.layout
         ]
         update_shelf_layout_chain(neo4j_payload, participant_id=participant_id)
+
+        background_tasks.add_task(_run_style_projection_sync, participant_id)
+        background_tasks.add_task(_run_placement_analysis_sync, participant_id)
 
         return {"status": "success"}
     except Exception as e:

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import MyHand, RegisteredBook, ShelfLayout
 from participant import resolve_participant_id
-from admin_neo4j.neo4j_crud import add_book_with_meaning
+from graph.main_kg.neo4j_crud import add_book_with_meaning
 
 from utils.shelf_utils import add_to_shelf
 

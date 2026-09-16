@@ -93,6 +93,24 @@ def run_migrations(engine) -> None:
         _add_column_if_missing(conn, "registered_books", "spine_color", "VARCHAR")
         _add_column_if_missing(conn, "shelfdesign", "last_forced_concept_count", "INTEGER DEFAULT 0")
 
+        # --- フェーズ1: 属性タグ基盤（高さ・色の手動補正の出所を記録） ---
+        _add_column_if_missing(conn, "registered_books", "spine_color_source", "VARCHAR DEFAULT 'auto_colorthief'")
+        _add_column_if_missing(conn, "registered_books", "height_source", "VARCHAR DEFAULT 'ndl_extent'")
+
+        # --- フェーズ2: 区切り確認を段単位からgap（本と本の間）単位に作り直し ---
+        if _table_exists(conn, "section_awareness"):
+            conn.execute(text("DROP TABLE section_awareness"))
+            logger.info("migration: section_awareness を廃止しました（section_boundaryに置き換え）")
+
+        # --- フェーズ2: 興味分野タグを固定語彙→現在棚にあるジャンルに変更 ---
+        # 質問の意味そのものが変わった（固定16語彙への複数選択 → 棚にあるジャンルの
+        # タップ順ランキング）ため、旧語彙での回答は新しい候補と噛み合わない。
+        # rank列を足す一度きりのタイミングで、旧回答を消してから作り直す。
+        if _table_exists(conn, "interest_tag") and "rank" not in _columns(conn, "interest_tag"):
+            conn.execute(text("DELETE FROM interest_tag"))
+            logger.info("migration: interest_tag の旧語彙による回答をクリアしました（質問仕様の変更のため）")
+        _add_column_if_missing(conn, "interest_tag", "rank", "INTEGER DEFAULT 1")
+
         # --- 被験者スコープの導入 ---
         rebuilt = []
         for model in (ShelfLayout, MyHand):

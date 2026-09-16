@@ -1,53 +1,35 @@
 import json
-import os
+import logging
+import random
 import re
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from admin_neo4j.neo4j_driver import get_session
-from admin_neo4j.neo4j_crud import (
-    get_graph_overview, get_book_relations, get_book_concepts, get_book_basic, save_book_impression,
-    get_book_impressions, get_book_edges, get_subgraph_for_isbns, get_full_graph,
-    count_concept_nodes, get_latest_concept_topic, confirm_concept_edge, delete_concept_edge,
-    save_discoveries, record_discovery_feedback, list_discoveries,
-    get_answered_discovery_questions, query_co_occurrence_pairs, get_growth_stats,
-    save_chat_message, list_chat_history, clear_chat_history, write_concept_for_books,
+from graph.main_kg.neo4j_crud import (
+    get_book_relations, get_book_concepts, get_book_basic, save_book_impression,
+    delete_concept_edge, get_growth_stats,
+    list_participant_groups, remove_group_member, remove_group_members, add_group_members,
+    rename_group, merge_groups, delete_group,
+    log_group_highlight_event, log_mode_switch_event,
+    set_possessed_since,
 )
+from graph.style_projection.diff import compute_style_diff, get_latest_style_profile
+from graph.style_projection.bookshelf_bridge import sync_from_bookshelf
+from graph.style_projection.groups import get_candidate_groups
+from graph.experiment.guess_records import (
+    save_pre_guess, get_guess, save_post_guess, TARGET_TYPES,
+)
+from graph.experiment.semantic_diff import build_semantic_diff
+from graph.experiment.assignment import get_condition as get_trial_condition
 from utils.llm_provider import get_llm_client
-from utils.network_analysis import analyze_book_network
-from utils.shelf_pattern_analysis import analyze_shelf_patterns
 from database import get_db
 from participant import resolve_participant_id, is_valid_participant_id
-from models import ShelfLayout, RegisteredBook, ShelfDesign
+from models import RegisteredBook
 
 router = APIRouter(prefix="/knowledge_graph")
 
 _llm = get_llm_client()
-
-# ユーザーが自由に付けた意味づけ（Concept）が、これだけ新しく増えるたびに
-# 本棚側から強制的に話しかける（対話が完全に受け身にならないようにするため）
-CONCEPT_WHISPER_THRESHOLD = 3
-
-NDC_L1 = {
-    "0": "総記", "1": "哲学", "2": "歴史・地理", "3": "社会科学",
-    "4": "自然科学", "5": "技術", "6": "産業", "7": "芸術", "8": "言語", "9": "文学",
-}
-
-# 設計書5章のLLM発見エンジンが扱う4種類の発見
-DISCOVERY_TYPES = {"commonality", "contradiction", "implicit_pattern", "structural"}
-
-# 分析プロンプトに載せる書誌一覧の上限。
-# 小さめのモデル（Groqの無料枠など）では入力トークンの上限に当たりやすく、
-# 蔵書が増えるほどここが最初に溢れる。ANALYSIS_CATALOG_LIMIT で調整できる。
-CATALOG_LIMIT = int(os.environ.get("ANALYSIS_CATALOG_LIMIT", "24"))
-
-@router.get("/")
-def get_graph(participant_id: str = Depends(resolve_participant_id)):
-    """その被験者の知識グラフだけを返す。
-    以前はDB全体を返していたため、被験者が増えると他人のグラフが混ざっていた。"""
-    return get_full_graph(participant_id)
-
 
 @router.get("/book/{isbn}")
 def get_book_detail(isbn: str, participant_id: str = Depends(resolve_participant_id)):
@@ -74,6 +56,26 @@ def get_book_basic_endpoint(isbn: str, participant_id: str = Depends(resolve_par
     return data
 
 
+class PossessedSinceRequest(BaseModel):
+    possessed_since: str  # "YYYY-MM-DD"
+
+
+@router.post("/book/{isbn}/possessed-since")
+def set_possessed_since_endpoint(
+    isbn: str,
+    body: PossessedSinceRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """本棚の「褪せ」表現の元になる、この本を持ち始めた日を手動で設定する。
+    書誌APIからは分からない情報（本人しか知らない）なので手動入力のみ。"""
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", body.possessed_since):
+        raise HTTPException(status_code=422, detail="possessed_since は YYYY-MM-DD 形式で指定してください")
+    ok = set_possessed_since(isbn, participant_id=participant_id, possessed_since=body.possessed_since)
+    if not ok:
+        raise HTTPException(status_code=404, detail="本が見つかりません")
+    return {"isbn": isbn, "possessed_since": body.possessed_since}
+
+
 class ImpressionRequest(BaseModel):
     text: str
 
@@ -90,784 +92,6 @@ def save_book_impression_endpoint(
     return {"ok": True}
 
 
-@router.get("/book/{isbn}/impressions")
-def get_book_impressions_endpoint(isbn: str, participant_id: str = Depends(resolve_participant_id)):
-    """1冊に対する感想の履歴（設計書3.1の personal_notes[] に相当）。"""
-    return {"impressions": get_book_impressions(isbn, participant_id=participant_id)}
-
-
-class SubgraphRequest(BaseModel):
-    isbns: list[str]
-
-
-@router.post("/subgraph")
-def get_subgraph(
-    body: SubgraphRequest,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    """複数冊(本棚のAI分析の提案など)を対象に、その本たち同士のつながりだけの部分グラフを返す"""
-    return get_subgraph_for_isbns(body.isbns, participant_id=participant_id)
-
-
-# ============================================================
-# 知識グラフの俯瞰分析（AIによる提案）
-# ============================================================
-
-def _clean(text: str) -> str:
-    """改行・連続空白をスペース1個にまとめる（プロンプトの行構造が崩れないように）。"""
-    return re.sub(r"\s+", " ", text).strip() if text else ""
-
-
-def _build_network_section(network: dict) -> list[str]:
-    lines = ["", "【NetworkXによる蔵書ネットワークの構造分析】"]
-    stats = network["graph_stats"]
-    lines.append(
-        f"- 分析対象: {stats['num_nodes']}冊 / つながり{stats['num_edges']}本 / "
-        f"孤立クラスタ数{stats['num_components']} / 密度{stats['density']}"
-    )
-
-    lines.append("")
-    lines.append("【ハブとなっている本（多くの本とつながりを持つ中心的な1冊）】")
-    if network["hub_books"]:
-        for b in network["hub_books"]:
-            lines.append(f"- [{b['isbn']}] {b['title']}（中心性: {b['degree_centrality']}）")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【コミュニティ検出によるテーマクラスタ】")
-    if network["communities"]:
-        for c in network["communities"][:5]:
-            titles = "、".join(b["title"] for b in c["books"][:4])
-            lines.append(f"- クラスタ{c['id']}（{c['size']}冊）: {titles}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【橋渡し役の本（除くとクラスタが分断される本）】")
-    if network["bridge_books"]:
-        for b in network["bridge_books"][:5]:
-            lines.append(f"- [{b['isbn']}] {b['title']}")
-    else:
-        lines.append("- なし")
-
-    return lines
-
-
-def _fetch_shelf_rows(db: Session, participant_id: str) -> dict[int, list[dict]]:
-    """本棚の物理配置（高さ・ジャンル・色・著者など）をshelf_index別に集める。
-    並べ方ルールの機械的な検出（shelf_pattern_analysis）の入力になる。"""
-    rows = (
-        db.query(ShelfLayout, RegisteredBook)
-        .join(RegisteredBook, RegisteredBook.isbn == ShelfLayout.isbn)
-        .filter(ShelfLayout.participant_id == participant_id)
-        .all()
-    )
-    shelves: dict[int, list[dict]] = {}
-    for layout, book in rows:
-        shelves.setdefault(layout.shelf_index, []).append({
-            "isbn": layout.isbn,
-            "title": book.title,
-            "shelf_index": layout.shelf_index,
-            "x_pos": layout.x_pos,
-            "height_mm": layout.height_mm or book.height_mm,
-            "pages": layout.pages or book.pages,
-            "ndc": book.ndc,
-            "authors": book.authors,
-            "spine_color": book.spine_color,
-        })
-    return shelves
-
-
-def _build_shelf_pattern_section(shelf_patterns: dict) -> list[str]:
-    lines = ["", "【本棚の物理的な配置から機械的に検出された、並べ方のルール】"]
-    findings = shelf_patterns["findings"]
-    if findings:
-        for f in findings:
-            lines.append(f"- [{f['label']}] {f['fact']}")
-    else:
-        lines.append("- 特に強いルールは検出されませんでした。")
-
-    lines.append("")
-    lines.append("【並べ方のルールとして考えられる12パターン（参考。検出されていないものも含む）】")
-    for i, p in enumerate(shelf_patterns["reference_patterns"], start=1):
-        lines.append(f"{i}. {p}")
-
-    return lines
-
-
-def _build_stats_context(overview: dict, network: dict) -> list[str]:
-    """会話向けの軽量な分析コンテキスト（/analyze の詳細版と違い、トークン数を抑えるため
-    書誌一覧・孤立本の列挙は含めない）。"""
-    lines = [f"総冊数: {overview['total_books']}冊", "", "【NDC分類の内訳】"]
-    for row in overview["ndc_distribution"][:6]:
-        name = NDC_L1.get(row["ndc_l1"], row["ndc_l1"] or "不明")
-        lines.append(f"- {name}: {row['book_count']}冊")
-
-    lines.append("")
-    lines.append("【複数の本に共通する意味づけ】")
-    if overview["concept_clusters"]:
-        for row in overview["concept_clusters"][:6]:
-            items = list(zip(row["isbns"][:4], row["titles"][:4]))
-            titles = "、".join(f"[{isbn}]{title}" for isbn, title in items)
-            lines.append(f"- 「{row['concept']}」({row['book_count']}冊): {titles}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【複数冊持っている著者】")
-    if overview["favorite_authors"]:
-        for row in overview["favorite_authors"][:6]:
-            items = list(zip(row["isbns"][:3], row["titles"][:3]))
-            titles = "、".join(f"[{isbn}]{title}" for isbn, title in items)
-            lines.append(f"- {row['author']}({row['book_count']}冊): {titles}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【ユーザーが本に付けた意味づけ・感想メモ】")
-    if overview["book_meanings"]:
-        for row in overview["book_meanings"][:8]:
-            meaning = _clean(row["meaning"])[:50]
-            lines.append(f"- [{row['isbn']}] {row['title']}: 「{meaning}」")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【NetworkXによる構造分析：ハブとなる本】")
-    if network["hub_books"]:
-        for b in network["hub_books"][:5]:
-            lines.append(f"- [{b['isbn']}] {b['title']}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【コミュニティ検出によるテーマクラスタ】")
-    if network["communities"]:
-        for c in network["communities"][:4]:
-            titles = "、".join(f"[{b['isbn']}]{b['title']}" for b in c["books"][:4])
-            lines.append(f"- クラスタ{c['id']}（{c['size']}冊）: {titles}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【橋渡し役の本】")
-    if network["bridge_books"]:
-        for b in network["bridge_books"][:4]:
-            lines.append(f"- [{b['isbn']}] {b['title']}")
-    else:
-        lines.append("- なし")
-
-    return lines
-
-
-def _collect_context_isbns(overview: dict, network: dict) -> set[str]:
-    """chat用コンテキストに実際に登場した本のISBN集合（related_isbnsの検証に使う）。"""
-    isbns: set[str] = set()
-    for row in overview["concept_clusters"]:
-        isbns.update(row.get("isbns") or [])
-    for row in overview["favorite_authors"]:
-        isbns.update(row.get("isbns") or [])
-    for row in overview["book_meanings"]:
-        if row.get("isbn"):
-            isbns.add(row["isbn"])
-    for b in network["hub_books"]:
-        isbns.add(b["isbn"])
-    for c in network["communities"]:
-        for b in c["books"]:
-            isbns.add(b["isbn"])
-    for b in network["bridge_books"]:
-        isbns.add(b["isbn"])
-    return isbns
-
-
-def _ensure_trailing_question(text: str) -> str:
-    """LLMが指示を無視して問いかけを付け忘れた場合の保険。
-    既に「？」「?」があればそのまま返し、無ければ最後に補う。"""
-    text = text.strip()
-    if "？" in text or "?" in text:
-        return text
-    return f"{text.rstrip('。')}。ここまで読んで、どう感じますか？"
-
-
-def _build_opening_prompt(fact: str, intent: str) -> str:
-    return "\n".join([
-        "あなたは読書家の蔵書を分析し、対話しながら気づきを深めてくれる、気さくな伴走者です。",
-        "以下は、ユーザーの蔵書ナレッジグラフから見つかった、ちょっと面白い事実です。",
-        "",
-        f"事実: {fact}",
-        f"聞きたいこと: {intent}",
-        "",
-        "上記の「聞きたいこと」を意識しつつ、押しつけがましくなく、気さくにユーザーに話しかけてください。",
-        "日本語で2〜3文以内、前置きや説明文は付けず、話しかける言葉だけを書いてください。",
-        "【重要】必ず最後の1文をユーザーへの問いかけにし、文末を「？」で終えてください。問いかけの無い返答は不可です。",
-    ])
-
-
-def _build_chat_prompt(stats_lines: list[str], history: list, message: str | None) -> str:
-    lines = [
-        "あなたは読書家の蔵書を分析し、対話しながら気づきを深めてくれる、気さくな伴走者です。",
-        "以下はユーザーの蔵書ナレッジグラフから抽出した分析結果です。これを根拠に会話してください。",
-        "",
-        *stats_lines,
-        "",
-    ]
-
-    if not history and not message:
-        lines.append("これから対話を始めます。")
-        lines.append(
-            "上記の分析結果の中から、ユーザーがまだ気づいていなさそうな傾向やつながりを1つ選んで話しかけてください。"
-            "日本語で2〜3文以内、堅苦しくない口調で。"
-        )
-    else:
-        lines.append("これまでの対話:")
-        for m in history:
-            speaker = "ユーザー" if m.role == "user" else "あなた"
-            lines.append(f"{speaker}: {m.text}")
-        if message:
-            lines.append(f"ユーザー: {message}")
-        lines.append(
-            "上記の分析結果を根拠にしながら、ユーザーの発言に応答してください。"
-            "共感的に受け止めつつ、必要に応じて分析結果からの気づきを添え、日本語で2〜4文以内で応答してください。"
-        )
-
-    lines.append("")
-    lines.append(
-        "【重要】reply の最後の1文は必ずユーザーへの問いかけにし、文末を「？」で終えてください。問いかけの無い返答は不可です。"
-    )
-    lines.append(
-        "返答の中で具体的に触れた本、または関連が深い本があれば、そのISBNを related_isbns に1〜5冊程度含めてください。"
-    )
-    lines.append(
-        "related_isbns には上記コンテキストの [ ] 内にあるISBNの文字列のみを使い、特に触れていなければ空配列にしてください。"
-    )
-    lines.append(
-        "出力は次のJSONオブジェクトの形式のみとし、前置きや説明文、コードブロック記法は付けないでください。"
-    )
-    lines.append(
-        '{"reply": "対話の返答文", "related_isbns": ["isbn1", "isbn2"]}'
-    )
-    return "\n".join(lines)
-
-
-def _build_co_occurrence_section(co_occurrence: list[dict]) -> list[str]:
-    """繰り返し隣り合わせに置き直されている本のペア。
-    ユーザーが言葉にしていない関連（設計書5章の未言語化パターン）の手がかり。"""
-    lines = ["", "【何度も隣り合わせに置き直されている本のペア（本人が言語化していない関連の可能性）】"]
-    if co_occurrence:
-        for row in co_occurrence[:5]:
-            lines.append(
-                f"- [{row['source_isbn']}]{row['source_title']} ↔ "
-                f"[{row['target_isbn']}]{row['target_title']}（{row['co_occurrence_count']}回）"
-            )
-    else:
-        lines.append("- まだ十分な配置の履歴がありません。")
-    return lines
-
-
-def _build_asked_questions_section(asked_questions: list[str]) -> list[str]:
-    if not asked_questions:
-        return []
-    lines = ["", "【すでにユーザーへ提示済みの問いかけ（同じ内容を繰り返さないこと）】"]
-    lines.extend(f"- {q}" for q in asked_questions[:6])
-    return lines
-
-
-def _build_analysis_prompt(
-    overview: dict,
-    network: dict,
-    shelf_patterns: dict,
-    co_occurrence: list[dict] | None = None,
-    asked_questions: list[str] | None = None,
-) -> str:
-    lines = [
-        "あなたは読書家の蔵書を分析するアシスタントです。",
-        "以下はユーザーの蔵書ナレッジグラフ（Neo4j）から抽出した統計情報です。",
-        "この情報を俯瞰し、ユーザー自身では気づきにくい傾向・偏り・つながりを見つけて、",
-        "今後の読書や本棚整理に役立つ提案を3〜4個、日本語で簡潔に提示してください。",
-        "NDCによる分類上の近さだけでなく、各本の概要（description）や著者・出版社、",
-        "ユーザーが付けた意味づけメモの内容にも着目し、ジャンルを横断した意味的なつながりも積極的に見つけてください。",
-        "",
-        f"総冊数: {overview['total_books']}冊",
-        "",
-        "【NDC分類の内訳（上位カテゴリ別）】",
-    ]
-    for row in overview["ndc_distribution"]:
-        name = NDC_L1.get(row["ndc_l1"], row["ndc_l1"] or "不明")
-        titles = "、".join(row["sample_titles"])
-        lines.append(f"- {name}: {row['book_count']}冊（例: {titles}）")
-
-    lines.append("")
-    lines.append("【複数の本に共通する意味づけ（テーマクラスタ）】")
-    if overview["concept_clusters"]:
-        for row in overview["concept_clusters"][:6]:
-            titles = "、".join(row["titles"][:4])
-            lines.append(f"- 「{row['concept']}」({row['book_count']}冊): {titles}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【複数冊持っている著者】")
-    if overview["favorite_authors"]:
-        for row in overview["favorite_authors"][:5]:
-            titles = "、".join(row["titles"][:3])
-            lines.append(f"- {row['author']}({row['book_count']}冊): {titles}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【他の本と意味的なつながりがまだない本（孤立している本）】")
-    if overview["isolated_books"]:
-        for row in overview["isolated_books"][:6]:
-            lines.append(f"- [{row['isbn']}] {row['title']}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("【ユーザーが本に付けた意味づけ・感想メモ】")
-    if overview["book_meanings"]:
-        for row in overview["book_meanings"][:8]:
-            meaning = _clean(row["meaning"])[:40]
-            lines.append(f"- {row['title']}: 「{meaning}」")
-    else:
-        lines.append("- なし")
-
-    # 書誌一覧は提案がISBNを引くための索引なので、概要は落として冊数も絞る。
-    # ここが一番かさむため、モデルの入力上限に当たるときは真っ先に削る対象。
-    lines.append("")
-    lines.append("【蔵書の書誌情報一覧（ISBN・タイトル・著者）】")
-    catalog = overview["book_catalog"]
-    if catalog:
-        for row in catalog[:CATALOG_LIMIT]:
-            author = (row["authors"] or "").split(",")[0] or "著者不明"
-            lines.append(f"- [{row['isbn']}] {row['title']}（{author}）")
-        if len(catalog) > CATALOG_LIMIT:
-            lines.append(f"…ほか{len(catalog) - CATALOG_LIMIT}冊")
-    else:
-        lines.append("- なし")
-
-    lines.extend(_build_network_section(network))
-    lines.extend(_build_shelf_pattern_section(shelf_patterns))
-    lines.extend(_build_co_occurrence_section(co_occurrence or []))
-    lines.extend(_build_asked_questions_section(asked_questions or []))
-
-    lines.append("")
-    lines.append(
-        "上記の「NetworkXによる蔵書ネットワークの構造分析」は実際のグラフ構造から機械的に算出した客観的な指標です。"
-        "ハブとなる本やコミュニティ、橋渡し役の本についても積極的に言及し、提案の根拠として活用してください。"
-    )
-    lines.append(
-        "「本棚の物理的な配置から機械的に検出された、並べ方のルール」については、断定せず"
-        "「〜のように見えますが、意識されていますか？」のように、実際にユーザーが意識しているか確認する提案を1つ以上含めてください。"
-        "また、機械的には検出されなかったが、ジャンル・著者・色・高さなどの書誌情報から新たに見つかる並べ方の工夫やつながりがあれば、"
-        "12パターンの参考リストも手がかりにしながら積極的に提案してください。"
-    )
-    lines.append(
-        "各提案について、その提案の根拠となった本のISBNを related_isbns に1〜5冊程度含めてください。"
-    )
-    lines.append(
-        "related_isbns には上記リストの [ ] 内にあるISBNの文字列のみを使い、関連本が特定できない提案では空配列にしてください。"
-    )
-    lines.append(
-        "各提案には discovery_type を付けてください。値は次の4つのいずれかです。"
-        "commonality（複数の本に共通する要素の発見）、"
-        "contradiction（意味づけと実際の配置の食い違い）、"
-        "implicit_pattern（本人が言語化していない配置の癖）、"
-        "structural（グラフ構造からの発見）。"
-    )
-    # 質問カードは本棚の上に吹き出しとして出るので、見出しではなく
-    # そのまま出せる短い問いかけ文が要る。Yes/Noで一次応答できる形にする。
-    lines.append(
-        "さらに各提案には question を付けてください。question は本棚がユーザーに話しかける"
-        "短い問いかけ文（40字以内）で、必ず「？」で終え、"
-        "「はい／いいえ」で一次的に答えられる聞き方にしてください。"
-        "例:「この3冊、共通しているのは“仕事の道具”という感覚ですか？」"
-    )
-    lines.append(
-        "出力は次のJSONオブジェクトの形式のみとし、前置きや説明文、コードブロック記法は付けないでください。"
-    )
-    lines.append(
-        '{"proposals": [{"title": "提案の短い見出し", "description": "1〜2文の簡潔な説明", '
-        '"question": "ユーザーへの短い問いかけ？", '
-        '"discovery_type": "commonality", "related_isbns": ["isbn1", "isbn2"]}, ...]}'
-    )
-    return "\n".join(lines)
-
-
-def _parse_proposals(raw: str, valid_isbns: set[str]) -> list[dict]:
-    text = raw.strip()
-    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip(), flags=re.MULTILINE).strip()
-    # モデルが前後に余計な文章・句読点を付け足すことがあるため、
-    # JSON本体らしき範囲だけを取り出す
-    obj_start, obj_end = text.find("{"), text.rfind("}")
-    arr_start, arr_end = text.find("["), text.rfind("]")
-    if obj_start != -1 and obj_end != -1 and obj_end > obj_start:
-        candidate = text[obj_start:obj_end + 1]
-    elif arr_start != -1 and arr_end != -1 and arr_end > arr_start:
-        candidate = text[arr_start:arr_end + 1]
-    else:
-        candidate = text
-
-    try:
-        data = json.loads(candidate)
-        items = data.get("proposals") if isinstance(data, dict) else data
-        if isinstance(items, list):
-            proposals = []
-            for item in items:
-                if not isinstance(item, dict):
-                    continue
-                raw_isbns = item.get("related_isbns") or []
-                if not isinstance(raw_isbns, list):
-                    raw_isbns = []
-                related_isbns = [i for i in raw_isbns if isinstance(i, str) and i in valid_isbns]
-                discovery_type = str(item.get("discovery_type", "")).strip()
-                if discovery_type not in DISCOVERY_TYPES:
-                    discovery_type = "structural"
-                title = str(item.get("title", ""))
-                proposals.append({
-                    "title": title,
-                    "description": str(item.get("description", "")),
-                    # 問いかけを出し忘れた場合は見出しから作る（カードが空にならないように）
-                    "question": _ensure_trailing_question(str(item.get("question", "")) or title),
-                    "discovery_type": discovery_type,
-                    "related_isbns": related_isbns,
-                })
-            return proposals
-    except (json.JSONDecodeError, AttributeError):
-        pass
-    # パースに失敗した場合は生テキストをそのまま1件の提案として返す
-    return [{
-        "title": "分析結果",
-        "description": text,
-        "question": _ensure_trailing_question(text[:60]),
-        "discovery_type": "structural",
-        "related_isbns": [],
-    }]
-
-
-def _parse_chat_reply(raw: str, valid_isbns: set[str]) -> tuple[str, list[str]]:
-    text = raw.strip()
-    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.MULTILINE).strip()
-    obj_start, obj_end = text.find("{"), text.rfind("}")
-    candidate = text[obj_start:obj_end + 1] if obj_start != -1 and obj_end > obj_start else text
-
-    try:
-        data = json.loads(candidate)
-        reply = str(data.get("reply", "")).strip()
-        raw_isbns = data.get("related_isbns") or []
-        related_isbns = [i for i in raw_isbns if isinstance(i, str) and i in valid_isbns] if isinstance(raw_isbns, list) else []
-        if reply:
-            return reply, related_isbns
-    except (json.JSONDecodeError, AttributeError):
-        pass
-    # パースに失敗した場合は生テキストをそのまま返す
-    return text, []
-
-
-def _build_chat_summary_prompt(history: list) -> str:
-    """「終わる」で対話を締めたときに、そこまでの雑談から新しい意味づけが
-    生まれていないかをAI自身に振り返らせるためのプロンプト。"""
-    lines = ["以下はユーザーと本棚AIとの会話です。"]
-    for m in history:
-        speaker = "ユーザー" if m.role == "user" else "本棚"
-        lines.append(f"{speaker}: {m.text}")
-    lines.append("")
-    lines.append(
-        "この会話を通じてユーザーが言葉にした、本や本同士の関係についての意味づけ・気づきを"
-        "1文程度で要約してください。挨拶や相槌だけで、新しい意味づけと呼べる内容がなければ"
-        "summarizable を false にしてください。"
-    )
-    lines.append(
-        "出力は次のJSON形式のみとし、前置きや説明文、コードブロック記法は付けないでください。"
-    )
-    lines.append('{"summarizable": true, "summary": "一言のまとめ"}')
-    return "\n".join(lines)
-
-
-def _parse_chat_summary(raw: str) -> tuple[bool, str]:
-    text = raw.strip()
-    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.MULTILINE).strip()
-    obj_start, obj_end = text.find("{"), text.rfind("}")
-    candidate = text[obj_start:obj_end + 1] if obj_start != -1 and obj_end > obj_start else text
-    try:
-        data = json.loads(candidate)
-        summary = str(data.get("summary", "")).strip()
-        summarizable = bool(data.get("summarizable", False)) and bool(summary)
-        return summarizable, summary
-    except (json.JSONDecodeError, AttributeError):
-        return False, ""
-
-
-class AnalysisChatMessage(BaseModel):
-    role: str  # "user" | "ai"
-    text: str
-
-
-class AnalysisChatRequest(BaseModel):
-    history: list[AnalysisChatMessage] = []
-    message: str | None = None
-
-
-@router.get("/forced-whisper")
-def get_forced_whisper(
-    db: Session = Depends(get_db),
-    participant_id: str = Depends(resolve_participant_id),
-):
-    """ユーザーが自由に付けた意味づけ（Concept）が閾値分だけ増えていたら、
-    タップを待たずに本棚側から強制的に話しかける開始メッセージを生成する。
-    一度話しかけたら、次に閾値分また増えるまでは再度話しかけない。"""
-    design = (
-        db.query(ShelfDesign)
-        .filter(ShelfDesign.participant_id == participant_id)
-        .first()
-    )
-    if not design:
-        return {"forced": False}
-
-    current_count = count_concept_nodes(participant_id)
-    last_count = design.last_forced_concept_count or 0
-    if current_count - last_count < CONCEPT_WHISPER_THRESHOLD:
-        return {"forced": False}
-
-    topic = get_latest_concept_topic(participant_id)
-    if not topic or not topic.get("isbns"):
-        # 意味づけの実体（本との紐付け）が見つからない場合もカウントは進め、無限に問い合わせが続くのを防ぐ
-        design.last_forced_concept_count = current_count
-        db.commit()
-        return {"forced": False}
-
-    anchor_isbn = topic["isbns"][0]
-    titles = "、".join(topic["titles"][:4])
-    fact = (
-        f"ユーザーはこれまでに数多くの意味づけを本棚に重ねてきました。"
-        f"直近では「{titles}」などに「{topic['concept']}」という意味づけがされています。"
-    )
-    intent = "積み重ねてきた意味づけ全体を振り返って本棚側から気づいたことを伝え、それらの意味づけがどうつながっているかを尋ねる。"
-
-    prompt = _build_opening_prompt(fact, intent)
-    try:
-        reply = _ensure_trailing_question(_llm.generate_text(prompt, max_tokens=200).strip())
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"対話に失敗しました: {e}")
-
-    design.last_forced_concept_count = current_count
-    db.commit()
-
-    save_chat_message(participant_id, "ai", reply, topic["isbns"][:5])
-
-    return {
-        "forced": True,
-        "isbn": anchor_isbn,
-        "title": topic["titles"][0] if topic["titles"] else None,
-        "topic_id": "forced_reflection",
-        "reply": reply,
-        "related_isbns": topic["isbns"][:5],
-    }
-
-
-@router.get("/chat-history")
-def get_chat_history(participant_id: str = Depends(resolve_participant_id)):
-    """左ペイン「発見と対話」の対話履歴（設計書6.1）。
-    以前はReact stateのみで保持しリロードで消えていたため、被験者ごとに
-    バックエンド側へ永続化したものを読み直す。"""
-    return {"messages": list_chat_history(participant_id)}
-
-
-@router.delete("/chat-history")
-def delete_chat_history(participant_id: str = Depends(resolve_participant_id)):
-    """「会話を消す」で押されたときに、永続化した履歴側も一緒に消す。"""
-    clear_chat_history(participant_id)
-    return {"ok": True}
-
-
-class ChatMessageRequest(BaseModel):
-    role: str  # "user" | "ai"
-    text: str
-    related_isbns: list[str] = []
-
-
-@router.post("/chat-message")
-def post_chat_message(
-    body: ChatMessageRequest,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    """book-chat/forced-whisper を経由しないメッセージ（発見カードの「もっと話す」で
-    差し込まれるAIの問いかけなど）も履歴として残すための汎用エンドポイント。"""
-    save_chat_message(participant_id, body.role, body.text, body.related_isbns)
-    return {"ok": True}
-
-
-class ChatSummaryRequest(BaseModel):
-    history: list[AnalysisChatMessage] = []
-
-
-@router.post("/chat-summary")
-def chat_summary(
-    body: ChatSummaryRequest,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    """「終わる」を押したときに、そこまでの会話から意味づけを提案する。
-    ここではまだ何も書き戻さない。ユーザーが/chat-summary/confirmで確認して
-    初めて知識グラフに残る（発見と同じく、AIの仮説→ユーザーの判断、の順を守る）。"""
-    if not body.history:
-        raise HTTPException(status_code=400, detail="要約する会話がありません")
-
-    prompt = _build_chat_summary_prompt(body.history)
-    try:
-        raw = _llm.generate_json(prompt, max_tokens=200)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"会話の振り返りに失敗しました: {e}")
-
-    summarizable, summary = _parse_chat_summary(raw)
-    return {"summarizable": summarizable, "summary": summary}
-
-
-class ChatSummaryConfirmRequest(BaseModel):
-    summary: str
-    related_isbns: list[str] = []
-
-
-@router.post("/chat-summary/confirm")
-def confirm_chat_summary(
-    body: ChatSummaryConfirmRequest,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    """/chat-summary の提案をユーザーが承認したときだけ、実際に意味づけとして書き戻す。"""
-    if not body.summary.strip() or not body.related_isbns:
-        raise HTTPException(status_code=400, detail="まとめか対象の本が指定されていません")
-    write_concept_for_books(participant_id, body.summary, body.related_isbns)
-    return {"ok": True}
-
-
-class BookChatRequest(BaseModel):
-    # 応答は棚全体の分析を根拠にするため、特定の本に紐づかない対話でも呼べる。
-    # 2ペイン構成では右ペインに常設の対話パネルがあり、本を選ばずに話し始められる。
-    isbn: str | None = None
-    topic_id: str | None = None
-    history: list[AnalysisChatMessage] = []
-    message: str | None = None
-
-
-@router.post("/book-chat")
-def book_chat(
-    body: BookChatRequest,
-    db: Session = Depends(get_db),
-    participant_id: str = Depends(resolve_participant_id),
-):
-    """本棚からの強制対話（forced-whisper）の続きに応答する。
-    開始の一言はforced-whisper側で生成済みのため、ここでは棚全体の分析結果を根拠に応答するのみ。"""
-    shelf_isbns = [
-        r[0] for r in db.query(ShelfLayout.isbn)
-                        .filter(ShelfLayout.participant_id == participant_id).all()
-    ]
-    if not shelf_isbns:
-        raise HTTPException(status_code=400, detail="本棚に本が並んでいません")
-
-    overview = get_graph_overview(participant_id, shelf_isbns=shelf_isbns)
-    if overview["total_books"] == 0:
-        raise HTTPException(status_code=400, detail="本棚に本がありません")
-
-    edges = get_book_edges(participant_id, shelf_isbns=shelf_isbns)
-    network = analyze_book_network(nodes=overview["book_catalog"], edges=edges)
-
-    # 会話履歴が伸び続けてもトークン予算を圧迫しないよう、直近だけを渡す
-    recent_history = body.history[-8:]
-
-    stats_lines = _build_stats_context(overview, network)
-    valid_isbns = _collect_context_isbns(overview, network)
-    prompt = _build_chat_prompt(stats_lines, recent_history, body.message)
-    try:
-        raw = _llm.generate_json(prompt, max_tokens=450)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"対話に失敗しました: {e}")
-
-    reply, related_isbns = _parse_chat_reply(raw, valid_isbns)
-    reply = _ensure_trailing_question(reply)
-
-    if body.message:
-        save_chat_message(participant_id, "user", body.message)
-    save_chat_message(participant_id, "ai", reply, related_isbns)
-
-    return {"reply": reply, "related_isbns": related_isbns}
-
-
-@router.post("/analyze")
-def analyze_graph(
-    db: Session = Depends(get_db),
-    participant_id: str = Depends(resolve_participant_id),
-):
-    shelf_isbns = [
-        r[0] for r in db.query(ShelfLayout.isbn)
-                        .filter(ShelfLayout.participant_id == participant_id).all()
-    ]
-    if not shelf_isbns:
-        raise HTTPException(status_code=400, detail="本棚に本が並んでいません")
-
-    overview = get_graph_overview(participant_id, shelf_isbns=shelf_isbns)
-    if overview["total_books"] == 0:
-        raise HTTPException(status_code=400, detail="本棚に本がありません")
-
-    edges = get_book_edges(participant_id, shelf_isbns=shelf_isbns)
-    network = analyze_book_network(nodes=overview["book_catalog"], edges=edges)
-
-    shelf_rows = _fetch_shelf_rows(db, participant_id)
-    memo_isbns = {row["isbn"] for row in overview["book_meanings"] if row.get("isbn")}
-    shelf_patterns = analyze_shelf_patterns(shelf_rows, memo_isbns=memo_isbns)
-
-    # 繰り返し隣り合わせに置き直されている本のペア（未言語化パターンの材料）
-    co_occurrence = query_co_occurrence_pairs(participant_id)
-
-    prompt = _build_analysis_prompt(
-        overview, network, shelf_patterns,
-        co_occurrence=co_occurrence,
-        asked_questions=get_answered_discovery_questions(participant_id),
-    )
-    try:
-        raw = _llm.generate_json(prompt, max_tokens=800)
-    except Exception as e:
-        raise HTTPException(status_code=502, detail=f"分析に失敗しました: {e}")
-
-    valid_isbns = {row["isbn"] for row in overview["book_catalog"] if row.get("isbn")}
-    proposals = _parse_proposals(raw, valid_isbns)
-
-    # 発見を永続化する（設計書3.3）。以前はここで捨てていたため、
-    # status も納得度・驚き度のフィードバックも残らなかった。
-    saved = save_discoveries(
-        [
-            {
-                "type": p.get("discovery_type") or "structural",
-                "title": p["title"],
-                "generated_question": p["question"],
-                "body": p["description"],
-                "related_book_ids": p["related_isbns"],
-            }
-            for p in proposals
-        ],
-        participant_id=participant_id,
-    )
-    for proposal, record in zip(proposals, saved):
-        proposal["discovery_id"] = record["discovery_id"]
-
-    return {
-        "proposals": proposals,
-        "stats": overview,
-        "network": network,
-        "shelf_patterns": shelf_patterns,
-        "co_occurrence": co_occurrence,
-    }
-
-
-# ============================================================
-# Discovery のフィードバック収集（設計書7.3）
-# ============================================================
-
-class DiscoveryFeedbackRequest(BaseModel):
-    status: str  # "confirmed" | "rejected" | "modified"
-    surprise_score: float | None = None   # 驚き度
-    agreement_score: float | None = None  # 納得度
-    comment: str | None = None
-
-
 @router.get("/growth")
 def get_growth_endpoint(participant_id: str = Depends(resolve_participant_id)):
     """育成インジケータ（設計書6.4）の元になる量。
@@ -875,60 +99,13 @@ def get_growth_endpoint(participant_id: str = Depends(resolve_participant_id)):
     return get_growth_stats(participant_id)
 
 
-@router.get("/discoveries")
-def list_discoveries_endpoint(
-    status: str | None = None,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    return {"discoveries": list_discoveries(participant_id, status=status)}
-
-
-@router.post("/discovery/{discovery_id}/feedback")
-def discovery_feedback_endpoint(
-    discovery_id: str,
-    body: DiscoveryFeedbackRequest,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    if body.status not in ("confirmed", "rejected", "modified", "pending"):
-        raise HTTPException(status_code=400, detail="status が不正です")
-
-    ok = record_discovery_feedback(
-        discovery_id,
-        participant_id=participant_id,
-        status=body.status,
-        surprise_score=body.surprise_score,
-        agreement_score=body.agreement_score,
-        comment=body.comment,
-    )
-    if not ok:
-        raise HTTPException(status_code=404, detail="発見が見つかりません")
-    return {"ok": True}
-
-
-class ConceptEdgeConfirmRequest(BaseModel):
-    confirmed: bool
-
-
-@router.post("/concept-edge/{edge_id}/confirm")
-def confirm_concept_edge_endpoint(
-    edge_id: str,
-    body: ConceptEdgeConfirmRequest,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    """推測でついた意味づけエッジ(confidence: inferred)を、
-    ユーザーのYes/Noで確定または否定する（設計書6.2の一次応答）。"""
-    ok = confirm_concept_edge(edge_id, participant_id=participant_id, confirmed=body.confirmed)
-    if not ok:
-        raise HTTPException(status_code=404, detail="エッジが見つかりません")
-    return {"ok": True}
-
-
 @router.delete("/concept-edge/{edge_id}")
 def delete_concept_edge_endpoint(
     edge_id: str,
     participant_id: str = Depends(resolve_participant_id),
 ):
-    """本詳細パネルの意味づけ一覧から「消す」を押したときの削除。"""
+    """本詳細パネルの意味づけ一覧から「消す」を押したときの削除。
+    Concept自体を削除するため、同じ意味づけを共有する他の本からも一括で消える。"""
     ok = delete_concept_edge(edge_id, participant_id=participant_id)
     if not ok:
         raise HTTPException(status_code=404, detail="エッジが見つかりません")
@@ -936,21 +113,237 @@ def delete_concept_edge_endpoint(
 
 
 # ============================================================
-# 他の参加者との比較対話（「他の人の本棚を観察する」画面）
+# グループ管理（グルーピングモード）
 #
-# 閲覧は読み取り専用（既存の /book/{isbn}/basic 等をそのまま呼べば良い）だが、
-# ここでは「自分の知識グラフ」と「相手の知識グラフ」の構造的な違いを根拠に
-# 話しかける対話だけを新設する。書き込みは対話ログの保存のみで、
-# 相手の蔵書・意味づけには一切触れない。
+# 「グループ」は既存の Concept(意味づけ)をそのまま使う。ここでは
+# conceptId を起点にした一覧・リネーム・統合・メンバー追加削除・削除・
+# 操作ログ記録用のエンドポイントを追加する。
 # ============================================================
 
-def _build_participant_stats(participant_id: str) -> dict:
-    """比較の材料になる統計一式（俯瞰統計＋ネットワーク分析）。
-    /analyze と違い棚の並びには依存せず、その人の蔵書全体を対象にする。"""
-    overview = get_graph_overview(participant_id)
-    edges = get_book_edges(participant_id)
-    network = analyze_book_network(nodes=overview["book_catalog"], edges=edges)
-    return {"overview": overview, "network": network}
+@router.get("/groups")
+def list_groups_endpoint(participant_id: str = Depends(resolve_participant_id)):
+    """グルーピングモードの左パネル用：全グループ(Concept)を所属冊数・メンバー付きで返す。"""
+    return {"groups": list_participant_groups(participant_id=participant_id)}
+
+
+class RenameGroupRequest(BaseModel):
+    text: str
+
+
+@router.patch("/groups/{concept_id}/rename")
+def rename_group_endpoint(
+    concept_id: str,
+    body: RenameGroupRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    text = body.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="text is required")
+    result = rename_group(concept_id, text, participant_id=participant_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="グループが見つかりません")
+    return result
+
+
+class MergeGroupsRequest(BaseModel):
+    source_concept_ids: list[str]
+    target_text: str
+
+
+@router.post("/groups/merge")
+def merge_groups_endpoint(
+    body: MergeGroupsRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    if len(body.source_concept_ids) < 2:
+        raise HTTPException(status_code=400, detail="source_concept_ids は2件以上必要です")
+    text = body.target_text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="target_text is required")
+    result = merge_groups(body.source_concept_ids, text, participant_id=participant_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="グループが見つかりません")
+    return result
+
+
+@router.delete("/groups/{concept_id}")
+def delete_group_endpoint(
+    concept_id: str,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    result = delete_group(concept_id, participant_id=participant_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="グループが見つかりません")
+    return result
+
+
+class AddGroupMembersRequest(BaseModel):
+    isbns: list[str]
+
+
+@router.post("/groups/{concept_id}/members")
+def add_group_members_endpoint(
+    concept_id: str,
+    body: AddGroupMembersRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    if not body.isbns:
+        raise HTTPException(status_code=400, detail="isbns is required")
+    n = add_group_members(concept_id, body.isbns, participant_id=participant_id)
+    return {"added": n}
+
+
+@router.delete("/groups/{concept_id}/members/{isbn}")
+def remove_group_member_endpoint(
+    concept_id: str,
+    isbn: str,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    ok = remove_group_member(concept_id, isbn, participant_id=participant_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="メンバーが見つかりません")
+    return {"ok": True}
+
+
+class RemoveGroupMembersRequest(BaseModel):
+    isbns: list[str]
+
+
+@router.post("/groups/{concept_id}/members/remove")
+def remove_group_members_endpoint(
+    concept_id: str,
+    body: RemoveGroupMembersRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """複数選択でまとめてグループから外す。DELETEでのbody送信を避けるためPOSTにしている。"""
+    if not body.isbns:
+        raise HTTPException(status_code=400, detail="isbns is required")
+    n = remove_group_members(concept_id, body.isbns, participant_id=participant_id)
+    return {"removed": n}
+
+
+class GroupHighlightEventRequest(BaseModel):
+    action: str  # "on" | "off"
+
+
+@router.post("/groups/{concept_id}/highlight-event")
+def log_group_highlight_event_endpoint(
+    concept_id: str,
+    body: GroupHighlightEventRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """左パネルからのハイライト操作(オン/オフ)をログに記録するだけの、fire-and-forget用エンドポイント。"""
+    log_group_highlight_event(concept_id, body.action, participant_id=participant_id)
+    return {"ok": True}
+
+
+class ModeSwitchEventRequest(BaseModel):
+    mode: str  # "normal" | "grouping"
+
+
+@router.post("/mode-switch-event")
+def log_mode_switch_event_endpoint(
+    body: ModeSwitchEventRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """通常モード⇄グルーピングモードの切り替えをログに記録するだけの、fire-and-forget用エンドポイント。"""
+    log_mode_switch_event(body.mode, participant_id=participant_id)
+    return {"ok": True}
+
+
+# ============================================================
+# 事前推測 → 差分提示 → 事後推測（フェーズ1）
+#
+# ステップ1: 本棚を一通り眺めた後、閲覧者の素の解釈（介入前の値）をGuessRecordに記録する。
+# ステップ2-4: 事前推測(全体・部分)の送信を受けて、記録時に決まった条件に応じて
+#   - experimental: StyleProfileの差分をLLMが断定を避けた自然文に翻訳したカード（2.7）
+#   - control     : 同じ見た目で、パーソナライズしていない一般的な読み方のヒント（2.8）
+#   - transfer    : 差分提示自体を行わない（転移テスト、フェーズ2）
+#   を出し分ける。
+# ステップ5: 差分提示（またはtransferでは提示なし）の後、post_textとして事後推測を記録する。
+#
+# 条件の割り当ては experiment.assignment（未実装、4章で追加予定）が本来の割当元になる。
+# それまでは _resolve_condition が固定で "experimental" を返す暫定実装。
+# ============================================================
+
+# 統制群向けの固定ヒント。LLMを使わず静的な文言にすることで、「情報を与えること
+# 自体の効果」だけを実験群と揃え、内容のパーソナライズ差が紛れ込まないようにする。
+CONTROL_HINTS = [
+    "本の並び方には、その人らしさが表れることがあるかもしれません。",
+    "同じ本棚でも、どこから手に取るかで印象は変わるかもしれません。",
+    "本の並べ方は、その日の気分や事情に左右されていることもあるかもしれません。",
+    "整理の仕方は、人によって大事にしているものが違うのかもしれません。",
+]
+
+_DIFF_METRIC_JA = {
+    "avg_group_size":        "1グループあたりの平均冊数",
+    "stdev_group_size":      "グループの大きさのばらつき",
+    "isolated_ratio":        "どのグループにも属さない本の割合",
+    "avg_multi_membership":  "1冊が複数グループに属す度合い",
+    "max_depth":             "グループを入れ子にする深さ",
+    "clustering_coefficient": "本棚上で似た本同士が固まって置かれている度合い",
+    "modularity":            "グループ分けと実際の配置のまとまり具合",
+    "modularity_nmi":        "配置のまとまりとグループ分けの一致度",
+}
+
+
+def _build_diff_card_prompt(diff: dict) -> str:
+    lines = [
+        "あなたは2人の読書家の「本の整理の仕方」の違いを、断定を避けた柔らかい言い方で伝えるアシスタントです。",
+        "以下は構造指標（本の内容ではなく、並べ方・グループ分けの仕方だけの違い）です。",
+        "",
+    ]
+    for key, label in _DIFF_METRIC_JA.items():
+        row = diff["diffs"].get(key)
+        if not row or row.get("diff") is None:
+            continue
+        lines.append(f"- {label}: あなた={row['viewer']}, 相手={row['owner']}, 差={row['diff']}")
+
+    lines.append("")
+    lines.append("上記の差分のうち、はっきり違いが出ているものを1〜2個選び、その違いが伝わる短い文を作ってください。")
+    lines.append("必ず断定を避け、「〜かもしれません」で終える言い方にしてください。日本語で1文ずつ、40〜70字程度。")
+    lines.append("本の内容（ジャンルや好み）には触れず、並べ方・グループ分けの仕方の違いだけを扱ってください。")
+    lines.append("出力は次のJSON形式のみとし、前置きや説明文、コードブロック記法は付けないでください。")
+    lines.append('{"cards": ["文1", "文2"]}')
+    return "\n".join(lines)
+
+
+def _ensure_tentative_tone(text: str) -> str:
+    text = text.strip()
+    if "かもしれ" in text:
+        return text
+    return f"{text.rstrip('。')}かもしれません。"
+
+
+def _parse_diff_cards(raw: str) -> list[str]:
+    text = raw.strip()
+    text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text, flags=re.MULTILINE).strip()
+    obj_start, obj_end = text.find("{"), text.rfind("}")
+    candidate = text[obj_start:obj_end + 1] if obj_start != -1 and obj_end > obj_start else text
+    try:
+        data = json.loads(candidate)
+        cards = data.get("cards") if isinstance(data, dict) else None
+        if isinstance(cards, list):
+            result = [_ensure_tentative_tone(str(c)) for c in cards if str(c).strip()]
+            if result:
+                return result[:2]
+    except (json.JSONDecodeError, AttributeError):
+        pass
+    return [_ensure_tentative_tone(text[:80])]
+
+
+def _ensure_style_profile_exists(db: Session, pid: str) -> None:
+    """diff計算に使うStyleProfileがまだ無ければその場で作る。
+    本棚のドラッグ操作(/bookshelf/sync-layout)を一度も行っていない参加者は
+    投影スタイル分析システム側にまだParticipantノードすら無いことがあるため、
+    save_style_profile単体ではなくSQLiteの現在の棚状態から橋渡しし直す
+    （bookshelf_bridge.sync_from_bookshelfと同じ経路）。"""
+    if get_latest_style_profile(pid) is not None:
+        return
+    try:
+        sync_from_bookshelf(db, participant_id=pid)
+    except Exception as e:
+        logging.getLogger(__name__).warning("StyleProfileの初回計算に失敗しました(%s): %s", pid, e)
 
 
 def _require_comparable(other_id: str, participant_id: str) -> None:
@@ -960,177 +353,234 @@ def _require_comparable(other_id: str, participant_id: str) -> None:
         raise HTTPException(status_code=400, detail="自分自身とは比較できません")
 
 
-def _build_comparison_stats_lines(label: str, overview: dict, network: dict) -> list[str]:
-    lines = [f"【{label}の蔵書】", f"総冊数: {overview['total_books']}冊", "", "NDC分類の内訳:"]
-    for row in overview["ndc_distribution"][:6]:
-        name = NDC_L1.get(row["ndc_l1"], row["ndc_l1"] or "不明")
-        lines.append(f"- {name}: {row['book_count']}冊")
-
-    lines.append("")
-    lines.append("複数の本に共通する意味づけ:")
-    if overview["concept_clusters"]:
-        for row in overview["concept_clusters"][:5]:
-            titles = "、".join(row["titles"][:3])
-            lines.append(f"- 「{row['concept']}」({row['book_count']}冊): {titles}")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("複数冊持っている著者:")
-    if overview["favorite_authors"]:
-        for row in overview["favorite_authors"][:5]:
-            lines.append(f"- {row['author']}({row['book_count']}冊)")
-    else:
-        lines.append("- なし")
-
-    lines.append("")
-    lines.append("ハブとなる本・テーマクラスタ（ネットワーク構造分析）:")
-    if network["hub_books"]:
-        for b in network["hub_books"][:4]:
-            lines.append(f"- [{b['isbn']}] {b['title']}")
-    else:
-        lines.append("- なし")
-    if network["communities"]:
-        for c in network["communities"][:3]:
-            titles = "、".join(b["title"] for b in c["books"][:3])
-            lines.append(f"- クラスタ（{c['size']}冊）: {titles}")
-
-    return lines
+def _resolve_condition(db: Session, participant_id: str, other_id: str) -> str:
+    """このtrial（viewer×owner）に割り当てる実験条件を解決する。
+    experiment.assignment（研究者が実験管理画面で生成するTrialAssignment）に
+    割当があればそれを使う。割当が無い参加者ペア（研究者の自由閲覧・デモ用途）は
+    暫定的に "experimental" を既定値として返す。"""
+    condition = get_trial_condition(db, participant_id, other_id)
+    return condition or "experimental"
 
 
-def _build_comparison_prompt(
+class PreGuessRequest(BaseModel):
+    text: str
+
+
+@router.post("/compare/{other_id}/pre-guess")
+def submit_pre_guess(
     other_id: str,
-    me_lines: list[str],
-    other_lines: list[str],
-    history: list,
-    message: str | None,
-) -> str:
-    lines = [
-        "あなたは2人の読書家の蔵書を見比べ、対話しながら違いへの気づきを深めてくれる、気さくな伴走者です。",
-        "以下はユーザー本人と、比較対象の参加者それぞれの蔵書ナレッジグラフから抽出した統計情報です。",
-        "",
-        *me_lines,
-        "",
-        *other_lines,
-        "",
-    ]
-
-    if not history and not message:
-        lines.append("これから対話を始めます。")
-        lines.append(
-            f"上記2人の蔵書を比べて見える違いや共通点の中から、ユーザーが気づいていなさそうな点を1つ選び、"
-            f"{other_id}さんの本棚との違いについて話しかけてください。日本語で2〜3文以内、堅苦しくない口調で。"
-        )
-    else:
-        lines.append("これまでの対話:")
-        for m in history:
-            speaker = "ユーザー" if m.role == "user" else "あなた"
-            lines.append(f"{speaker}: {m.text}")
-        if message:
-            lines.append(f"ユーザー: {message}")
-        lines.append(
-            "上記2人の蔵書の違い・共通点を根拠にしながら、ユーザーの発言に応答してください。"
-            "共感的に受け止めつつ、必要に応じて具体的な違いに触れ、日本語で2〜4文以内で応答してください。"
-        )
-
-    lines.append("")
-    lines.append(
-        "【重要】reply の最後の1文は必ずユーザーへの問いかけにし、文末を「？」で終えてください。問いかけの無い返答は不可です。"
-    )
-    lines.append(
-        "返答の中で具体的に触れた本があれば、そのISBNを related_isbns に1〜5冊程度含めてください。"
-    )
-    lines.append(
-        "related_isbns には上記コンテキストに登場したISBNの文字列のみを使い、特に触れていなければ空配列にしてください。"
-    )
-    lines.append(
-        "出力は次のJSONオブジェクトの形式のみとし、前置きや説明文、コードブロック記法は付けないでください。"
-    )
-    lines.append('{"reply": "対話の返答文", "related_isbns": ["isbn1", "isbn2"]}')
-    return "\n".join(lines)
-
-
-def _compare_chat_scope(me: str, other_id: str) -> str:
-    """比較対話ログ専用の合成キー。参加者IDの正規表現は':'を許さないため、
-    実在の participant_id と衝突しない。"""
-    return f"cmp::{me}::{other_id}"
-
-
-@router.get("/compare/{other_id}")
-def compare_overview(
-    other_id: str,
+    body: PreGuessRequest,
+    db: Session = Depends(get_db),
     participant_id: str = Depends(resolve_participant_id),
 ):
-    """比較対話パネル冒頭の簡易サマリー用。自分と相手、双方の蔵書統計を返す。
-    どちらかが0冊でもエラーにしない（相手がまだ本を並べていない場合がある）。"""
+    """フェーズ1ステップ1：本棚を一通り眺めた後の、閲覧者の素の解釈を記録する。
+    差分カードを見せる前の値なので、一度記録したら上書きしない。"""
     _require_comparable(other_id, participant_id)
-    me_stats = _build_participant_stats(participant_id)
-    other_stats = _build_participant_stats(other_id)
-    return {
-        "me": {"participant_id": participant_id, **me_stats},
-        "other": {"participant_id": other_id, **other_stats},
-    }
-
-
-class CompareChatRequest(BaseModel):
-    history: list[AnalysisChatMessage] = []
-    message: str | None = None
-
-
-@router.get("/compare/{other_id}/chat-history")
-def get_compare_chat_history(
-    other_id: str,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    if not is_valid_participant_id(other_id):
-        raise HTTPException(status_code=400, detail="other_id が不正です")
-    return {"messages": list_chat_history(_compare_chat_scope(participant_id, other_id))}
-
-
-@router.delete("/compare/{other_id}/chat-history")
-def delete_compare_chat_history(
-    other_id: str,
-    participant_id: str = Depends(resolve_participant_id),
-):
-    if not is_valid_participant_id(other_id):
-        raise HTTPException(status_code=400, detail="other_id が不正です")
-    clear_chat_history(_compare_chat_scope(participant_id, other_id))
+    text = body.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="text は必須です")
+    condition = _resolve_condition(db, participant_id, other_id)
+    saved = save_pre_guess(
+        viewer_id=participant_id, owner_id=other_id,
+        target_type="overall", text=text, condition=condition,
+    )
+    if not saved:
+        raise HTTPException(status_code=409, detail="事前推測は既に記録されています")
     return {"ok": True}
 
 
-@router.post("/compare/{other_id}/chat")
-def compare_chat(
+@router.get("/compare/{other_id}/pre-guess")
+def read_pre_guess(
     other_id: str,
-    body: CompareChatRequest,
     participant_id: str = Depends(resolve_participant_id),
 ):
-    """自分の知識グラフと相手の知識グラフの構造的な違いを根拠にした対話。
-    相手の蔵書・意味づけへは一切書き込まない（対話ログは合成キーで自分側にだけ残る）。"""
+    """再訪問時に、既に事前推測を送信済みかを判定するための読み取り。"""
+    if not is_valid_participant_id(other_id):
+        raise HTTPException(status_code=400, detail="other_id が不正です")
+    guess = get_guess(viewer_id=participant_id, owner_id=other_id, target_type="overall")
+    return {
+        "submitted": guess is not None,
+        "text": guess["pre_text"] if guess else None,
+        "condition": guess["condition"] if guess else None,
+    }
+
+
+def _book_meta_map(db: Session, isbns: set[str]) -> dict:
+    """候補グループの本を見せるための最小限の書誌情報（タイトル・表紙のみ）。
+    書誌情報は全参加者で共有のテーブルなので、所有者IDに関係なくISBNだけで引ける。"""
+    rows = db.query(RegisteredBook).filter(RegisteredBook.isbn.in_(isbns)).all()
+    return {r.isbn: {"isbn": r.isbn, "title": r.title, "cover": r.cover} for r in rows}
+
+
+@router.get("/compare/{other_id}/group-candidates")
+def group_candidates(
+    other_id: str,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """部分推測に出す候補グループ（2〜3個）をシステム側が自動選定して返す。
+    Group.name（意味データ）はここでは返さない。名前は推測の答えそのものなので、
+    候補提示のUIでは書誌情報（タイトル・表紙）だけを見せ、閲覧者に自由記述で答えさせる。"""
+    _require_comparable(other_id, participant_id)
+    _ensure_style_profile_exists(db, other_id)
+
+    candidates = get_candidate_groups(other_id)
+    isbns = {isbn for c in candidates for isbn in c["isbns"]}
+    book_meta = _book_meta_map(db, isbns)
+    for c in candidates:
+        c["books"] = [book_meta.get(isbn, {"isbn": isbn, "title": None, "cover": None}) for isbn in c["isbns"]]
+
+    return {"candidates": candidates}
+
+
+class PartialGuessRequest(BaseModel):
+    candidate_group_ids: list[str]
+    chosen_group_id: str
+    text: str
+
+
+@router.post("/compare/{other_id}/partial-guess")
+def submit_partial_guess(
+    other_id: str,
+    body: PartialGuessRequest,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """システムが提示した候補グループのうち、閲覧者が選んだ1つについての推測を記録する。
+    自由選択にすると閲覧者ごとに推測対象がバラバラになり差分の質を比較できなくなるため、
+    候補自体は全員共通（システム選定）にし、その中からの選択だけを閲覧者に委ねている。"""
+    _require_comparable(other_id, participant_id)
+    text = body.text.strip()
+    if not text or not body.chosen_group_id:
+        raise HTTPException(status_code=400, detail="chosen_group_id と text は必須です")
+    if body.chosen_group_id not in body.candidate_group_ids:
+        raise HTTPException(status_code=400, detail="chosen_group_id は candidate_group_ids に含まれている必要があります")
+
+    # 全体推測(overall)と同じ条件を引き継ぐ（1試行の中で条件が割れないようにする）。
+    # overallがまだ無い場合（想定外の呼び出し順）はその場で解決する。
+    overall = get_guess(viewer_id=participant_id, owner_id=other_id, target_type="overall")
+    condition = overall["condition"] if overall else _resolve_condition(db, participant_id, other_id)
+
+    saved = save_pre_guess(
+        viewer_id=participant_id, owner_id=other_id, target_type="partial",
+        text=text, condition=condition,
+        target_group_id=body.chosen_group_id, candidate_group_ids=body.candidate_group_ids,
+    )
+    if not saved:
+        raise HTTPException(status_code=409, detail="部分推測は既に記録されています")
+    return {"ok": True}
+
+
+@router.get("/compare/{other_id}/partial-guess")
+def read_partial_guess(
+    other_id: str,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    if not is_valid_participant_id(other_id):
+        raise HTTPException(status_code=400, detail="other_id が不正です")
+    guess = get_guess(viewer_id=participant_id, owner_id=other_id, target_type="partial")
+    return {
+        "submitted": guess is not None,
+        "chosen_group_id": guess["target_group_id"] if guess else None,
+        "text": guess["pre_text"] if guess else None,
+        "condition": guess["condition"] if guess else None,
+    }
+
+
+class PostGuessRequest(BaseModel):
+    target_type: str  # "overall" | "partial"
+    text: str
+
+
+@router.post("/compare/{other_id}/post-guess")
+def submit_post_guess(
+    other_id: str,
+    body: PostGuessRequest,
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """フェーズ1ステップ5：差分提示（介入・一般ヒント・またはtransferでは提示なし）の後の
+    事後推測。pre_textを残したまま編集してもらう想定のため、送り直せば何度でも上書きできる。"""
+    _require_comparable(other_id, participant_id)
+    if body.target_type not in TARGET_TYPES:
+        raise HTTPException(status_code=400, detail="target_type は overall か partial のいずれかです")
+    text = body.text.strip()
+    if not text:
+        raise HTTPException(status_code=400, detail="text は必須です")
+    saved = save_post_guess(
+        viewer_id=participant_id, owner_id=other_id,
+        target_type=body.target_type, text=text,
+    )
+    if not saved:
+        raise HTTPException(status_code=400, detail="先に事前推測を送信してください")
+    return {"ok": True}
+
+
+@router.get("/compare/{other_id}/post-guess")
+def read_post_guess(
+    other_id: str,
+    target_type: str = "overall",
+    participant_id: str = Depends(resolve_participant_id),
+):
+    if not is_valid_participant_id(other_id):
+        raise HTTPException(status_code=400, detail="other_id が不正です")
+    if target_type not in TARGET_TYPES:
+        raise HTTPException(status_code=400, detail="target_type は overall か partial のいずれかです")
+    guess = get_guess(viewer_id=participant_id, owner_id=other_id, target_type=target_type)
+    return {
+        "submitted": bool(guess and guess.get("post_text")),
+        "pre_text": guess["pre_text"] if guess else None,
+        "text": guess["post_text"] if guess else None,
+    }
+
+
+@router.get("/compare/{other_id}/diff-cards")
+def diff_cards(
+    other_id: str,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    """事前推測(全体・部分)の送信後に見せる「あなたとこの人の整理の仕方を比べてみると」カード。
+    両方が記録済みであることを前提にする（介入前の値を守るため）。条件(experimental/control/
+    transfer)は事前推測の記録時に決まったものをそのまま使う（このエンドポイントでは選べない）。"""
     _require_comparable(other_id, participant_id)
 
-    me_stats = _build_participant_stats(participant_id)
-    other_stats = _build_participant_stats(other_id)
-    me_lines = _build_comparison_stats_lines("あなた", me_stats["overview"], me_stats["network"])
-    other_lines = _build_comparison_stats_lines(other_id, other_stats["overview"], other_stats["network"])
+    whole_guess = get_guess(viewer_id=participant_id, owner_id=other_id, target_type="overall")
+    partial_guess = get_guess(viewer_id=participant_id, owner_id=other_id, target_type="partial")
+    if whole_guess is None or partial_guess is None:
+        raise HTTPException(status_code=400, detail="先に事前推測（全体・部分）を送信してください")
 
-    valid_isbns = (
-        {r["isbn"] for r in me_stats["overview"]["book_catalog"] if r.get("isbn")}
-        | {r["isbn"] for r in other_stats["overview"]["book_catalog"] if r.get("isbn")}
-    )
+    condition = whole_guess["condition"]
 
-    recent_history = body.history[-8:]
-    prompt = _build_comparison_prompt(other_id, me_lines, other_lines, recent_history, body.message)
+    if condition == "transfer":
+        # 転移試行では差分提示自体を行わない。フロントは基本ここを呼ばない設計だが、
+        # 直接叩かれても空カードを返すだけで安全にしておく。
+        return {"condition": "transfer", "cards": []}
+
+    if condition == "control":
+        return {"condition": "control", "cards": random.sample(CONTROL_HINTS, k=min(2, len(CONTROL_HINTS)))}
+
+    _ensure_style_profile_exists(db, participant_id)
+    _ensure_style_profile_exists(db, other_id)
     try:
-        raw = _llm.generate_json(prompt, max_tokens=450)
+        diff = compute_style_diff(viewer_id=participant_id, owner_id=other_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    prompt = _build_diff_card_prompt(diff)
+    try:
+        raw = _llm.generate_json(prompt, max_tokens=300)
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"対話に失敗しました: {e}")
+        raise HTTPException(status_code=502, detail=f"差分の翻訳に失敗しました: {e}")
+    structural_cards = _parse_diff_cards(raw)
 
-    reply, related_isbns = _parse_chat_reply(raw, valid_isbns)
-    reply = _ensure_trailing_question(reply)
+    # 2.6 意味差分カード：部分推測で選ばれた対象グループ限定で、そのグループの
+    # 実際のname/commentだけをLLMに渡す（他グループ・他参加者のデータは含めない）。
+    semantic_card = None
+    target_group_id = partial_guess.get("target_group_id")
+    if target_group_id:
+        try:
+            semantic_card = build_semantic_diff(_llm, partial_guess["pre_text"], target_group_id)
+        except Exception as e:
+            logging.getLogger(__name__).warning("意味差分の生成に失敗しました(%s): %s", other_id, e)
 
-    scope = _compare_chat_scope(participant_id, other_id)
-    if body.message:
-        save_chat_message(scope, "user", body.message)
-    save_chat_message(scope, "ai", reply, related_isbns)
-
-    return {"reply": reply, "related_isbns": related_isbns}
+    return {"condition": "experimental", "structural_cards": structural_cards, "semantic_card": semantic_card}

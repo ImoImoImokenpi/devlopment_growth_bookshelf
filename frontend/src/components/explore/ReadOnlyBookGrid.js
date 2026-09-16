@@ -8,7 +8,7 @@ import BookGridPane from "../BookGridPane";
 
 const API = "http://localhost:8000";
 
-export default function ReadOnlyBookGrid({ participantId, focusIsbn, onFocus }) {
+export default function ReadOnlyBookGrid({ participantId, focusIsbn, onFocus, highlightIsbns }) {
   const [bookshelf, setBookshelf] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,6 +34,7 @@ export default function ReadOnlyBookGrid({ participantId, focusIsbn, onFocus }) 
       books={books}
       focusIsbn={focusIsbn}
       onFocus={onFocus}
+      highlightIsbns={highlightIsbns}
       emptyMessage="この参加者の本棚にはまだ本がありません。"
     />
   );

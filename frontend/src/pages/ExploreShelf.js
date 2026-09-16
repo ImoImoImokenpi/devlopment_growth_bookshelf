@@ -18,7 +18,7 @@ import { getParticipantId } from "../utils/participant";
 import ReadOnlyBookGrid from "../components/explore/ReadOnlyBookGrid";
 import ReadOnlySpineShelf from "../components/explore/ReadOnlySpineShelf";
 import ReadOnlyBookFocusPanel from "../components/explore/ReadOnlyBookFocusPanel";
-import ComparisonDialoguePanel from "../components/explore/ComparisonDialoguePanel";
+import PreGuessPanel from "../components/explore/PreGuessPanel";
 
 const DIALOGUE_WIDTH_PCT = 28;
 const PANEL_WIDTH_PCT = 25;
@@ -30,6 +30,7 @@ export default function ExploreShelf() {
   const myId = getParticipantId();
   const { viewMode, shelfWidthPct, cardOrigin, clearCardOrigin } = useOutletContext();
   const [focusIsbn, setFocusIsbn] = useState(null);
+  const [highlightIsbns, setHighlightIsbns] = useState([]);
   const containerRef = useRef(null);
 
   // 自分自身のIDが指定された場合は観察の対象にならないため差し戻す
@@ -44,6 +45,7 @@ export default function ExploreShelf() {
 
   useLayoutEffect(() => {
     setFocusIsbn(null);
+    setHighlightIsbns([]);
 
     if (!cardOrigin || !containerRef.current) {
       setFlipTransform(null);
@@ -86,14 +88,24 @@ export default function ExploreShelf() {
   return (
     <div ref={containerRef} style={gridStyle}>
       <div style={s.dialogueWrap}>
-        <ComparisonDialoguePanel otherId={participantId} />
+        <PreGuessPanel otherId={participantId} onHighlight={setHighlightIsbns} />
       </div>
 
       <main style={{ ...s.shelfPane, flexBasis: `${shelfWidthPct}%` }}>
         {viewMode === "spine" ? (
-          <ReadOnlySpineShelf participantId={participantId} focusIsbn={focusIsbn} onFocus={setFocusIsbn} />
+          <ReadOnlySpineShelf
+            participantId={participantId}
+            focusIsbn={focusIsbn}
+            onFocus={setFocusIsbn}
+            highlightIsbns={highlightIsbns}
+          />
         ) : (
-          <ReadOnlyBookGrid participantId={participantId} focusIsbn={focusIsbn} onFocus={setFocusIsbn} />
+          <ReadOnlyBookGrid
+            participantId={participantId}
+            focusIsbn={focusIsbn}
+            onFocus={setFocusIsbn}
+            highlightIsbns={highlightIsbns}
+          />
         )}
       </main>
 

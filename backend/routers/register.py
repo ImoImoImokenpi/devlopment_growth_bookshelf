@@ -7,8 +7,11 @@ from sqlalchemy.orm import Session
 from lxml import etree
 
 from database import get_db
-from models import MyHand, RegisteredBook
+from models import MyHand, RegisteredBook, GenreTag
+from participant import resolve_participant_id
+from schemas import HeightUpdateRequest, ColorUpdateRequest, GenreTagRequest
 from utils.llm_provider import get_llm_client
+from graph.main_kg.neo4j_crud import update_book_attributes
 from routers.search import (
     get_http_client,
     _extract_ndc_from_bib,
@@ -20,6 +23,68 @@ from routers.search import (
 )
 
 router = APIRouter(prefix="/register", tags=["register"])
+
+# NDC(日本十進分類法)第1次区分 → ジャンルタグの自動シード用ラベル。
+# 書誌データから機械的に決まる「粗いジャンル」で、ユーザーの手動タグと併用する。
+NDC_L1_GENRE_LABELS = {
+    "0": "総記", "1": "哲学", "2": "歴史", "3": "社会科学", "4": "自然科学",
+    "5": "技術・工学", "6": "産業", "7": "芸術・美術", "8": "言語", "9": "文学",
+}
+
+
+def _seed_genre_tag_from_ndc(db: Session, isbn: str, ndc_full: str | None, participant_id: str) -> None:
+    """登録時に、NDC分類から粗いジャンルタグを1件だけ自動生成する。
+    NDCが無い/未知の区分なら何もしない（ユーザーの手動タグ付けに任せる）。"""
+    if not ndc_full:
+        return
+    label = NDC_L1_GENRE_LABELS.get(ndc_full[0])
+    if not label:
+        return
+    exists = (
+        db.query(GenreTag)
+        .filter(
+            GenreTag.participant_id == participant_id,
+            GenreTag.isbn == isbn,
+            GenreTag.tag == label,
+        )
+        .first()
+    )
+    if exists:
+        return
+    db.add(GenreTag(participant_id=participant_id, isbn=isbn, tag=label, origin="ndc_auto"))
+
+
+def backfill_genre_tags_from_ndc(db: Session) -> int:
+    """このフェーズ1の仕組みを入れる前に登録・配置済みだった本には
+    NDC由来のジャンルタグが無い。起動時に1回、現在棚に並んでいる
+    (participant_id, isbn) の組み合わせぶんだけ穴埋めする（冪等）。
+    フェーズ2(c)の興味分野質問が「現在棚にある本のジャンル」を
+    候補にするため、これが無いと候補が空になってしまう参加者が出る。"""
+    from models import ShelfLayout  # 循環import回避のため関数内import
+
+    pairs = db.query(ShelfLayout.participant_id, ShelfLayout.isbn).distinct().all()
+    ndc_by_isbn = {b.isbn: b.ndc for b in db.query(RegisteredBook).all()}
+    existing = {
+        (t.participant_id, t.isbn, t.tag)
+        for t in db.query(GenreTag.participant_id, GenreTag.isbn, GenreTag.tag).all()
+    }
+
+    added = 0
+    for participant_id, isbn in pairs:
+        ndc = ndc_by_isbn.get(isbn)
+        if not ndc:
+            continue
+        label = NDC_L1_GENRE_LABELS.get(ndc[0])
+        if not label or (participant_id, isbn, label) in existing:
+            continue
+        db.add(GenreTag(participant_id=participant_id, isbn=isbn, tag=label, origin="ndc_auto"))
+        existing.add((participant_id, isbn, label))
+        added += 1
+
+    if added:
+        db.commit()
+    return added
+
 
 NDL_SRU_URL     = "https://ndlsearch.ndl.go.jp/api/sru"
 SPINE_IMAGE_DIR = (
@@ -314,6 +379,7 @@ async def save_book(
     book_data: str = Form(...),
     image: UploadFile | None = File(None),
     db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
 ):
     data = json.loads(book_data)
     isbn = data.get("isbn")
@@ -351,5 +417,153 @@ async def save_book(
         description=data.get("description"),
     )
     db.add(book)
+    _seed_genre_tag_from_ndc(db, isbn, data.get("ndc_full"), participant_id)
     db.commit()
     return {"message": "saved", "isbn": isbn, "spine_image": spine_path, "spine_color": spine_color, "cover": ndl_cover}
+
+
+# ============================================================
+# フェーズ1: 属性タグ基盤（高さ・色の手動補正、ジャンルタグ）
+# ============================================================
+
+# ── 高さの手動補正 ────────────────────────────────
+@router.patch("/{isbn}/height")
+def update_height(isbn: str, body: HeightUpdateRequest, db: Session = Depends(get_db)):
+    book = db.query(RegisteredBook).filter(RegisteredBook.isbn == isbn).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="本が見つかりません")
+    book.height_mm = body.height_mm
+    book.height_source = "manual"
+    db.commit()
+    try:
+        update_book_attributes(isbn, {"height_mm": body.height_mm})
+    except Exception:
+        pass  # Neo4jが落ちていてもSQLite側の補正は成立させる
+    return {"isbn": isbn, "height_mm": book.height_mm, "height_source": book.height_source}
+
+
+# ── 代表色の手動補正 ──────────────────────────────
+@router.patch("/{isbn}/color")
+def update_color(isbn: str, body: ColorUpdateRequest, db: Session = Depends(get_db)):
+    if not re.fullmatch(r"\d{1,3},\d{1,3},\d{1,3}", body.spine_color):
+        raise HTTPException(status_code=422, detail='spine_color は "R,G,B" 形式で指定してください')
+    book = db.query(RegisteredBook).filter(RegisteredBook.isbn == isbn).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="本が見つかりません")
+    book.spine_color = body.spine_color
+    book.spine_color_source = "manual"
+    db.commit()
+    try:
+        update_book_attributes(isbn, {"spine_color": body.spine_color})
+    except Exception:
+        pass
+    return {"isbn": isbn, "spine_color": book.spine_color, "spine_color_source": book.spine_color_source}
+
+
+# ── ジャンルタグ ──────────────────────────────────
+@router.get("/{isbn}/genre-tags")
+def list_genre_tags(
+    isbn: str,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    tags = (
+        db.query(GenreTag)
+        .filter(GenreTag.participant_id == participant_id, GenreTag.isbn == isbn)
+        .order_by(GenreTag.created_at)
+        .all()
+    )
+    return [{"tag": t.tag, "origin": t.origin} for t in tags]
+
+
+@router.post("/{isbn}/genre-tags")
+def add_genre_tag(
+    isbn: str,
+    body: GenreTagRequest,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    tag = body.tag.strip()
+    if not tag:
+        raise HTTPException(status_code=422, detail="タグを入力してください")
+    if not db.query(RegisteredBook).filter(RegisteredBook.isbn == isbn).first():
+        raise HTTPException(status_code=404, detail="本が見つかりません")
+
+    existing = (
+        db.query(GenreTag)
+        .filter(GenreTag.participant_id == participant_id, GenreTag.isbn == isbn, GenreTag.tag == tag)
+        .first()
+    )
+    if not existing:
+        db.add(GenreTag(participant_id=participant_id, isbn=isbn, tag=tag, origin="manual"))
+        db.commit()
+    return list_genre_tags(isbn, db, participant_id)
+
+
+@router.delete("/{isbn}/genre-tags/{tag}")
+def delete_genre_tag(
+    isbn: str,
+    tag: str,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    row = (
+        db.query(GenreTag)
+        .filter(GenreTag.participant_id == participant_id, GenreTag.isbn == isbn, GenreTag.tag == tag)
+        .first()
+    )
+    if row:
+        db.delete(row)
+        db.commit()
+    return list_genre_tags(isbn, db, participant_id)
+
+
+# ── 属性一括取得（本ID→属性値。分析用にまとめて取り出す） ──────
+@router.get("/attributes")
+def list_book_attributes(
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    books = db.query(RegisteredBook).all()
+    tags_by_isbn: dict[str, list[dict]] = {}
+    for t in db.query(GenreTag).filter(GenreTag.participant_id == participant_id).all():
+        tags_by_isbn.setdefault(t.isbn, []).append({"tag": t.tag, "origin": t.origin})
+
+    return [
+        {
+            "isbn":               b.isbn,
+            "title":              b.title,
+            "authors":            b.authors.split(",") if b.authors else [],
+            "height_mm":          b.height_mm,
+            "height_source":      b.height_source,
+            "spine_color":        b.spine_color,
+            "spine_color_source": b.spine_color_source,
+            "ndc":                b.ndc,
+            "genre_tags":         tags_by_isbn.get(b.isbn, []),
+        }
+        for b in books
+    ]
+
+
+# ── 1冊分の属性詳細（本詳細パネルの編集UI用）。
+#    パスパラメータが1セグメントの他ルートと衝突しないよう、必ずファイル末尾に置く。──
+@router.get("/{isbn}")
+def get_book_detail(
+    isbn: str,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+):
+    book = db.query(RegisteredBook).filter(RegisteredBook.isbn == isbn).first()
+    if not book:
+        raise HTTPException(status_code=404, detail="本が見つかりません")
+    return {
+        "isbn":               book.isbn,
+        "title":              book.title,
+        "authors":            book.authors.split(",") if book.authors else [],
+        "height_mm":          book.height_mm,
+        "height_source":      book.height_source,
+        "spine_color":        book.spine_color,
+        "spine_color_source": book.spine_color_source,
+        "ndc":                book.ndc,
+        "genre_tags":         list_genre_tags(isbn, db, participant_id),
+    }

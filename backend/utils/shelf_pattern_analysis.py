@@ -41,17 +41,38 @@ def _spine_width_px(pages) -> float:
     return min(100.0, max(1.0, pages * 0.08))
 
 
-def _color_bucket(spine_color: str | None) -> str | None:
+def _parse_spine_hsv(spine_color: str | None) -> tuple[float, float, float] | None:
     if not spine_color:
         return None
     try:
         r, g, b = (int(v) for v in spine_color.split(","))
     except (ValueError, AttributeError):
         return None
-    h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+    return colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+
+
+def _color_bucket(spine_color: str | None) -> str | None:
+    hsv = _parse_spine_hsv(spine_color)
+    if hsv is None:
+        return None
+    h, s, v = hsv
     if s < 0.15 or v < 0.15:
         return "無彩色"
     return HUE_NAMES[int(h * 10) % 10]
+
+
+def _hue_angle(spine_color: str | None) -> float | None:
+    """色相環上の連続値（0〜1、無彩色はNone）。10色相バケットへの離散化
+    （_color_bucket）だと「隣同士でバケットが一致するか」しか見られず、
+    バケットをまたいでなだらかに変化するグラデーションを検出できない。
+    そのため、グラデーション判定（placement_analysis）にはこちらを使う。"""
+    hsv = _parse_spine_hsv(spine_color)
+    if hsv is None:
+        return None
+    h, s, v = hsv
+    if s < 0.15 or v < 0.15:
+        return None
+    return h
 
 
 def _ndc_l1(ndc: str | None) -> str | None:
@@ -95,6 +116,13 @@ def _rank_spearman(xs: list[float], ys: list[float]) -> float:
     if var_x == 0 or var_y == 0:
         return 0.0
     return cov / (var_x ** 0.5 * var_y ** 0.5)
+
+
+# 他モジュール（placement_analysis）から同じ計算を再利用するための公開名。
+color_hue_bucket = _color_bucket
+hue_angle = _hue_angle
+spine_width_px = _spine_width_px
+rank_spearman = _rank_spearman
 
 
 def _count_runs(seq: list) -> int:

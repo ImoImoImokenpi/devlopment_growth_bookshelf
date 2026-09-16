@@ -6,7 +6,7 @@
   - 客観データ（Book / Author / Publisher / NDC）は全被験者で共有する。
     同じ本を複数人が持ち込んでもノードは1つでよい。
   - 主観データ（Concept / Impression / ShelfPosition / SHELF_NEXT /
-    PlacementEvent / Discovery）は participantId で完全に分離する。
+    PlacementEvent）は participantId で完全に分離する。
   - 「誰の蔵書か」は (:Participant)-[:OWNS]->(:Book) で表す。
     読み出しは必ずこの OWNS を経由させ、他人の本が混ざらないようにする。
 
@@ -14,7 +14,7 @@
 """
 import logging
 
-from admin_neo4j.neo4j_driver import get_session
+from graph.main_kg.neo4j_driver import get_session
 from participant import DEFAULT_PARTICIPANT_ID
 
 logger = logging.getLogger(__name__)
@@ -27,11 +27,17 @@ _CONSTRAINTS = [
     "CREATE CONSTRAINT shelfpos_id IF NOT EXISTS FOR (s:ShelfPosition) REQUIRE s.posId IS UNIQUE",
     "CREATE CONSTRAINT concept_id IF NOT EXISTS FOR (c:Concept) REQUIRE c.conceptId IS UNIQUE",
     "CREATE CONSTRAINT impression_id IF NOT EXISTS FOR (i:Impression) REQUIRE i.impressionId IS UNIQUE",
-    "CREATE CONSTRAINT discovery_id IF NOT EXISTS FOR (d:Discovery) REQUIRE d.discoveryId IS UNIQUE",
     "CREATE INDEX concept_participant IF NOT EXISTS FOR (c:Concept) ON (c.participantId)",
     "CREATE INDEX shelfpos_participant IF NOT EXISTS FOR (s:ShelfPosition) ON (s.participantId)",
-    "CREATE INDEX discovery_participant IF NOT EXISTS FOR (d:Discovery) ON (d.participantId)",
     "CREATE INDEX placement_participant IF NOT EXISTS FOR (e:PlacementEvent) ON (e.participantId)",
+    # グルーピングモード関連のイベントログ（種別ごとに固定ノードラベルを使う、PlacementEventと同じ設計）
+    "CREATE INDEX commentevent_participant IF NOT EXISTS FOR (e:CommentEvent) ON (e.participantId)",
+    "CREATE INDEX groupcreate_participant IF NOT EXISTS FOR (e:GroupCreateEvent) ON (e.participantId)",
+    "CREATE INDEX groupedit_participant IF NOT EXISTS FOR (e:GroupEditEvent) ON (e.participantId)",
+    "CREATE INDEX groupmerge_participant IF NOT EXISTS FOR (e:GroupMergeEvent) ON (e.participantId)",
+    "CREATE INDEX groupdelete_participant IF NOT EXISTS FOR (e:GroupDeleteEvent) ON (e.participantId)",
+    "CREATE INDEX grouphighlight_participant IF NOT EXISTS FOR (e:GroupHighlightEvent) ON (e.participantId)",
+    "CREATE INDEX modeswitch_participant IF NOT EXISTS FOR (e:ModeSwitchEvent) ON (e.participantId)",
 ]
 
 # participantId を持たない既存ノード／リレーションに既定の被験者を刻む。
@@ -80,11 +86,6 @@ _STAMP_QUERIES = [
     MATCH (e:PlacementEvent) WHERE e.participantId IS NULL
     SET e.participantId = $pid
     """,
-    # 旧 Meaning ノード（add_book_with_meaning が作っていたもの）
-    """
-    MATCH (m:Meaning) WHERE m.participantId IS NULL
-    SET m.participantId = $pid
-    """,
 ]
 
 # 感想を Book のプロパティから Impression ノードへ移す。
@@ -97,6 +98,42 @@ MERGE (b)-[:HAS_IMPRESSION]->(i:Impression {participantId: $pid, text: b.impress
 ON CREATE SET i.impressionId = randomUUID(), i.createdAt = datetime()
 REMOVE b.impression
 RETURN count(*) AS moved
+"""
+
+# 旧 Meaning ノード（add_book_with_meaning が意味づけ入力用に作っていたもの）を、
+# 実際に読み出し側の実装があるConcept方式へ移す。文言が同じConceptがすでに
+# あれば1つに集約する（save_conceptと同じMERGEキー）。移行後はMeaningノードを
+# 削除するので、コード側の書き込み経路（旧HAS_MEANING）を消しても再実行しても
+# データが失われない。
+_MEANING_TO_CONCEPT_MIGRATION = """
+MATCH (b:Book)-[old:HAS_MEANING]->(m:Meaning)
+WHERE m.text IS NOT NULL AND m.text <> ''
+WITH b, m, old, coalesce(m.participantId, $pid) AS pid
+MERGE (c:Concept {participantId: pid, text: m.text})
+    ON CREATE SET c.conceptId = randomUUID(), c.createdAt = coalesce(m.createdAt, datetime())
+MERGE (b)-[r:CONCEPT {participantId: pid}]->(c)
+    ON CREATE SET
+        r.edgeId           = randomUUID(),
+        r.createdAt         = coalesce(m.createdAt, datetime()),
+        r.reinforceCount    = 1,
+        r.strength          = 1.0,
+        r.origin            = 'legacy_meaning_migration',
+        r.confidence        = 'confirmed',
+        r.lastReinforcedAt  = datetime()
+WITH DISTINCT m
+DETACH DELETE m
+RETURN count(m) AS migrated
+"""
+
+# 「褪せ」表現(所持日数に応じた見た目の変化)の元になる日付。
+# 既存のOWNSにはまだ無いので、addedAt（無ければ今日）で穴埋めする。
+# 参加者に依存しない全体のバックフィルなので $pid は使わない。IS NULL のものだけ
+# 触るため、手動で日付を設定済みのものを上書きすることはない。
+_POSSESSED_SINCE_BACKFILL = """
+MATCH (:Participant)-[own:OWNS]->(:Book)
+WHERE own.possessedSince IS NULL
+SET own.possessedSince = coalesce(date(own.addedAt), date())
+RETURN count(own) AS backfilled
 """
 
 # 既存の本はすべて既定の被験者の蔵書とみなす。
@@ -148,6 +185,17 @@ def run_neo4j_migrations(participant_id: str = DEFAULT_PARTICIPANT_ID) -> None:
             moved = session.run(_IMPRESSION_MIGRATION, pid=participant_id).single()
             if moved and moved["moved"]:
                 logger.info("Neo4j migration: 感想 %d 件を Impression ノードへ移しました", moved["moved"])
+
+            migrated = session.run(_MEANING_TO_CONCEPT_MIGRATION, pid=participant_id).single()
+            if migrated and migrated["migrated"]:
+                logger.info(
+                    "Neo4j migration: 旧Meaningノード %d 件をConceptへ移行しました",
+                    migrated["migrated"],
+                )
+
+            backfilled = session.run(_POSSESSED_SINCE_BACKFILL).single()
+            if backfilled and backfilled["backfilled"]:
+                logger.info("Neo4j migration: possessedSince %d 件を穴埋めしました", backfilled["backfilled"])
 
             if not _already_applied(session, PARTICIPANT_SCOPE_MIGRATION):
                 owned = session.run(_BACKFILL_OWNERSHIP, pid=participant_id).single()

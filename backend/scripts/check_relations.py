@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-from admin_neo4j.neo4j_driver import get_session
+from graph.main_kg.neo4j_driver import get_session
 
 conn = sqlite3.connect(Path(__file__).parent.parent / "bookshelf.db")
 cur = conn.cursor()

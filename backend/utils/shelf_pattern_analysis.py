@@ -35,10 +35,12 @@ REFERENCE_PATTERNS = [
 ]
 
 
-def _spine_width_px(pages) -> float:
+def _spine_width_px(pages, height_mm=None) -> float:
     if not pages:
         return 20.0
-    return min(100.0, max(1.0, pages * 0.08))
+    # 文庫(高さ160mm以下)は背幅を細めにする
+    factor = 0.75 if height_mm and height_mm <= 160 else 1.0
+    return min(100.0, max(1.0, pages * 0.08 * factor))
 
 
 def _parse_spine_hsv(spine_color: str | None) -> tuple[float, float, float] | None:
@@ -425,7 +427,7 @@ def analyze_shelf_patterns(shelves: dict[int, list[dict]], memo_isbns: set[str] 
             b["_ndc_l1"] = _ndc_l1(b.get("ndc"))
             b["_color"] = _color_bucket(b.get("spine_color"))
             b["_author"] = _first_author(b.get("authors"))
-            b["_width_px"] = _spine_width_px(b.get("pages"))
+            b["_width_px"] = _spine_width_px(b.get("pages"), b.get("height_mm"))
             b["_x_px"] = (b.get("x_pos") or 0) * PX_TO_MM_SCALE
         enriched[shelf_idx] = ordered
 

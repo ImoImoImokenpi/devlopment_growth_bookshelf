@@ -19,7 +19,7 @@ const s = {
   panel: {
     display: "flex", flexDirection: "column",
     width: "100%",
-    background: "#fdfcf8", borderLeft: "1px solid #ede8da",
+    background: "#fff",
     height: "100%", overflowY: "auto", overflowX: "hidden",
   },
 };

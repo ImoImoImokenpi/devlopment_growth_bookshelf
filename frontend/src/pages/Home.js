@@ -1,92 +1,118 @@
-// 設計書6.1の2ペイン構成。
-//   メイン: 本棚ビジュアライズ（背表紙・ドラッグ&ドロップ配置）
-//   サブ  : 本詳細
+// アプリのメイン画面「育つ本棚」(/)。上部のナビバー(Layout)の下に全面表示する。
 //
-// 本棚は段を追加しても縮んでいかないよう、画面幅に対する固定割合にする
-// （はみ出た分は本棚側の縦スクロールで見る）。割合そのものは「棚の調整」の
-// 「本棚サイズの調整」からユーザーが変えられる（shelfWidthPct）。
+// 画面構成:
+//   見出し列 : タイトル・冊数（左）、棚の設定と「対話する」（右）
+//   本文     : 本棚の作業スペース（左・背表紙をドラッグで並べ替える）
+//              ＋ 右パネル（本を選ぶと本の詳細、「対話する」を押すと対話）
 //
-// 右の本詳細は本を選んでいる（focusIsbn がある）ときだけ画面の30%で開き、
-// 閉じている間は幅0に収納される。
+// 「対話する」は見出し列の右端に置き、押すとその真下の右パネルが対話に切り替わる。
+// ボタンと開くパネルの位置をそろえ、どこに何が出たのか迷わないようにする。
+//
+// 本棚の幅は「棚の設定 → 本棚サイズの調整」(shelfWidthPct) で画面幅に対する割合を
+// 変えられる。作業スペースより大きくはならず、はみ出た高さは作業スペース内で縦スクロールする。
+//
+// グルーピング（左のグループパネル・ModeToggle）はいったん画面から外している。
+// 部品（components/grouping, ModeToggle）とSpineShelfView側の処理は残してある。
 import { useState } from "react";
 import SpineShelfView from "../components/SpineShelfView";
 import OwnBookGrid from "../components/OwnBookGrid";
 import ShelfSettingsMenu from "../components/ShelfSettingsMenu";
 import PageHeader from "../components/PageHeader";
-import ModeToggle from "../components/ModeToggle";
-import Toast from "../components/Toast";
+import { PAGE_PAD_X, PAGE_PAD_TOP } from "../components/Layout";
 import CompanionPanel from "../components/companion/CompanionPanel";
-import GroupPanel from "../components/grouping/GroupPanel";
-import IntentCheckEntry from "../components/intent/IntentCheckEntry";
+import DialoguePanel from "../components/dialogue/DialoguePanel";
 import {
   ShelfWorkspaceProvider,
   useShelfWorkspace,
 } from "../context/ShelfWorkspaceContext";
 
-const NAVBAR_SPACE = 66; // 上部に固定表示されているNavbarの逃げ
-const PANEL_WIDTH_PCT = 25;   // 本詳細／グループパネルが開いているときの画面幅に対する割合
+const SIDE_PANEL_W = 380;      // 本の詳細パネルの幅(px)
+const DIALOGUE_PANEL_W = 460;  // 対話パネルの幅(px)
 
 function HomeWorkspace() {
-  const { mode, setMode, focusIsbn, shelfWidthPct, toast, dismissToast } = useShelfWorkspace();
-  const isRightPanelOpen = !!focusIsbn;
-  const isGroupingMode = mode === "grouping";
-  const isBoundaryMode = mode === "boundary"; // フェーズ2(b): 区切り確認モード
-
-  // 背表紙⇄グリッドの切り替え（以前はNavbar上の別ページ「/GridShelf」だったが、
-  // 右下の設定ボタン(ShelfSettingsMenu)の中に統合した）。デフォルトは背表紙表示。
+  const { focusIsbn, setFocusIsbn, shelfWidthPct, growth } = useShelfWorkspace();
+  const [isDialogueOpen, setIsDialogueOpen] = useState(false);
+  // 背表紙⇄グリッドの切り替えは「棚の設定」の中にある。デフォルトは背表紙表示。
   const [viewMode, setViewMode] = useState("spine");
 
+  const isDetailOpen = !isDialogueOpen && !!focusIsbn;
+  const panelWidth = isDialogueOpen ? DIALOGUE_PANEL_W : isDetailOpen ? SIDE_PANEL_W : 0;
+
+  const openDialogue = () => {
+    setFocusIsbn(null);
+    setIsDialogueOpen(true);
+  };
+
   return (
-    <div style={{ ...s.page, background: (isGroupingMode || isBoundaryMode) ? "#f5efdd" : "#f7f3ea" }}>
-      {/* 「みんなの本棚」画面（BrowseLayout）と同じ PageHeader を使い、
-          見出しのデザインを全ページで統一する。 */}
-      <div style={s.headerRow}>
+    <div style={s.page}>
+      <style>{`
+        .shelf-stage { scrollbar-width: thin; scrollbar-color: #d8ccb0 transparent; }
+        .shelf-stage::-webkit-scrollbar { width: 8px; height: 8px; }
+        .shelf-stage::-webkit-scrollbar-button { display: none; }
+        .shelf-stage::-webkit-scrollbar-thumb { background: #d8ccb0; border-radius: 4px; }
+        .talk-btn:hover:not(:disabled) { background: #b8963a !important; }
+      `}</style>
+
+      <div style={s.header}>
         <PageHeader
-          title="My本棚"
+          title="育つ本棚"
+          sub={growth?.books != null ? `${growth.books}冊 ・ 本棚と対話しよう！` : "本棚と対話しよう！"}
           right={
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <IntentCheckEntry />
-              <ModeToggle mode={mode} onChange={setMode} />
+            <div style={s.actions}>
+              <ShelfSettingsMenu viewMode={viewMode} onViewModeChange={setViewMode} />
+              <button
+                className="talk-btn"
+                style={{ ...s.talkBtn, ...(isDialogueOpen ? s.talkBtnActive : {}) }}
+                onClick={openDialogue}
+                disabled={isDialogueOpen}
+                title="本棚と対話する"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+                {isDialogueOpen ? "対話中" : "対話する"}
+              </button>
             </div>
           }
         />
       </div>
 
-      {isGroupingMode && (
-        <div style={s.banner}>グループ整理モード：本を選んでグループを作ったり、左のパネルで整理できます</div>
-      )}
-      {isBoundaryMode && (
-        <div style={s.banner}>
-          区切り確認モード：本と本の間をタップして、意識して区切ったところを選んでください
-          <button style={s.bannerDoneBtn} onClick={() => setMode("normal")}>完了</button>
-        </div>
-      )}
-
       <div style={s.body}>
-        <div style={s.grid}>
-          <div style={{ ...s.panelWrap, width: isGroupingMode ? `${PANEL_WIDTH_PCT}%` : 0 }}>
-            <GroupPanel />
-          </div>
-
-          <main style={{ ...s.shelfPane, flexBasis: `${shelfWidthPct}%` }}>
-            {viewMode === "spine" ? (
-              <SpineShelfView />
-            ) : (
-              <div style={s.gridWrap}>
-                <OwnBookGrid />
+        {/* 作業スペース。本棚と右パネル（本の詳細・対話）を1つのまとまりとして中央に置き、
+            パネルが本棚のすぐ横に開くようにする。本棚は自分の列の中で縦スクロールする。 */}
+        <div style={s.stage}>
+          {viewMode === "spine" ? (
+            <div
+              className="shelf-stage"
+              style={{ ...s.shelfCol, width: `min(${shelfWidthPct}vw, 100%)` }}
+            >
+              <div style={s.shelfWrap}>
+                <SpineShelfView />
               </div>
-            )}
-            {/* 背表紙⇄グリッドの切り替えは、棚と重ならないよう右下の設定ボタンの中にまとめた */}
-            <ShelfSettingsMenu viewMode={viewMode} onViewModeChange={setViewMode} />
-          </main>
+            </div>
+          ) : (
+            <div className="shelf-stage" style={s.gridCol}>
+              <OwnBookGrid />
+            </div>
+          )}
 
-          <div style={{ ...s.panelWrap, width: isRightPanelOpen ? `${PANEL_WIDTH_PCT}%` : 0 }}>
-            <CompanionPanel />
-          </div>
+          <aside
+            style={{
+              ...s.side,
+              width: panelWidth,
+              marginLeft: panelWidth ? 24 : 0,
+              borderWidth: panelWidth ? 1 : 0,
+            }}
+          >
+            <div style={{ ...s.sideInner, width: panelWidth || SIDE_PANEL_W }}>
+              {isDialogueOpen
+                ? <DialoguePanel onClose={() => setIsDialogueOpen(false)} />
+                : <CompanionPanel />}
+            </div>
+          </aside>
         </div>
       </div>
 
-      <Toast toast={toast} onDismiss={dismissToast} />
     </div>
   );
 }
@@ -101,44 +127,51 @@ export default function Home() {
 
 const s = {
   page: {
-    height: "100vh", paddingTop: NAVBAR_SPACE, boxSizing: "border-box",
+    flex: 1, minHeight: 0, display: "flex", flexDirection: "column",
+    background: "#fdfcf8",
+  },
+  header: { flexShrink: 0, padding: `${PAGE_PAD_TOP}px ${PAGE_PAD_X}px 0` },
+  actions: { display: "flex", alignItems: "center", gap: 10 },
+  talkBtn: {
+    display: "inline-flex", alignItems: "center", gap: 8,
+    height: 40, padding: "0 20px", borderRadius: 999, border: "none",
+    background: "#c9a84c", color: "#fff", fontSize: 13.5, fontWeight: 700,
+    cursor: "pointer", fontFamily: "inherit",
+    boxShadow: "0 2px 8px rgba(160,120,30,0.25)", transition: "background 0.15s",
+  },
+  talkBtnActive: {
+    background: "#f5efdd", color: "#8a7030", boxShadow: "none", cursor: "default",
+  },
+  body: {
+    flex: 1, minHeight: 0, display: "flex",
+    padding: `0 ${PAGE_PAD_X}px 24px`,
+  },
+  stage: {
+    flex: 1, minWidth: 0, minHeight: 0,
+    borderRadius: 16, background: "#f3eee2",
+    display: "flex", justifyContent: "center",
+    padding: "24px",
+    boxSizing: "border-box", overflow: "hidden",
+  },
+  // 本棚の列。影が切れないよう、列の内側に少し余白を持たせる
+  shelfCol: {
+    flex: "0 1 auto", minWidth: 0, height: "100%",
+    overflowY: "auto", overflowX: "hidden",
     display: "flex", flexDirection: "column",
-    overflow: "hidden", transition: "background 200ms ease",
+    padding: "4px 12px 28px",
   },
-  headerRow: { flexShrink: 0, padding: "20px 28px 12px" },
-  banner: {
-    flexShrink: 0, textAlign: "center", padding: "6px 12px",
-    background: "#c9a84c", color: "#fff", fontSize: 12, fontWeight: 600,
-    display: "flex", justifyContent: "center", alignItems: "center", gap: 12,
+  shelfWrap: {
+    flexShrink: 0, margin: "auto 0",
+    // filter だと本棚内の固定表示（範囲選択の枠・モーダル）の基準がずれるので box-shadow にする
+    boxShadow: "0 14px 30px rgba(60,40,10,0.22)",
   },
-  bannerDoneBtn: {
-    padding: "3px 12px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.7)",
-    background: "rgba(255,255,255,0.15)", color: "#fff", fontSize: 11, fontWeight: 700,
-    cursor: "pointer",
+  gridCol: { flex: 1, minWidth: 0, height: "100%", overflowY: "auto", boxSizing: "border-box" },
+  side: {
+    flexShrink: 0, height: "100%", overflow: "hidden",
+    borderRadius: 16, borderStyle: "solid", borderColor: "#ede8da", background: "#fff",
+    boxShadow: "0 8px 24px rgba(60,40,10,0.08)",
+    boxSizing: "border-box",
+    transition: "width 240ms ease, margin-left 240ms ease",
   },
-  body: { flex: 1, minHeight: 0, overflow: "hidden" },
-  grid: {
-    display: "flex",
-    justifyContent: "center",
-    height: "100%",
-    overflow: "hidden",
-  },
-  shelfPane: {
-    position: "relative",
-    flex: "0 0 auto", // flexBasis はインラインで shelfWidthPct に差し替える
-    minWidth: 0,
-    height: "100%",
-    overflow: "auto",
-    transition: "flex-basis 240ms ease",
-  },
-  gridWrap: {
-    position: "relative", zIndex: 2, boxSizing: "border-box",
-    padding: "24px 28px",
-  },
-  panelWrap: {
-    flex: "0 0 auto",
-    height: "100%",
-    overflow: "hidden",
-    transition: "width 240ms ease",
-  },
+  sideInner: { height: "100%" },
 };

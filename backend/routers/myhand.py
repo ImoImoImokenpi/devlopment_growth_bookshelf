@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Body
 from schemas import AddFromHandRequest
 from sqlalchemy.orm import Session
 from database import get_db
-from models import MyHand, RegisteredBook, ShelfLayout
+from models import MyHand, RegisteredBook
 from participant import resolve_participant_id
+from shelf_period import PRESENT, normalize_period
 from graph.main_kg.neo4j_crud import add_book_with_meaning
 
 from utils.shelf_utils import add_to_shelf
@@ -56,15 +57,8 @@ def add_to_hand(
     if _myhand_by_isbn(isbn, db, participant_id):
         return {"message": "already exists", "isbn": isbn}
 
-    # 既に自分の棚にある本は手元に入れない。
-    # 入れてしまうと棚へ移せず、手元に残り続けてしまう。
-    on_shelf = (
-        db.query(ShelfLayout)
-        .filter(ShelfLayout.participant_id == participant_id, ShelfLayout.isbn == isbn)
-        .first()
-    )
-    if on_shelf:
-        return {"message": "already_on_shelf", "isbn": isbn}
+    # 棚には同じ本を複数冊置けるので、既に棚にある本でも手元には入れられる
+    # （もう1冊を棚に置くために、改めて手元→本棚の流れに乗せられるようにする）。
 
     db.add(MyHand(participant_id=participant_id, registered_book_id=reg_book.id))
     db.commit()
@@ -73,13 +67,15 @@ def add_to_hand(
 @router.post("/add_from_hand")
 async def add_from_hand(
     req: AddFromHandRequest,
+    period: str = "present",
     db: Session = Depends(get_db),
     participant_id: str = Depends(resolve_participant_id),
 ):
+    period = normalize_period(period)
     if not req.isbns:
         raise HTTPException(status_code=400, detail="No books selected")
 
-    added, already_on_shelf, skipped = [], [], []
+    added, skipped = [], []
 
     for isbn in req.isbns:
         hand_book = _myhand_by_isbn(isbn, db, participant_id)
@@ -89,26 +85,27 @@ async def add_from_hand(
 
         reg_book = hand_book.book  # RegisteredBook オブジェクト
 
-        try:
-            add_book_with_meaning(reg_book, participant_id=participant_id)
-        except Exception as e:
-            print(f"Neo4j保存エラー [{isbn}]: {e}")
-            skipped.append(isbn)
-            continue
+        # 「過去」の棚は振り返り用の仮の並びで、実際の所有関係ではないため、
+        # Neo4j側（Book/OWNS・概念グラフ）には一切書き込まない。
+        if period == PRESENT:
+            try:
+                add_book_with_meaning(reg_book, participant_id=participant_id)
+            except Exception as e:
+                print(f"Neo4j保存エラー [{isbn}]: {e}")
+                skipped.append(isbn)
+                continue
 
-        result = add_to_shelf(db, reg_book, participant_id=participant_id)
+        result = add_to_shelf(db, reg_book, participant_id=participant_id, period=period)
 
         if result == "error":
             print(f"棚への配置に失敗しました [{isbn}]（詳細は logs/app.log）")
             skipped.append(isbn)
             continue
 
-        # 既に棚にある場合も手元からは取り除く。
-        # ここで残すと、置けないのに手元に居座り続けて詰まってしまう。
         db.delete(hand_book)
         try:
             db.commit()
-            (added if result == "placed" else already_on_shelf).append(isbn)
+            added.append(isbn)
         except Exception as e:
             db.rollback()
             print(f"コミットエラー [{isbn}]: {e}")
@@ -117,7 +114,6 @@ async def add_from_hand(
     return {
         "message": "Success",
         "added": added,
-        "already_on_shelf": already_on_shelf,
         "skipped": skipped,
     }
 

@@ -10,7 +10,7 @@ Book/Author/NDCなど共有ノードの内容には一切依存しない
   グラフ理論の標準的な指標をそのまま流用しており、独自のヒューリスティック
   ではない。
 - ジャンル×配置の一致度（4）・内容テーマ×配置の一致度・意味づけ×配置の一致度は
-  いずれも style_projection.metrics の modularity/NMI 実装を再利用する
+  いずれも community_stats の modularity/NMI 実装を再利用する
   （コミュニティ定義をGroupからNDC-L1/Theme/Conceptに差し替えるだけ）。
   内容テーマ(Theme)はあらすじからLLMが生成する参加者ごとの分類（themes.py）、
   意味づけ(Concept)は参加者が本に付けたConceptをそのまま使う（新規計算不要）。
@@ -29,7 +29,7 @@ from collections import Counter
 import networkx as nx
 
 from graph.main_kg.neo4j_driver import get_session
-from graph.style_projection.metrics import modularity_for_communities, normalized_mutual_information
+from graph.placement_analysis.community_stats import modularity_for_communities, normalized_mutual_information
 from utils.shelf_pattern_analysis import rank_spearman, spine_width_px
 
 FUNCTIONAL_THRESHOLD = 0.35  # これ未満なら「機能的な説明が弱い」とみなす
@@ -61,7 +61,7 @@ def _fetch_enriched_positions(session, participant_id: str) -> list[dict]:
 
 def _fetch_concept_primary(session, participant_id: str) -> dict[str, str]:
     """本ごとの「代表的な意味づけ」。複数のConceptに属す本はconceptId昇順で
-    最小のものを採用する（style_projection._belongs_to_communitiesと同じ考え方）。"""
+    最小のものを採用する。"""
     rows = session.run(
         """
         MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)
@@ -117,7 +117,7 @@ def _build_shelf_graph(session, participant_id: str, positions: list[dict]) -> n
 def _assortativity(graph: nx.Graph, attribute: str) -> float | None:
     """属性アソータティビティ係数（Newman 2003）の素朴な実装。
     networkx.attribute_assortativity_coefficient は内部でnumpyを要求するため、
-    本プロジェクトの他の指標（style_projection._nmi等）と同じ方針で、
+    community_stats の NMI と同じ方針で、
     追加依存を増やさず自前で計算する。"""
     edges = list(graph.edges())
     if not edges:
@@ -230,7 +230,7 @@ def _split_into_groups(rows: list[dict]) -> list[list[dict]]:
 
     gaps = []
     for a, b in zip(rows, rows[1:]):
-        width_a = spine_width_px(a.get("pages"))
+        width_a = spine_width_px(a.get("pages"), a.get("height_mm"))
         gaps.append((b["x_pos"] or 0) - (a["x_pos"] or 0) - width_a)
 
     median_gap = statistics.median(gaps)
@@ -338,13 +338,13 @@ def _color_uniformity_score(by_shelf: dict[int, list[dict]]) -> tuple[float | No
 def _placement_alignment_scores(graph: nx.Graph, attribute: str) -> tuple[float | None, float | None]:
     """本にどの属性（ジャンル=ndc_l1・内容テーマ=theme・意味づけ=concept_id）で
     コミュニティ分けをしても、それが物理的な配置（SHELF_NEXT）とどれだけ
-    一致するかを、style_projection.metricsのmodularity/NMI実装で測る
+    一致するかを、community_stats の modularity/NMI 実装で測る
     （コミュニティ定義を差し替えているだけで計算式は共通）。
 
     属性値が無い本（例: あらすじが無くThemeが未生成、意味づけをしていない）は
     互いにまとめず、1冊だけの単独コミュニティとして扱う。欠損値をまとめて
     1つの巨大な「なし」コミュニティにすると、それらの本の物理的な散らばり方
-    次第でmodularityが見かけ上歪むため（style_projection._belongs_to_communities
+    次第でmodularityが見かけ上歪むため（以前の投影スタイル分析
     と同じ配慮）。"""
     if graph.number_of_edges() == 0:
         return None, None
@@ -390,7 +390,7 @@ def _spacing_regularity(by_shelf: dict[int, list[dict]]) -> tuple[float | None, 
     for shelf_index, rows in by_shelf.items():
         gaps = []
         for a, b in zip(rows, rows[1:]):
-            width_a = spine_width_px(a["pages"])
+            width_a = spine_width_px(a["pages"], a.get("height_mm"))
             gaps.append((b["x_pos"] or 0) - (a["x_pos"] or 0) - width_a)
         if len(gaps) < 3:
             continue

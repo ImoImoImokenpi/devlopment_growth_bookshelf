@@ -322,7 +322,7 @@ def list_registered(db: Session = Depends(get_db)):
     ]
 
 
-# ── 2ステップISBN抽出：OCR → NDL、失敗時は Gemini ────
+# ── 2ステップISBN抽出：OCR → NDL、失敗時は LLM（画像から読み取り） ────
 @router.post("/extract-isbn")
 async def extract_isbn(file: UploadFile = File(...)):
     image_data = await file.read()
@@ -442,24 +442,6 @@ def update_height(isbn: str, body: HeightUpdateRequest, db: Session = Depends(ge
     return {"isbn": isbn, "height_mm": book.height_mm, "height_source": book.height_source}
 
 
-# ── 代表色の手動補正 ──────────────────────────────
-@router.patch("/{isbn}/color")
-def update_color(isbn: str, body: ColorUpdateRequest, db: Session = Depends(get_db)):
-    if not re.fullmatch(r"\d{1,3},\d{1,3},\d{1,3}", body.spine_color):
-        raise HTTPException(status_code=422, detail='spine_color は "R,G,B" 形式で指定してください')
-    book = db.query(RegisteredBook).filter(RegisteredBook.isbn == isbn).first()
-    if not book:
-        raise HTTPException(status_code=404, detail="本が見つかりません")
-    book.spine_color = body.spine_color
-    book.spine_color_source = "manual"
-    db.commit()
-    try:
-        update_book_attributes(isbn, {"spine_color": body.spine_color})
-    except Exception:
-        pass
-    return {"isbn": isbn, "spine_color": book.spine_color, "spine_color_source": book.spine_color_source}
-
-
 # ── ジャンルタグ ──────────────────────────────────
 @router.get("/{isbn}/genre-tags")
 def list_genre_tags(
@@ -518,33 +500,6 @@ def delete_genre_tag(
     return list_genre_tags(isbn, db, participant_id)
 
 
-# ── 属性一括取得（本ID→属性値。分析用にまとめて取り出す） ──────
-@router.get("/attributes")
-def list_book_attributes(
-    db: Session = Depends(get_db),
-    participant_id: str = Depends(resolve_participant_id),
-):
-    books = db.query(RegisteredBook).all()
-    tags_by_isbn: dict[str, list[dict]] = {}
-    for t in db.query(GenreTag).filter(GenreTag.participant_id == participant_id).all():
-        tags_by_isbn.setdefault(t.isbn, []).append({"tag": t.tag, "origin": t.origin})
-
-    return [
-        {
-            "isbn":               b.isbn,
-            "title":              b.title,
-            "authors":            b.authors.split(",") if b.authors else [],
-            "height_mm":          b.height_mm,
-            "height_source":      b.height_source,
-            "spine_color":        b.spine_color,
-            "spine_color_source": b.spine_color_source,
-            "ndc":                b.ndc,
-            "genre_tags":         tags_by_isbn.get(b.isbn, []),
-        }
-        for b in books
-    ]
-
-
 # ── 1冊分の属性詳細（本詳細パネルの編集UI用）。
 #    パスパラメータが1セグメントの他ルートと衝突しないよう、必ずファイル末尾に置く。──
 @router.get("/{isbn}")
@@ -566,4 +521,10 @@ def get_book_detail(
         "spine_color_source": book.spine_color_source,
         "ndc":                book.ndc,
         "genre_tags":         list_genre_tags(isbn, db, participant_id),
+        # 本の詳細パネル用の書誌情報
+        "publisher":          book.publisher,
+        "published_year":     book.published_year,
+        "pages":              book.pages,
+        "cover":              book.cover,
+        "description":        book.description,
     }

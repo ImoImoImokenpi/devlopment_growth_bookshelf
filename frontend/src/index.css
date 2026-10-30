@@ -1,5 +1,11 @@
+html {
+  /* スクロールバーの有無で画面の中心がずれないよう、常にその幅を確保する */
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
+  background: #fdfcf8;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;

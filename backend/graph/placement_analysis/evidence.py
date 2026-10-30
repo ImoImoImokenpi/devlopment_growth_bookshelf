@@ -32,6 +32,17 @@ def save_design_evidence(participant_id: str, evidence_candidate: dict) -> dict:
     computed_at = datetime.now()
 
     with get_session() as session:
+        # 同じ段・同じ種類の根拠は最新の1件だけを残す（並べ替えのたびに増え続けないように）
+        session.run(
+            """
+            MATCH (:Participant {participantId: $pid})-[:HAS_DESIGN_EVIDENCE]->(old:DesignEvidence)
+            WHERE old.shelfIndex = $shelf_index AND old.evidenceType = $evidence_type
+            DETACH DELETE old
+            """,
+            pid=participant_id,
+            shelf_index=evidence_candidate["shelf_index"],
+            evidence_type=evidence_candidate["evidence_type"],
+        )
         session.run(
             """
             MATCH (p:Participant {participantId: $pid})

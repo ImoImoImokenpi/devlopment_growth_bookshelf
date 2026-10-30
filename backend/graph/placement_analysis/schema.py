@@ -2,7 +2,7 @@
 
 制約名はすべて pa_ 接頭辞を付け、既存の意味づけナレッジグラフ側
 （graph.main_kg.neo4j_migrate、接頭辞なし）・投影スタイル分析側
-（style_projection.schema、sp_ 接頭辞）・実験運用側（experiment.schema、gr_ 接頭辞）
+（以前の投影スタイル分析 sp_・実験運用 gr_）
 と名前が衝突しないようにしている。
 """
 from graph.main_kg.neo4j_driver import get_session

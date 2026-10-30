@@ -14,7 +14,6 @@ const WOOD_URL        = "/sources/wood_texture.jpg";
 const DARK_WOOD_URL   = "/sources/dark_wood_texture.jpg";
 const SYNC_DELAY_MS   = 10_000;
 const MAX_BOOK_HEIGHT = 250;
-const SHELF_MAX_WIDTH = 800;
 const LONG_PRESS_MS      = 400; // これ以上押し続けたら「移動」ジェスチャーとみなす
 const TAP_MOVE_THRESHOLD = 6;   // 長押しに至らなかった場合、この移動量未満なら「タップ」扱い
 const SPINE_PALETTES = [
@@ -49,32 +48,22 @@ function getPalette(isbn) {
 function resolveSpineHeight(book) {
   return Math.min(1000, Math.max(10, book.height_mm * 1.2));
 }
+// 文庫(A6判・高さ約148mm)は単行本より紙が薄く、同じページ数でも背幅が狭い。
+// height_mm で文庫を判定し、背幅の倍率を下げる。
+// (バックエンド側の spine_width / _spine_width_px と同じ判定・倍率)
+const BUNKO_MAX_HEIGHT_MM = 160;
+const BUNKO_WIDTH_FACTOR  = 0.75;
+function bunkoFactor(book) {
+  const h = book?.height_mm;
+  return h && h <= BUNKO_MAX_HEIGHT_MM ? BUNKO_WIDTH_FACTOR : 1;
+}
 function resolveSpineWidth(book) {
-  const fromPages = book?.pages ? Math.min(100, Math.max(1, book.pages * 0.08)) : 20;
+  const fromPages = book?.pages ? Math.min(100, Math.max(1, book.pages * 0.08 * bunkoFactor(book))) : 20;
   return fromPages;
 }
 
 function snapX(x) {
   return Math.round(x / SNAP) * SNAP;
-}
-
-// 所持している日数に応じた「褪せ」表現。
-// possessed_since が無い（まだ設定されていない）本は褪せさせない。
-const FADE_MAX_DAYS = 365 * 5; // これ以上は褪せ具合が頭打ち
-
-function fadeFactor(possessedSince) {
-  if (!possessedSince) return 0;
-  const days = (Date.now() - new Date(possessedSince).getTime()) / 86_400_000;
-  if (!Number.isFinite(days) || days <= 0) return 0;
-  return Math.max(0, Math.min(1, days / FADE_MAX_DAYS));
-}
-
-function fadeFilterStyle(fade) {
-  if (fade <= 0) return null;
-  const saturate = (1 - 0.55 * fade).toFixed(2);
-  const brightness = (1 + 0.12 * fade).toFixed(2);
-  const opacity = (1 - 0.2 * fade).toFixed(2);
-  return `saturate(${saturate}) brightness(${brightness}) opacity(${opacity})`;
 }
 
 // ─────────────────────────────────────────────
@@ -124,27 +113,27 @@ function detectStacks(books, frameLeft, frameRight) {
 // SpineShelfView Component
 // ─────────────────────────────────────────────
 function SpineShelfView() {
-  const { myBookshelf, fetchBookshelf, removeBook } = useContext(MyBookshelfContext);
+  const { myBookshelf, fetchBookshelf, removeBook, period } = useContext(MyBookshelfContext);
 
   // 選択・強調・発見の線は右ペインと共有する（設計書6.1の2ペイン構成）
   const {
-    mode,
-    selectedIsbns, setSelectedIsbns,
     focusIsbn, setFocusIsbn,
     highlightIsbns, conceptHighlights,
-    refreshGrowth,
-    bumpGroupsVersion, setGroupHighlightMembers,
+    flushLayoutSyncRef, dialogueSessionIdRef,
   } = useShelfWorkspace();
 
   const svgRef = useRef();
   const syncTimerRef = useRef(null);
+  // まだ保存していない並び（10秒の待ち中）と、その間にユーザーが直接ドラッグした本。
+  // ドラッグした本は、挿し込みで押し出されただけの本と区別して送る（対話のきっかけになる）。
+  const pendingLayoutRef = useRef(null);
+  const movedIsbnsRef = useRef(new Set());
   const containerRef = useRef();
   const isDraggingBookRef = useRef(false);
   const trashRef = useRef(null);
   const overTrashRef = useRef(false);
-  const overGroupRowIdRef = useRef(null); // グルーピングモード：本を左パネルのグループ行へドラッグ中の対象concept_id
   const removeBookRef = useRef(null);
-  const stackOwnershipRef = useRef({}); // isbn → "left" | "right"、ドラッグ開始時の所属を記録
+  const stackOwnershipRef = useRef({}); // ShelfLayoutの行id → "left" | "right"、ドラッグ開始時の所属を記録
   const longPressRef = useRef({ armed: false, inited: false, timer: null, startX: 0, startY: 0 }); // タップ/長押し移動の判定用
 
   const shelves = myBookshelf?.shelves || [];
@@ -152,11 +141,9 @@ function SpineShelfView() {
   const books = useMemo(() => shelves.flatMap((s) => s.books), [shelves]);
 
   const [localLayout, setLocalLayout] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [meaningInput, setMeaningInput] = useState("");
-  const [isSavingMeaning, setIsSavingMeaning] = useState(false);
-  const [rubberBand, setRubberBand] = useState(null);
-  const [deletedIsbns, setDeletedIsbns] = useState(new Set());
+  // 本棚には同じISBNの本を複数冊置けるため、物理的な1冊1冊は
+  // ShelfLayoutの行id（book.id）で区別する（isbnは「どの本か」を表すだけ）。
+  const [deletedIds, setDeletedIds] = useState(new Set());
 
   // 本棚からの語りかけは右ペインの対話パネルが担当する（設計書6.1）。
   // ここでは棚の描画と操作だけに集中する。
@@ -174,9 +161,9 @@ function SpineShelfView() {
 
   const booksWithPosition = useMemo(() => {
     return books
-      .filter(b => !deletedIsbns.has(b.isbn))
+      .filter(b => !deletedIds.has(b.id))
       .map((book) => {
-        const local = localLayout.find((l) => l.isbn === book.isbn);
+        const local = localLayout.find((l) => l.id === book.id);
         const shelfIdx = local?.shelf_index ?? book.shelf_index ?? 0;
         const xPosMM = local?.x_pos ?? book.x_pos ?? 0;
         const xPx = xPosMM * PX_TO_MM_SCALE + FRAME;
@@ -189,89 +176,7 @@ function SpineShelfView() {
           y: FRAME + shelfIdx * (unitShelfHeight + FRAME) + TOP_GAP,
         };
       });
-  }, [books, localLayout, unitShelfHeight, deletedIsbns]);
-
-  // ── フェーズ2(b) 区切り確認モード ──
-  // モーダル内に棚を再現するのではなく、実際にこの棚の上で本と本の「間」を
-  // 直接タップさせる。区切りの単位（gap_index）はバックエンドと同じ定義
-  // （段内をx座標で並べたときの左からの位置）で、booksWithPosition から
-  // その場で計算する。並べ方の推定結果（PlacementProfile等）はここでは
-  // 一切参照しない——表示するのは今の配置そのものと、ユーザー自身が
-  // 付けたON/OFFの状態だけ。
-  const boundaryMode = mode === "boundary";
-  const [boundaries, setBoundaries] = useState({}); // "shelfIndex:gapIndex" -> boolean
-
-  const gapZones = useMemo(() => {
-    if (!boundaryMode) return [];
-    const byShelf = {};
-    booksWithPosition.forEach(b => {
-      if (!byShelf[b.gridRow]) byShelf[b.gridRow] = [];
-      byShelf[b.gridRow].push(b);
-    });
-    const zones = [];
-    Object.keys(byShelf).forEach(shelfIndexStr => {
-      const shelfIndex = Number(shelfIndexStr);
-      const sorted = [...byShelf[shelfIndex]].sort((a, b) => a.x - b.x);
-      for (let i = 0; i < sorted.length - 1; i++) {
-        const left = sorted[i];
-        const right = sorted[i + 1];
-        const leftEdge = left.x + resolveSpineWidth(left);
-        const rightEdge = right.x;
-        const mid = (leftEdge + rightEdge) / 2;
-        const clickWidth = Math.max(16, rightEdge - leftEdge);
-        zones.push({
-          shelf_index: shelfIndex,
-          gap_index: i,
-          x: mid - clickWidth / 2,
-          width: clickWidth,
-          y: left.y,
-          height: MAX_BOOK_HEIGHT,
-        });
-      }
-    });
-    return zones;
-  }, [booksWithPosition, boundaryMode]);
-
-  // 区切り確認モードに入ったら、既存の回答状態を取得する。直前の移動がまだ
-  // 同期待ち（10秒デバウンス）の場合は、gap_indexがずれないよう先に同期を確定させる。
-  useEffect(() => {
-    if (!boundaryMode) return;
-    let cancelled = false;
-    (async () => {
-      if (syncTimerRef.current) {
-        clearTimeout(syncTimerRef.current);
-        syncTimerRef.current = null;
-        if (localLayout.length) await handleSyncLayout(localLayout);
-      }
-      try {
-        const res = await fetch("http://localhost:8000/intent-survey/shelf");
-        const shelves = await res.json();
-        if (cancelled) return;
-        const map = {};
-        shelves.forEach(row => {
-          row.boundaries.forEach((val, gapIdx) => { map[`${row.shelf_index}:${gapIdx}`] = val; });
-        });
-        setBoundaries(map);
-      } catch (err) {
-        console.error("区切り確認の状態取得に失敗しました", err);
-      }
-    })();
-    return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [boundaryMode]);
-
-  const toggleBoundary = useCallback((shelfIndex, gapIndex) => {
-    const key = `${shelfIndex}:${gapIndex}`;
-    setBoundaries(prev => {
-      const nextVal = !prev[key];
-      fetch(`http://localhost:8000/intent-survey/sections/${shelfIndex}/${gapIndex}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ is_intentional: nextVal }),
-      }).catch(err => console.error("区切りの保存に失敗しました", err));
-      return { ...prev, [key]: nextVal };
-    });
-  }, []);
+  }, [books, localLayout, unitShelfHeight, deletedIds]);
 
   const WIDTH = useMemo(() => {
     const maxWidth = d3.max(
@@ -292,12 +197,22 @@ function SpineShelfView() {
     return Math.max(0, Math.min(Math.floor((pxY - FRAME) / (unitShelfHeight + FRAME)), shelfCount - 1));
   }, [unitShelfHeight, shelfCount]);
 
-  // ライフサイクル
-  useEffect(() => { fetchBookshelf(); }, []);
+  // ライフサイクル（初回表示時に本棚を取得する）
+  useEffect(() => { fetchBookshelf(); }, [fetchBookshelf]);
+
+  // 過去/現在の切り替え直後は、前の時期のローカル状態（配置中の一時レイアウト・
+  // 削除済みマーク）を持ち越さない。books は「1冊もない時は前の内容を保持する」
+  // ガードがあるため（読み込み中のチラつき防止）、空の時期に切り替えた場合は
+  // ここで明示的にクリアしないと前の時期の本が残って見えてしまう。
+  useEffect(() => {
+    setLocalLayout([]);
+    setDeletedIds(new Set());
+  }, [period]);
 
   useEffect(() => {
     if (!books.length) return;
     setLocalLayout(books.map((b) => ({
+      id: b.id,
       isbn: b.isbn,
       shelf_index: b.shelf_index,
       x_pos: b.x_pos ?? 0,
@@ -313,101 +228,32 @@ function SpineShelfView() {
 
   // API連携
   const handleSyncLayout = useCallback(async (layoutData) => {
+    const movedIsbns = [...movedIsbnsRef.current];
+    movedIsbnsRef.current = new Set();
+    pendingLayoutRef.current = null;
     try {
-      await fetch("http://localhost:8000/bookshelf/sync-layout", {
+      await fetch(`http://localhost:8000/bookshelf/sync-layout?period=${period}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ layout: layoutData }),
+        body: JSON.stringify({
+          layout: layoutData,
+          moved_isbns: movedIsbns,
+          dialogue_session_id: dialogueSessionIdRef.current,
+        }),
       });
     } catch (err) { console.error("Sync failed", err); }
-  }, []);
+  }, [period, dialogueSessionIdRef]);
 
-  const handleSaveMeaning = async () => {
-    const text = meaningInput.trim();
-    if (!text) return alert("グループの名前を入力してください");
-    setIsSavingMeaning(true);
-    try {
-      const res = await fetch("http://localhost:8000/bookshelf/save-concept", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isbns: selectedIsbns, meaning: text }),
-      });
-      if (res.ok) {
-        setIsModalOpen(false);
-        setMeaningInput("");
-        setSelectedIsbns([]);
-        // 意味づけ（グループ）が増えると育ち具合が変わるので、右ペインに反映させる。
-        // 左パネルのグループ一覧にも新しいグループが増えたことを反映させる。
-        refreshGrowth();
-        bumpGroupsVersion();
-      } else {
-        const data = await res.json().catch(() => null);
-        alert(`保存に失敗しました: ${data?.detail || res.status}`);
-      }
-    } catch (err) {
-      console.error("Save meaning failed", err);
-      alert("保存に失敗しました。通信エラーの可能性があります。");
-    }
-    finally { setIsSavingMeaning(false); }
-  };
-
-  const handleCloseMeaningModal = () => {
-    setIsModalOpen(false);
-    setMeaningInput("");
-  };
-
-  // 左パネルで選んでいるグループ（無ければ null）。
-  // ある間は、フローティングバーが「グループを作る」ではなく
-  // 「選択した本を追加／除外」に切り替わる。
-  const activeGroup = conceptHighlights.group;
-
-  const handleAddSelectedToGroup = async () => {
-    if (!activeGroup) return;
-    const toAdd = selectedIsbns.filter(isbn => !activeGroup.isbns.includes(isbn));
-    if (toAdd.length === 0) return;
-    if (!window.confirm(`選択した${toAdd.length}冊をグループに追加しますか？`)) return;
-    try {
-      const res = await fetch(`http://localhost:8000/knowledge_graph/groups/${activeGroup.groupId}/members`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isbns: toAdd }),
-      });
-      if (res.ok) {
-        bumpGroupsVersion();
-        setGroupHighlightMembers(activeGroup.groupId, [...activeGroup.isbns, ...toAdd]);
-        setSelectedIsbns([]);
-      } else {
-        alert("追加に失敗しました");
-      }
-    } catch (err) {
-      console.error("グループへの追加に失敗しました", err);
-      alert("追加に失敗しました。通信エラーの可能性があります。");
-    }
-  };
-
-  const handleRemoveSelectedFromGroup = async () => {
-    if (!activeGroup) return;
-    const toRemove = selectedIsbns.filter(isbn => activeGroup.isbns.includes(isbn));
-    if (toRemove.length === 0) return;
-    if (!window.confirm(`選択した${toRemove.length}冊をグループから外しますか？`)) return;
-    try {
-      const res = await fetch(`http://localhost:8000/knowledge_graph/groups/${activeGroup.groupId}/members/remove`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isbns: toRemove }),
-      });
-      if (res.ok) {
-        bumpGroupsVersion();
-        setGroupHighlightMembers(activeGroup.groupId, activeGroup.isbns.filter(isbn => !toRemove.includes(isbn)));
-        setSelectedIsbns([]);
-      } else {
-        alert("除外に失敗しました");
-      }
-    } catch (err) {
-      console.error("グループから外す操作に失敗しました", err);
-      alert("除外に失敗しました。通信エラーの可能性があります。");
-    }
-  };
+  // 対話開始時などに、待ち中の並べ替えを今すぐ保存する
+  useEffect(() => {
+    flushLayoutSyncRef.current = async () => {
+      if (!syncTimerRef.current) return;
+      clearTimeout(syncTimerRef.current);
+      syncTimerRef.current = null;
+      if (pendingLayoutRef.current) await handleSyncLayout(pendingLayoutRef.current);
+    };
+    return () => { flushLayoutSyncRef.current = null; };
+  }, [flushLayoutSyncRef, handleSyncLayout]);
 
   // ─────────────────────────────────────────────
   // D3 Rendering
@@ -465,8 +311,8 @@ function SpineShelfView() {
       const shelfBooks = booksWithPosition.filter(b => b.gridRow === d.gridRow);
       const { left, right } = detectStacks(shelfBooks, FRAME, WIDTH - FRAME);
       stackOwnershipRef.current = {
-        ...Object.fromEntries(left.map(b  => [b.isbn, "left"])),
-        ...Object.fromEntries(right.map(b => [b.isbn, "right"])),
+        ...Object.fromEntries(left.map(b  => [b.id, "left"])),
+        ...Object.fromEntries(right.map(b => [b.id, "right"])),
       };
 
       if (trashRef.current) {
@@ -477,7 +323,6 @@ function SpineShelfView() {
 
     const dragHandler = d3.drag()
       .on("start", function(e, d) {
-        if (isModalOpen || boundaryMode) return;
         const state = longPressRef.current;
         state.armed = false;
         state.inited = false;
@@ -488,7 +333,6 @@ function SpineShelfView() {
       })
 
       .on("drag", function(e, d) {
-        if (isModalOpen) return;
         const state = longPressRef.current;
         if (!state.armed) return; // 長押し閾値未満の間は本を動かさない（タップ／範囲選択と衝突させないため）
         if (!state.inited) {
@@ -501,7 +345,7 @@ function SpineShelfView() {
         const movingWidth = resolveSpineWidth(d);
         const targetShelfForCheck = getShelfIndex(e.y + MAX_BOOK_HEIGHT / 2);
         const othersForCheck = booksWithPosition
-          .filter(b => b.gridRow === targetShelfForCheck && b.isbn !== d.isbn);
+          .filter(b => b.gridRow === targetShelfForCheck && b.id !== d.id);
         const totalOtherWidth = othersForCheck.reduce((sum, b) => sum + resolveSpineWidth(b), 0);
         const hasSpace = totalOtherWidth + movingWidth <= WIDTH - 2 * FRAME;
 
@@ -523,24 +367,6 @@ function SpineShelfView() {
           }
         }
 
-        // グルーピングモード：左パネルのグループ行の上にドラッグしているかどうかの判定。
-        // ゴミ箱と同じ getBoundingClientRect ヒットテストのパターンを流用する。
-        // このコードベースにグローバルCSSは無い（全てインラインstyle）ので、
-        // trashRef と同様にDOMのstyleを直接書き換える。
-        if (mode === "grouping" && e.sourceEvent) {
-          const { clientX, clientY } = e.sourceEvent;
-          let hitId = null;
-          document.querySelectorAll(".group-panel-row").forEach(row => {
-            const rect = row.getBoundingClientRect();
-            const over = clientX >= rect.left && clientX <= rect.right &&
-                         clientY >= rect.top  && clientY <= rect.bottom;
-            row.style.background = over ? "#fff3d6" : "#fff";
-            row.style.borderColor = over ? "#c9a84c" : "#ede8da";
-            if (over) hitId = row.dataset.conceptId;
-          });
-          overGroupRowIdRef.current = hitId;
-        }
-
         // 棚の外（余白）までスライドしていかないよう、描画領域内に留める
         const nx = Math.max(FRAME, Math.min(snapX(e.x), WIDTH - FRAME - movingWidth));
         const ny = Math.max(0, Math.min(e.y, HEIGHT - MAX_BOOK_HEIGHT));
@@ -559,12 +385,12 @@ function SpineShelfView() {
 
         const targetShelf = getShelfIndex(ny + MAX_BOOK_HEIGHT / 2);
         const others = booksWithPosition
-          .filter(b => b.gridRow === targetShelf && b.isbn !== d.isbn)
+          .filter(b => b.gridRow === targetShelf && b.id !== d.id)
           .sort((a, b) => a.x - b.x);
 
         // 所属はドラッグ開始時点で固定（座標変化による誤分類を防ぐ）
-        const leftBooks  = others.filter(b => (stackOwnershipRef.current[b.isbn] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "left");
-        const rightBooks = others.filter(b => (stackOwnershipRef.current[b.isbn] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "right");
+        const leftBooks  = others.filter(b => (stackOwnershipRef.current[b.id] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "left");
+        const rightBooks = others.filter(b => (stackOwnershipRef.current[b.id] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "right");
 
         let leftEdge = FRAME;
         let rightEdge = WIDTH - FRAME;
@@ -590,7 +416,7 @@ function SpineShelfView() {
               inserted = true;
             }
             svg.selectAll(".spine-book")
-              .filter(node => node.isbn === b.isbn)
+              .filter(node => node.id === b.id)
               .transition().duration(100).ease(d3.easeCubicOut)
               .attr("transform", `translate(${cursor}, ${b.y})`);
             cursor += resolveSpineWidth(b);
@@ -600,7 +426,7 @@ function SpineShelfView() {
           [...rightBooks].reverse().forEach(b => {
             rCursor -= resolveSpineWidth(b);
             svg.selectAll(".spine-book")
-              .filter(node => node.isbn === b.isbn)
+              .filter(node => node.id === b.id)
               .transition().duration(100).ease(d3.easeCubicOut)
               .attr("transform", `translate(${rCursor}, ${b.y})`);
           });
@@ -618,7 +444,7 @@ function SpineShelfView() {
             }
             cursor -= bw;
             svg.selectAll(".spine-book")
-              .filter(node => node.isbn === b.isbn)
+              .filter(node => node.id === b.id)
               .transition().duration(100).ease(d3.easeCubicOut)
               .attr("transform", `translate(${cursor}, ${b.y})`);
           });
@@ -626,7 +452,7 @@ function SpineShelfView() {
           let lCursor = FRAME;
           leftBooks.forEach(b => {
             svg.selectAll(".spine-book")
-              .filter(node => node.isbn === b.isbn)
+              .filter(node => node.id === b.id)
               .transition().duration(100).ease(d3.easeCubicOut)
               .attr("transform", `translate(${lCursor}, ${b.y})`);
             lCursor += resolveSpineWidth(b);
@@ -636,15 +462,15 @@ function SpineShelfView() {
         // ── 元の棚（別棚へのドラッグ時）: 隙間を詰める ──
         if (d.gridRow !== targetShelf) {
           const origOthers = booksWithPosition
-            .filter(b => b.gridRow === d.gridRow && b.isbn !== d.isbn)
+            .filter(b => b.gridRow === d.gridRow && b.id !== d.id)
             .sort((a, b) => a.x - b.x);
-          const origLeftBooks  = origOthers.filter(b => (stackOwnershipRef.current[b.isbn] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "left");
-          const origRightBooks = origOthers.filter(b => (stackOwnershipRef.current[b.isbn] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "right");
+          const origLeftBooks  = origOthers.filter(b => (stackOwnershipRef.current[b.id] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "left");
+          const origRightBooks = origOthers.filter(b => (stackOwnershipRef.current[b.id] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "right");
 
           let lCur = FRAME;
           origLeftBooks.forEach(b => {
             svg.selectAll(".spine-book")
-              .filter(node => node.isbn === b.isbn)
+              .filter(node => node.id === b.id)
               .transition().duration(100).ease(d3.easeCubicOut)
               .attr("transform", `translate(${lCur}, ${b.y})`);
             lCur += resolveSpineWidth(b);
@@ -653,7 +479,7 @@ function SpineShelfView() {
           [...origRightBooks].reverse().forEach(b => {
             rCur -= resolveSpineWidth(b);
             svg.selectAll(".spine-book")
-              .filter(node => node.isbn === b.isbn)
+              .filter(node => node.id === b.id)
               .transition().duration(100).ease(d3.easeCubicOut)
               .attr("transform", `translate(${rCur}, ${b.y})`);
           });
@@ -674,20 +500,9 @@ function SpineShelfView() {
         if (!wasInited) {
           // ── 長押しに至らなかった＝タップ ──
           isDraggingBookRef.current = false;
-          if (!isModalOpen && dist < TAP_MOVE_THRESHOLD) {
-            if (mode === "grouping") {
-              // タップは常に複数選択のトグル。左パネルでグループを選んでいる間は
-              // フローティングバーの「追加」「除外」ボタンでまとめて反映する
-              // （1冊ずつ確認ダイアログを出す方式は、複数冊を動かす操作として
-              // 手数が多すぎたため、選択→まとめて確認1回の方式に変更した）。
-              setSelectedIsbns(prev =>
-                prev.includes(d.isbn) ? prev.filter(isbn => isbn !== d.isbn) : [...prev, d.isbn]
-              );
-            } else if (mode !== "boundary") {
-              // 1冊タップ →「この本について」を右ペインに出す（設計書4章①）。
-              // 区切り確認モード中は本のタップに反応しない（間のタップだけを扱う）。
-              setFocusIsbn(d.isbn);
-            }
+          if (dist < TAP_MOVE_THRESHOLD) {
+            // 1冊タップ →「本の詳細」を右パネルに出す
+            setFocusIsbn(d.isbn);
           }
           return;
         }
@@ -702,44 +517,13 @@ function SpineShelfView() {
           trashRef.current.style.transform       = "translateX(-50%) scale(1)";
         }
 
-        // グルーピングモード：左パネルのグループ行にドロップした場合は、
-        // 棚上の座標は動かさず、そのグループへの追加確認だけを行う。
-        if (mode === "grouping" && overGroupRowIdRef.current) {
-          const conceptId = overGroupRowIdRef.current;
-          overGroupRowIdRef.current = null;
-          const rowEl = document.querySelector(`.group-panel-row[data-concept-id="${conceptId}"]`);
-          document.querySelectorAll(".group-panel-row").forEach(row => {
-            row.style.background = "#fff";
-            row.style.borderColor = "#ede8da";
-          });
-          const groupName = rowEl?.dataset.groupName || "";
-
-          d3.select(this).transition().duration(200).ease(d3.easeCubicOut)
-            .attr("transform", `translate(${d.x}, ${d.y})`);
-
-          if (window.confirm(`「${d.title}」をグループ「${groupName}」に追加しますか？`)) {
-            fetch(`http://localhost:8000/knowledge_graph/groups/${conceptId}/members`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ isbns: [d.isbn] }),
-            })
-              .then(res => { if (res.ok) bumpGroupsVersion(); })
-              .catch(err => console.error("グループへの追加に失敗しました", err));
-          }
-          return;
-        }
-        document.querySelectorAll(".group-panel-row").forEach(row => {
-          row.style.background = "#fff";
-          row.style.borderColor = "#ede8da";
-        });
-
         if (overTrashRef.current) {
           overTrashRef.current = false;
           d3.select(this).transition().duration(220).style("opacity", 0)
             .on("end", function() {
               d3.select(this).remove();
-              setDeletedIsbns(prev => new Set([...prev, d.isbn]));
-              if (removeBookRef.current) removeBookRef.current(d.isbn);
+              setDeletedIds(prev => new Set([...prev, d.id]));
+              if (removeBookRef.current) removeBookRef.current(d.id);
             });
           return;
         }
@@ -751,7 +535,7 @@ function SpineShelfView() {
         const centerX = tx + movingWidth / 2;
 
         const otherBooks = booksWithPosition
-          .filter(b => b.isbn !== d.isbn && b.gridRow === targetShelfIdx)
+          .filter(b => b.id !== d.id && b.gridRow === targetShelfIdx)
           .sort((a, b) => a.x - b.x);
 
         // スペースチェック: 収まらなければ全本を元の位置に戻す
@@ -767,8 +551,8 @@ function SpineShelfView() {
         let rightEdge = WIDTH - FRAME;
 
         // 所属はドラッグ開始時点で固定
-        const leftBooks  = otherBooks.filter(b => (stackOwnershipRef.current[b.isbn] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "left");
-        const rightBooks = otherBooks.filter(b => (stackOwnershipRef.current[b.isbn] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "right");
+        const leftBooks  = otherBooks.filter(b => (stackOwnershipRef.current[b.id] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "left");
+        const rightBooks = otherBooks.filter(b => (stackOwnershipRef.current[b.id] ?? (b.x + resolveSpineWidth(b) / 2 < WIDTH / 2 ? "left" : "right")) === "right");
 
         leftBooks.forEach(b => { leftEdge = Math.max(leftEdge, b.x + resolveSpineWidth(b)); });
         rightBooks.forEach(b => { rightEdge = Math.min(rightEdge, b.x); });
@@ -778,8 +562,9 @@ function SpineShelfView() {
 
         let nextLayout = [];
 
-        const toMmPos = (pxX, sIdx, oIdx, isbn) => ({
-          isbn,
+        const toMmPos = (pxX, sIdx, oIdx, book) => ({
+          id: book.id,
+          isbn: book.isbn,
           shelf_index: sIdx,
           x_pos: (pxX - FRAME) / PX_TO_MM_SCALE,
           order_index: oIdx,
@@ -799,14 +584,14 @@ function SpineShelfView() {
 
           let cur = FRAME;
           insertInto.forEach((b, i) => {
-            nextLayout.push(toMmPos(cur, targetShelfIdx, i, b.isbn));
+            nextLayout.push(toMmPos(cur, targetShelfIdx, i, b));
             cur += resolveSpineWidth(b);
           });
 
           let rCur = WIDTH - FRAME;
           [...rightBooks].reverse().forEach((b, i) => {
             rCur -= resolveSpineWidth(b);
-            nextLayout.push(toMmPos(rCur, targetShelfIdx, insertInto.length + (rightBooks.length - 1 - i), b.isbn));
+            nextLayout.push(toMmPos(rCur, targetShelfIdx, insertInto.length + (rightBooks.length - 1 - i), b));
           });
 
         } else {
@@ -824,7 +609,7 @@ function SpineShelfView() {
           // 左スタックをmmに変換
           let lCur = FRAME;
           leftBooks.forEach((b, i) => {
-            nextLayout.push(toMmPos(lCur, targetShelfIdx, i, b.isbn));
+            nextLayout.push(toMmPos(lCur, targetShelfIdx, i, b));
             lCur += resolveSpineWidth(b);
           });
 
@@ -832,39 +617,44 @@ function SpineShelfView() {
           let rCur = WIDTH - FRAME;
           [...insertInto].reverse().forEach((b, i) => {
             rCur -= resolveSpineWidth(b);
-            nextLayout.push(toMmPos(rCur, targetShelfIdx, leftBooks.length + i, b.isbn));
+            nextLayout.push(toMmPos(rCur, targetShelfIdx, leftBooks.length + i, b));
           });
         }
 
         // 他の棚のデータを維持
         for (let sIdx = 0; sIdx < shelfCount; sIdx++) {
           if (sIdx === targetShelfIdx) continue;
-          const otherShelfBooks = localLayout.filter(l => l.shelf_index === sIdx && l.isbn !== d.isbn);
+          const otherShelfBooks = localLayout.filter(l => l.shelf_index === sIdx && l.id !== d.id);
           nextLayout.push(...otherShelfBooks);
         }
 
         // 全ノードを確定座標へアニメーション移動
-        nextLayout.forEach(({ isbn, shelf_index, x_pos }) => {
+        nextLayout.forEach(({ id, shelf_index, x_pos }) => {
           const pxX = x_pos * PX_TO_MM_SCALE + FRAME;
           const pxY = FRAME + shelf_index * (unitShelfHeight + FRAME) + TOP_GAP;
           svg.selectAll(".spine-book")
-            .filter(node => node.isbn === isbn)
+            .filter(node => node.id === id)
             .transition().duration(200).ease(d3.easeCubicOut)
             .attr("transform", `translate(${pxX}, ${pxY})`);
         });
 
         setLocalLayout(nextLayout);
+        movedIsbnsRef.current.add(d.isbn);
+        pendingLayoutRef.current = nextLayout;
         if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
-        syncTimerRef.current = setTimeout(() => handleSyncLayout(nextLayout), SYNC_DELAY_MS);
+        syncTimerRef.current = setTimeout(() => {
+          syncTimerRef.current = null;
+          handleSyncLayout(nextLayout);
+        }, SYNC_DELAY_MS);
       });
 
     // ── Books Join ──
     const bookGroups = svg.selectAll(".spine-book")
-      .data(booksWithPosition, d => d.isbn)
+      .data(booksWithPosition, d => d.id)
       .join(
         enter => enter.append("g")
           .attr("class", "spine-book")
-          .attr("id", d => `spine-${d.isbn}`)
+          .attr("id", d => `spine-${d.id}`)
           .attr("transform", d => `translate(${d.x}, ${d.y})`),
         update => update,
         exit => exit.remove()
@@ -899,10 +689,6 @@ function SpineShelfView() {
       }
     });
 
-    // 所持日数に応じた「褪せ」表現。rect自体の filter（影）とは別に、
-    // グループ全体にCSSフィルタをかけて彩度・明るさ・不透明度を変える。
-    bookGroups.style("filter", d => fadeFilterStyle(fadeFactor(d.possessed_since)));
-
     // ── 強調の描き分け ─────────────────────────────
     //
     // グループのハイライト（意味づけのホバー含む）と、範囲選択（グループへの
@@ -917,28 +703,13 @@ function SpineShelfView() {
     svg.selectAll(".spine-hl").remove();
     svg.selectAll(".spine-hl-focus").remove();
 
-    const hasSelection = selectedIsbns.length > 0;
-    // conceptHighlights は "hover"（右ペインでのホバー強調）と "group"
-    // （グルーピングモードの左パネルで選んでいる1グループ）の2キーまでを持つ。
-    // グループは同時に1つしか選べない（別のグループを選ぶと切り替わる）が、
-    // 描画自体は複数キーを想定した「レイヤー」のリストとして扱っておき、
-    // hover と group が同時に立っていても両方描けるようにする。
+    // conceptHighlights は意味づけ単位の強調（対話の確認で項目にマウスを乗せたとき）
     const highlightLayers = Object.values(conceptHighlights);
 
     let layers = highlightLayers.map(entry => ({
       isbns: entry.isbns || [], color: entry.color, dashed: false, width: 3, blink: false,
     }));
-    let dimOthers = layers.length > 0;
-
-    // 選択中の本（グループへの追加／除外の候補、または新規グループ作成の対象）は、
-    // グループのハイライトと同時に出ることがある（例：メンバーの本を除外しようと
-    // タップした場合、グループの輪＋選択の輪が両方付く）ので、常に独立したレイヤーとして
-    // 追加する。点滅させて「これは"選んでいる"状態で、まだ確定していない」ことを
-    // 定常光のグループハイライトと見分けられるようにする。
-    if (hasSelection) {
-      layers.push({ isbns: selectedIsbns, color: "#64b4ff", dashed: false, width: 3, blink: true });
-      dimOthers = true;
-    }
+    const dimOthers = layers.length > 0;
 
     if (layers.length === 0) {
       if (focusIsbn) {
@@ -977,186 +748,16 @@ function SpineShelfView() {
       });
     });
 
-    // ── フェーズ2(b) 区切り確認モード: 本と本の間をタップ可能にする ──
-    svg.selectAll(".boundary-gap").remove();
-    if (boundaryMode) {
-      svg.selectAll(".boundary-gap")
-        .data(gapZones, gd => `${gd.shelf_index}:${gd.gap_index}`)
-        .join("rect")
-        .attr("class", "boundary-gap")
-        .attr("x", gd => gd.x)
-        .attr("y", gd => gd.y)
-        .attr("width", gd => gd.width)
-        .attr("height", gd => gd.height)
-        .attr("rx", 4)
-        .style("cursor", "pointer")
-        .attr("fill", gd => (boundaries[`${gd.shelf_index}:${gd.gap_index}`] ? "rgba(201,168,76,0.3)" : "rgba(255,255,255,0.05)"))
-        .attr("stroke", gd => (boundaries[`${gd.shelf_index}:${gd.gap_index}`] ? "#c9a84c" : "rgba(255,255,255,0.3)"))
-        .attr("stroke-width", 1.5)
-        .attr("stroke-dasharray", gd => (boundaries[`${gd.shelf_index}:${gd.gap_index}`] ? null : "3,3"))
-        .on("click", (e, gd) => {
-          e.stopPropagation();
-          toggleBoundary(gd.shelf_index, gd.gap_index);
-        });
-    }
-
-  }, [booksWithPosition, WIDTH, HEIGHT, selectedIsbns, isModalOpen, highlightIsbns, conceptHighlights, focusIsbn, mode, boundaryMode, gapZones, boundaries, toggleBoundary]);
-
-  // ── ラバーバンド選択 ──
-  useEffect(() => {
-    const svgEl = svgRef.current;
-    if (!svgEl) return;
-
-    let startClient = null;
-    let active = false;
-    let startedOnBook = false;
-
-    const isOnBook = (el) => {
-      while (el) {
-        if (el.classList?.contains("spine-book")) return true;
-        el = el.parentNode;
-      }
-      return false;
-    };
-
-    const onMouseDown = (e) => {
-      // 範囲選択（複数選択）はグルーピングモードでのグループ作成専用の操作。
-      // 通常モードでは棚のドラッグ配置とタップでの詳細表示だけを許可する。
-      if (mode !== "grouping") return;
-      if (e.target.tagName === "BUTTON" || e.target.tagName === "INPUT") return;
-      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
-      if (e.target.closest(".meaning-modal-overlay")) return;
-      // 本棚の外（右ペイン・質問カード・上部のナビ）で押した場合は、
-      // 範囲選択の対象にしない。ここを見落とすと、右ペインをクリックしただけで
-      // 棚の選択が解除されてしまう。
-      if (!e.target.closest(".shelf-surface")) return;
-      startClient = { x: e.clientX, y: e.clientY };
-      startedOnBook = isOnBook(e.target);
-      active = true;
-      isDraggingBookRef.current = false;
-    };
-
-    const onMouseMove = (e) => {
-      if (!active || !startClient) return;
-      if (isDraggingBookRef.current) {
-        active = false;
-        startClient = null;
-        setRubberBand(null);
-        return;
-      }
-      const x = Math.min(e.clientX, startClient.x);
-      const y = Math.min(e.clientY, startClient.y);
-      const w = Math.abs(e.clientX - startClient.x);
-      const h = Math.abs(e.clientY - startClient.y);
-      if (w > 3 || h > 3) setRubberBand({ x, y, w, h });
-    };
-
-    const onMouseUp = (e) => {
-      if (!active || !startClient) return;
-      active = false;
-
-      const w = Math.abs(e.clientX - startClient.x);
-      const h = Math.abs(e.clientY - startClient.y);
-
-      if (w > 5 && h > 5 && !isDraggingBookRef.current) {
-        const rect = svgEl.getBoundingClientRect();
-        const scale = Math.min(rect.width / WIDTH, rect.height / HEIGHT);
-        const ox = (rect.width - WIDTH * scale) / 2;
-        const oy = (rect.height - HEIGHT * scale) / 2;
-        const toSvg = (cx, cy) => ({
-          x: (cx - rect.left - ox) / scale,
-          y: (cy - rect.top - oy) / scale,
-        });
-        const tl = toSvg(Math.min(e.clientX, startClient.x), Math.min(e.clientY, startClient.y));
-        const br = toSvg(Math.max(e.clientX, startClient.x), Math.max(e.clientY, startClient.y));
-        const hits = booksWithPosition.filter(b =>
-          b.x < br.x && b.x + resolveSpineWidth(b) > tl.x &&
-          b.y < br.y && b.y + MAX_BOOK_HEIGHT > tl.y
-        ).map(b => b.isbn);
-        if (hits.length) setSelectedIsbns(hits);
-      } else if (!startedOnBook && w < 5 && h < 5) {
-        setSelectedIsbns([]);
-      }
-
-      startClient = null;
-      setRubberBand(null);
-    };
-
-    document.addEventListener("mousedown", onMouseDown);
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-
-    return () => {
-      document.removeEventListener("mousedown", onMouseDown);
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-    };
-  }, [booksWithPosition, WIDTH, mode]);
+  }, [booksWithPosition, WIDTH, HEIGHT, highlightIsbns, conceptHighlights, focusIsbn]);
 
   return (
     <div style={s.container}>
-      {/* 見出しと育ち具合の表示は右ペイン（育成インジケータ）が担う。
-          左ペインは本棚そのものだけに使う（設計書6.1）。 */}
-      {/* shelf-surface は範囲選択の当たり判定に使う目印。
-          ここより外（右ペインなど）で押しても選択は始まらない。 */}
-      <div
-        ref={containerRef}
-        className="shelf-surface"
-        style={{ width: "100%", height: "100%", minHeight: 0 }}
-      >
+      <div ref={containerRef} style={{ width: "100%", height: "100%", minHeight: 0 }}>
         {/* 幅は常にこのペインいっぱい。段が増えて高さが伸びても幅は縮めず、
             はみ出た分は shelfPane 側の縦スクロールで見る（詳細パネルの
             開閉やレイアウトの幅にサイズ感を左右されないようにする）。 */}
         <svg ref={svgRef} style={{ width: "100%", height: "auto", display: "block" }} />
       </div>
-      {rubberBand && (
-        <div style={{
-          position: "fixed",
-          left: rubberBand.x,
-          top: rubberBand.y,
-          width: rubberBand.w,
-          height: rubberBand.h,
-          backgroundColor: "rgba(100,180,255,0.1)",
-          border: "1px dashed #64b4ff",
-          pointerEvents: "none",
-          zIndex: 9999,
-        }} />
-      )}
-      {/* 段の増減・本棚サイズの調整・表示切り替えは ShelfSettingsMenu（右下の
-          設定ボタン）に集約した。Home.js側でSpineShelfView/OwnBookGridと並べて
-          常に表示できるようにするため、ここでは持たない。 */}
-
-      {mode === "grouping" && selectedIsbns.length > 0 && !isModalOpen && (() => {
-        // グループを選んでいる間は、選択した本の中身で「追加」「除外」を
-        // 出し分ける：全部メンバーなら除外だけ、全部非メンバーなら追加だけ。
-        // メンバーと非メンバーが混ざっている場合だけ両方出す（判断に迷う組み合わせなので）。
-        const selectionHasMember = activeGroup
-          ? selectedIsbns.some(isbn => activeGroup.isbns.includes(isbn))
-          : false;
-        const selectionHasNonMember = activeGroup
-          ? selectedIsbns.some(isbn => !activeGroup.isbns.includes(isbn))
-          : false;
-
-        return (
-          <div style={s.selectionBar}>
-            <span style={s.selectionCount}>{selectedIsbns.length}冊選択中</span>
-            {activeGroup ? (
-              <>
-                {selectionHasNonMember && (
-                  <button style={s.btnPrimary} onClick={handleAddSelectedToGroup}>選択した本を追加</button>
-                )}
-                {selectionHasMember && (
-                  <button style={s.btnSecondary} onClick={handleRemoveSelectedFromGroup}>選択した本を除外</button>
-                )}
-              </>
-            ) : (
-              <button style={s.btnPrimary} onClick={() => setIsModalOpen(true)}>グループを作る</button>
-            )}
-            <button style={s.btnSecondary} onClick={() => setSelectedIsbns([])}>解除</button>
-          </div>
-        );
-      })()}
-
       {/* ゴミ箱ゾーン */}
       <div
         ref={trashRef}
@@ -1190,80 +791,15 @@ function SpineShelfView() {
         </svg>
       </div>
 
-      {/* 本の詳細は右ペインの「この本について」が出す（重ねて表示しない） */}
-
-      {mode === "grouping" && isModalOpen && (
-        <div style={s.overlay} className="meaning-modal-overlay">
-          <div style={s.modal}>
-            <h3 style={{ marginBottom: "6px", fontFamily: "serif", color: "#2a1f0e" }}>グループを作る</h3>
-            <p style={{ fontSize: "12px", color: "#999", marginBottom: "14px" }}>
-              選択した{selectedIsbns.length}冊のグループ名を自由に決めよう
-            </p>
-
-            <textarea
-              autoFocus
-              style={s.meaningTextarea}
-              value={meaningInput}
-              onChange={e => setMeaningInput(e.target.value)}
-              placeholder="グループの名前（例: 積読、旅行記）"
-              disabled={isSavingMeaning}
-            />
-
-            <div style={{ display: "flex", gap: "10px", marginTop: "14px", justifyContent: "flex-end" }}>
-              <button onClick={handleCloseMeaningModal} style={s.btnSecondary}>キャンセル</button>
-              <button
-                onClick={handleSaveMeaning} style={s.btnPrimary}
-                disabled={isSavingMeaning || !meaningInput.trim()}
-              >
-                {isSavingMeaning ? "保存中..." : "保存"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 const s = {
-  // Home.js の shelfPane（position: relative）にぴったり重ねる。
-  // height:"100%" だとネストしたflex/percentage次第で親よりわずかに
-  // 大きくなり、shelfPane側のスクロールが棚の外まで伸びてしまうことが
-  // あったため、inset:0 で確実に親の範囲だけに固定する。
-  // 棚が画面いっぱいで見づらいので、四方に少し余白を取る。
+  // 大きさ・余白は置き場所（Home の作業スペース）側で決める
   container: {
-    margin: 0, position: "absolute", inset: 0,
-    boxSizing: "border-box", padding: "24px 28px",
-  },
-  btnPrimary: { padding: "8px 18px", backgroundColor: "#c9a84c", color: "#fff", border: "none", borderRadius: "12px", cursor: "pointer", fontWeight: "700" },
-  btnSecondary: { padding: "8px 18px", backgroundColor: "transparent", color: "#c9a84c", border: "1px solid #c9a84c", borderRadius: "12px", cursor: "pointer" },
-  overlay: { position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 },
-  modal: { backgroundColor: "#fff", padding: "26px", borderRadius: "12px", width: "420px", maxWidth: "90vw", boxShadow: "0 20px 40px rgba(0,0,0,0.2)" },
-  meaningTextarea: {
-    width: "100%", minHeight: "140px", padding: "10px",
-    borderRadius: "8px", border: "1px solid #ddd",
-    fontSize: "14px", lineHeight: 1.6, fontFamily: "inherit",
-    resize: "vertical", boxSizing: "border-box",
-  },
-  selectionBar: {
-    position: "fixed",
-    bottom: "90px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    backgroundColor: "#fff",
-    padding: "10px 20px",
-    borderRadius: "20px",
-    boxShadow: "0 8px 30px rgba(0,0,0,0.2)",
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    zIndex: 1000,
-    border: "1px solid #ede8da",
-  },
-  selectionCount: {
-    fontSize: "13px",
-    fontWeight: "600",
-    color: "#2a1f0e",
+    margin: 0, position: "relative", width: "100%",
+    boxSizing: "border-box",
   },
 };
 

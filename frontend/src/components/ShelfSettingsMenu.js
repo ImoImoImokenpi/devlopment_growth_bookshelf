@@ -1,4 +1,5 @@
-// 右下の「棚の調整」FAB。
+// 育つ本棚の見出し列に置く「棚の設定」ボタン。押すと下にメニューが開く。
+// （以前は画面右下に固定したFABだったが、本棚から離れて浮いて見えたため見出し列へ移した）
 //
 // 以前はここに段の増減・本棚サイズの調整だけがあったが、背表紙⇄グリッドの
 // 表示切り替え専用のトグルバーを画面上に別途置くと本棚と重なって邪魔になる
@@ -15,13 +16,12 @@ export default function ShelfSettingsMenu({ viewMode, onViewModeChange }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <>
-      <div
-        style={{
-          ...s.fab,
-          transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-        }}
+    <div style={s.wrap}>
+      <button
+        style={{ ...s.fab, ...(isOpen ? s.fabOpen : {}) }}
         onClick={() => setIsOpen(v => !v)}
+        title="棚の設定"
+        aria-label="棚の設定"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>
@@ -31,8 +31,9 @@ export default function ShelfSettingsMenu({ viewMode, onViewModeChange }) {
           <line x1="9" y1="8" x2="15" y2="8"/>
           <line x1="17" y1="16" x2="23" y2="16"/>
         </svg>
-      </div>
+      </button>
 
+      {isOpen && <div style={s.backdrop} onClick={() => setIsOpen(false)} />}
       {isOpen && (
         <div style={s.floatingPanel}>
           <div style={s.panelSectionTitle}>表示</div>
@@ -70,23 +71,22 @@ export default function ShelfSettingsMenu({ viewMode, onViewModeChange }) {
           <ShelfSizeAdjuster value={shelfWidthPct} onChange={setShelfWidthPct} />
         </div>
       )}
-    </>
+    </div>
   );
 }
 
 const s = {
+  wrap: { position: "relative" },
   fab: {
-    position: "fixed", bottom: "30px", right: "30px",
-    width: "48px", height: "48px", borderRadius: "50%",
-    backgroundColor: "#c9a84c", color: "#fff",
+    width: "40px", height: "40px", borderRadius: "50%",
+    border: "1px solid #e0d8c0", backgroundColor: "#fff", color: "#6b5a3e",
     display: "flex", justifyContent: "center", alignItems: "center",
-    cursor: "pointer",
-    boxShadow: "0 4px 16px rgba(201,168,76,0.45)",
-    zIndex: 1000,
-    transition: "transform 0.25s ease, box-shadow 0.2s",
+    cursor: "pointer", transition: "background 0.15s, color 0.15s",
   },
+  fabOpen: { backgroundColor: "#f5efdd", color: "#8a7030" },
+  backdrop: { position: "fixed", inset: 0, zIndex: 999 },
   floatingPanel: {
-    position: "fixed", bottom: "90px", right: "30px",
+    position: "absolute", top: "48px", right: 0,
     backgroundColor: "#fdfcf8",
     border: "1px solid #ede8da",
     padding: "14px 16px",
@@ -94,7 +94,7 @@ const s = {
     boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
     display: "flex", flexDirection: "column",
     gap: 6,
-    minWidth: "160px",
+    minWidth: "200px",
     zIndex: 1000,
   },
   panelSectionTitle: {

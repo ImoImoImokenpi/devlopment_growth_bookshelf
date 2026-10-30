@@ -1,7 +1,6 @@
 """PlacementProfileの計算・保存・履歴読み出し。
 
-style_projection.metrics.save_style_profile と同じ思想：上書きせず
-computed_at付きで追記保存し、参加者ごとの「配置の癖」の変遷を追える。
+保存のたびに古いものを消し、参加者ごとに最新の1件だけを残す。
 
 1回の呼び出しで:
   1. enrich_positions        … ShelfPosition/SHELF_NEXTへ派生プロパティを書く (1,2,3)
@@ -85,6 +84,11 @@ def compute_and_save_placement_profile(participant_id: str) -> dict:
                 computed_at: $computed_at
             })
             MERGE (p)-[:HAS_PLACEMENT_PROFILE]->(pp)
+            // 履歴は持たず、最新の1件だけを残す（並べ替えのたびに増え続けないように）
+            WITH p, pp
+            OPTIONAL MATCH (p)-[:HAS_PLACEMENT_PROFILE]->(old:PlacementProfile)
+            WHERE old <> pp
+            DETACH DELETE old
             """,
             pid=participant_id,
             profile_id=profile_id,

@@ -1,16 +1,17 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import axios from "axios";
 import PageHeader from "../components/PageHeader";
-import Breadcrumb from "../components/Breadcrumb";
 
 const API = "http://localhost:8000";
 
+// 本をギャラリー(登録済みの全書籍 RegisteredBook)に登録する画面。
+// 左に登録フォーム、右に最近の登録を並べる。
 export default function Register() {
   const [imageFile, setImageFile]   = useState(null);   // File オブジェクト（保存時に使う）
   const [preview,   setPreview]     = useState(null);   // プレビューURL
   const [dragging,  setDragging]    = useState(false);
   const [isbnInput, setIsbnInput]   = useState("");
-  const [extracting, setExtracting] = useState(false);  // Gemini 処理中
+  const [extracting, setExtracting] = useState(false);  // ISBN自動抽出の処理中
   const [searching,  setSearching]  = useState(false);  // NDL 検索中
   const [saving,     setSaving]     = useState(false);
   const [result,     setResult]     = useState(null);   // NDL 書誌情報
@@ -38,7 +39,7 @@ export default function Register() {
     setSaved(false);
   };
 
-  // ── Gemini でISBN自動抽出 ─────────────────────────
+  // ── 画像からISBNを自動抽出（LLMを使う） ─────────────────
   const handleExtract = async () => {
     if (!imageFile) return setError("先に画像をアップロードしてください");
     setError(null);
@@ -118,10 +119,12 @@ export default function Register() {
   return (
     <div style={s.page}>
       <PageHeader
-        title={<Breadcrumb items={[{ label: "実験準備" }, { label: "登録" }]} />}
+        title="本の登録"
         sub="背表紙の写真とISBNを紐づけて書誌情報を保存します"
       />
 
+      <div style={s.columns}>
+      <div style={s.formCol}>
       {/* ── STEP 1: 画像アップロード ── */}
       <div style={s.stepLabel}>① 背表紙の写真を選ぶ</div>
       <div
@@ -168,7 +171,7 @@ export default function Register() {
           style={{ ...s.btnOutline, ...(extracting ? s.btnDisabled : {}) }}
           onClick={handleExtract}
           disabled={extracting}
-          title="Gemini APIで画像からISBNを自動抽出"
+          title="画像からISBNを自動抽出"
         >
           {extracting ? "抽出中…" : "自動抽出"}
         </button>
@@ -181,7 +184,7 @@ export default function Register() {
         </button>
       </div>
       <p style={s.hint}>
-        「自動抽出」は Gemini API でISBNを読み取ります（APIクォータが必要）。<br />
+        「自動抽出」は LLM で画像からISBNを読み取ります（LLM_MODE=live のときのみ）。<br />
         ISBNが分かる場合は直接入力して「検索」してください。
       </p>
 
@@ -215,7 +218,7 @@ export default function Register() {
             </div>
           </div>
           {saved ? (
-            <div style={s.savedBadge}>データベースに保存しました ✓</div>
+            <div style={s.savedBadge}>ギャラリーに保存しました ✓</div>
           ) : (
             <button
               style={{ ...s.saveBtn, ...(saving ? s.btnDisabled : {}) }}
@@ -227,9 +230,10 @@ export default function Register() {
           )}
         </div>
       )}
+      </div>
       {/* ── 登録済み一覧（最新5冊） ── */}
       {bookList.length > 0 && (
-        <div style={s.listSection}>
+        <div style={s.listCol}>
           <div style={{ ...s.stepLabel, marginBottom: "16px" }}>
             最近の登録 ({Math.min(bookList.length, 5)} / {bookList.length}冊)
           </div>
@@ -282,17 +286,26 @@ export default function Register() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
 
 const s = {
-  page: {
-    padding: "70px 28px 40px",
-    minHeight: "100vh",
-    backgroundColor: "#fdfcf8",
-    maxWidth: "900px",
-    margin: "0 auto",
+  page: {},
+  // 単独の画面では、左に登録フォーム・右に最近の登録を並べて横幅全体を使う
+  columns: {
+    display: "grid",
+    gridTemplateColumns: "minmax(0, 1fr) minmax(320px, 440px)",
+    gap: "32px",
+    alignItems: "start",
+  },
+  formCol: {
+    background: "#fff", border: "1px solid #ede8da", borderRadius: "16px",
+    padding: "24px 28px 28px",
+  },
+  listCol: {
+    background: "#f3eee2", borderRadius: "16px", padding: "24px 20px",
   },
   stepLabel: {
     fontSize: "13px",
@@ -470,11 +483,6 @@ const s = {
     borderRadius: "10px",
     fontWeight: "600",
     fontSize: "14px",
-  },
-  listSection: {
-    marginTop: "48px",
-    paddingTop: "32px",
-    borderTop: "1px solid #ede8da",
   },
   listGrid: {
     display: "flex",

@@ -2,7 +2,6 @@ import { useState, useEffect, useLayoutEffect, useRef, useContext } from "react"
 import axios from "axios";
 import { MyHandContext } from "../context/MyHandContext";
 import PageHeader from "../components/PageHeader";
-import Breadcrumb from "../components/Breadcrumb";
 
 const API           = "http://localhost:8000";
 const SHELF_PAD     = 8;
@@ -12,8 +11,17 @@ const WALL_W        = 20;
 function resolveSpineHeight(book) {
   return Math.min(1000, Math.max(10, book.height_mm * 1.2));
 }
+// 文庫(A6判・高さ約148mm)は単行本より紙が薄く、同じページ数でも背幅が狭い。
+// height_mm で文庫を判定し、背幅の倍率を下げる。
+// (バックエンド側の spine_width / _spine_width_px と同じ判定・倍率)
+const BUNKO_MAX_HEIGHT_MM = 160;
+const BUNKO_WIDTH_FACTOR  = 0.75;
+function bunkoFactor(book) {
+  const h = book?.height_mm;
+  return h && h <= BUNKO_MAX_HEIGHT_MM ? BUNKO_WIDTH_FACTOR : 1;
+}
 function resolveSpineWidth(book) {
-  const fromPages = book?.pages ? Math.min(100, Math.max(1, book.pages * 0.08)) : 20;
+  const fromPages = book?.pages ? Math.min(100, Math.max(1, book.pages * 0.08 * bunkoFactor(book))) : 20;
   return fromPages;
 }
 
@@ -118,6 +126,8 @@ function SpineBook({ book, onClick, scale = 1 }) {
 }
 
 // ── メイン ──────────────────────────────────────────
+// ギャラリー = 登録済みの全書籍(RegisteredBook)。本をクリックして「手元に追加」し、
+// ナビバーの「手元の本」から育つ本棚へ加える。
 export default function Gallery() {
   const { myHand, setMyHand } = useContext(MyHandContext);
   const [books,      setBooks]      = useState([]);
@@ -150,8 +160,9 @@ export default function Gallery() {
   };
 
   useEffect(() => {
+    // 背表紙画像のない本(書誌情報だけ取り込まれた本)はギャラリーに出さない。
     axios.get(`${API}/register/list`)
-      .then(res => setBooks(res.data))
+      .then(res => setBooks(res.data.filter(b => b.spine_image)))
       .catch(() => {});
   }, []);
 
@@ -172,8 +183,6 @@ export default function Gallery() {
   }, [books.length]);
 
   const shelves   = chunkByWidth(books, shelfWidth);
-  const handBooks = books.filter(b => addedIsbns.has(b.isbn));
-
   return (
     <div style={s.page}>
       <style>{`
@@ -185,12 +194,12 @@ export default function Gallery() {
       `}</style>
 
       <div style={s.headerRow}>
-        <PageHeader title={<Breadcrumb items={[{ label: "実験準備" }, { label: "ギャラリー" }]} />} />
+        <PageHeader title="ギャラリー" sub="登録済みの本をすべて表示します。気になる本を「手元に追加」し、ナビバーの「手元の本」から育つ本棚へ加えられます。" />
       </div>
 
       <div style={s.bookcase} ref={bookcaseRef}>
         {books.length === 0 ? (
-          <p style={s.empty}>登録された本がありません。「登録」ページから背表紙を登録してください。</p>
+          <p style={s.empty}>登録された本がありません。「本の登録」から背表紙を登録してください。</p>
         ) : (
           <>
             <div style={s.topBoard} />
@@ -280,14 +289,8 @@ export default function Gallery() {
 }
 
 const s = {
-  page: {
-    paddingTop: "70px",
-    margin: 0,
-    minHeight: "100vh",
-    position: "relative",
-    backgroundColor: "#fff",
-  },
-  headerRow: { padding: "0 28px 12px" },
+  page: { position: "relative" },
+  headerRow: {},
   empty: {
     color: "#a08060",
     fontSize: "14px",
@@ -296,6 +299,8 @@ const s = {
   bookcase: {
     width: "100%",
     overflow: "hidden",
+    borderRadius: "6px",
+    boxShadow: "0 14px 30px rgba(60,40,10,0.22)",
   },
   topBoard: {
     height: "20px",

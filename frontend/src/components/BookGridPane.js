@@ -64,7 +64,7 @@ export default function BookGridPane({ books, focusIsbn, onFocus, highlightIsbns
         <div style={s.grid}>
           {sortedBooks.map(book => (
             <GridBook
-              key={book.isbn}
+              key={book.id ?? book.isbn}
               book={book}
               isFocused={book.isbn === focusIsbn}
               isHighlighted={highlightSet.has(book.isbn) && book.isbn !== focusIsbn}

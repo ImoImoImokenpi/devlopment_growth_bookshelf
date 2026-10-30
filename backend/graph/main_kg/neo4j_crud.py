@@ -42,8 +42,10 @@ class BookshelfNeo4j:
         return round(min(1.0, w_row * w_col * w_iso), 4)
 
     @staticmethod
-    def _spine_width_px(pages: int) -> float:
-        return min(100.0, max(1.0, pages * 0.08))
+    def _spine_width_px(pages: int, height_mm: int | None = None) -> float:
+        # 文庫(高さ160mm以下)は背幅を細めにする
+        factor = 0.75 if height_mm and height_mm <= 160 else 1.0
+        return min(100.0, max(1.0, pages * 0.08 * factor))
 
     @staticmethod
     def _pos_id(participant_id: str, shelf_index: int, column_index: int) -> str:
@@ -222,17 +224,46 @@ class BookshelfNeo4j:
             )
 
     def remove_book_ownership(self, isbn: str, participant_id: str) -> None:
-        """棚から本を外したときに所有関係を解除する。
-        Book ノード自体は他の被験者が持っている可能性があるので消さない。"""
+        """棚から本を外したときに所有関係と棚の位置を解除する。
+        Book ノード自体は他の被験者が持っている可能性があるので消さない。
+        （以前は OWNS だけを外していて、棚の位置 LOCATES が残っていた）"""
         with get_session() as session:
             session.run(
                 """
-                MATCH (:Participant {participantId: $pid})-[own:OWNS]->(:Book {isbn: $isbn})
-                DELETE own
+                MATCH (b:Book {isbn: $isbn})
+                OPTIONAL MATCH (:Participant {participantId: $pid})-[own:OWNS]->(b)
+                OPTIONAL MATCH (:ShelfPosition {participantId: $pid})-[loc:LOCATES]->(b)
+                DELETE own, loc
                 """,
                 pid=participant_id,
                 isbn=isbn,
             )
+
+    def reconcile_shelf(self, participant_id: str, shelf_isbns: list[str]) -> dict:
+        """画面の本棚（SQLite の ShelfLayout, present）を正として、そこにない本の
+        所有関係(OWNS)と棚の位置(LOCATES)を外す。Book ノードや意味づけは消さない。
+        実験準備のスクリプトなどで SQLite 側だけが作り直されると、知識グラフに
+        棚にない本が残り、対話のLLMや冊数の表示に紛れ込むため。"""
+        with get_session() as session:
+            owns = session.run(
+                """
+                MATCH (:Participant {participantId: $pid})-[own:OWNS]->(b:Book)
+                WHERE NOT b.isbn IN $isbns
+                DELETE own
+                RETURN count(own) AS c
+                """,
+                pid=participant_id, isbns=shelf_isbns,
+            ).single()["c"]
+            locates = session.run(
+                """
+                MATCH (:ShelfPosition {participantId: $pid})-[loc:LOCATES]->(b:Book)
+                WHERE NOT b.isbn IN $isbns
+                DELETE loc
+                RETURN count(loc) AS c
+                """,
+                pid=participant_id, isbns=shelf_isbns,
+            ).single()["c"]
+        return {"owns_removed": owns, "locates_removed": locates}
 
     # ============================================================
     # NDCグルーピング
@@ -317,373 +348,10 @@ class BookshelfNeo4j:
                 confidence=confidence,
                 strength=strength,
             ).single()
-            concept_id = row["conceptId"] if row else None
-
-            if concept_id:
-                event_id = self._create_event(session, "GroupCreateEvent", participant_id, "CREATED_BY")
-                session.run(
-                    """
-                    MATCH (e:GroupCreateEvent {eventId: $event_id})
-                    MATCH (c:Concept {conceptId: $concept_id})
-                    MERGE (e)-[:CREATED_GROUP]->(c)
-                    WITH e
-                    UNWIND $isbns AS isbn
-                    MATCH (b:Book {isbn: isbn})
-                    MERGE (e)-[:INCLUDED_BOOK]->(b)
-                    """,
-                    event_id=event_id, concept_id=concept_id, isbns=isbns,
-                )
-
-            return concept_id
-
-    def delete_concept_edge(self, edge_id: str, participant_id: str) -> bool:
-        """意味づけ(Concept)そのものを削除する（本詳細パネルの「消す」）。
-        Conceptはparticipantid+textで一意な「その意味づけ自体」を表すノードなので、
-        edge_idから辿れるConceptをDETACH DELETEすれば、それを共有する本すべてから
-        まとめて消える（1冊だけの結び付きを外す操作ではない。フロント側は削除前に
-        related_isbnsの件数を見て確認ダイアログを出す）。
-        グルーピングモードの左パネルからの削除は conceptId で呼べる delete_group を使うこと。
-        こちらは互換のため残している。"""
-        with get_session() as session:
-            row = session.run(
-                """
-                MATCH (:Book)-[:CONCEPT {edgeId: $edge_id, participantId: $pid}]->(c:Concept)
-                DETACH DELETE c
-                RETURN true AS deleted
-                """,
-                edge_id=edge_id,
-                pid=participant_id,
-            ).single()
-            return row is not None
-
-    # ============================================================
-    # グループ管理（グルーピングモード用）
-    #
-    # 「グループ」は新規のノード種別ではなく、既存の Concept（意味づけ）を
-    # そのまま使う。左パネルの一覧・リネーム・統合・メンバー追加削除・削除は
-    # すべて Concept ノードと CONCEPT リレーションへの操作として実装する。
-    # ============================================================
-
-    def list_participant_groups(self, participant_id: str) -> list[dict]:
-        """参加者が持つ全グループ(=Concept)を、所属冊数・メンバー一覧付きで返す。
-        グルーピングモードの左パネルの一覧表示に使う。"""
-        with get_session() as session:
-            result = session.run(
-                """
-                MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)
-                      -[r:CONCEPT {participantId: $pid}]->(c:Concept {participantId: $pid})
-                WITH c, collect({isbn: b.isbn, title: b.title, cover: b.cover, edge_id: r.edgeId}) AS members
-                RETURN c.conceptId AS concept_id, c.text AS text, toString(c.createdAt) AS created_at,
-                       size(members) AS book_count, members
-                ORDER BY c.text
-                """,
-                pid=participant_id,
-            )
-            return [dict(r) for r in result]
-
-    def remove_group_member(self, concept_id: str, isbn: str, participant_id: str) -> bool:
-        """グループから本を1冊だけ外す。delete_concept_edgeと違い、他の本には影響しない。
-        外した結果メンバーが0冊になった場合は、そのConceptごと片付ける。"""
-        with get_session() as session:
-            row = session.run(
-                """
-                MATCH (b:Book {isbn: $isbn})-[r:CONCEPT {participantId: $pid}]->
-                      (c:Concept {conceptId: $concept_id, participantId: $pid})
-                DELETE r
-                WITH c
-                OPTIONAL MATCH (c)<-[remaining:CONCEPT {participantId: $pid}]-(:Book)
-                WITH c, count(remaining) AS n
-                FOREACH (_ IN CASE WHEN n = 0 THEN [1] ELSE [] END | DETACH DELETE c)
-                RETURN true AS ok
-                """,
-                concept_id=concept_id, isbn=isbn, pid=participant_id,
-            ).single()
-            if row is None:
-                return False
-
-            event_id = self._create_event(
-                session, "GroupEditEvent", participant_id, "EDITED_BY",
-                {"action": "remove_member", "conceptId": concept_id, "isbn": isbn},
-            )
-            session.run(
-                """
-                MATCH (e:GroupEditEvent {eventId: $event_id})
-                MATCH (b:Book {isbn: $isbn})
-                MERGE (e)-[:AFFECTED_BOOK]->(b)
-                WITH e
-                OPTIONAL MATCH (c:Concept {conceptId: $concept_id})
-                FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
-                    MERGE (e)-[:EDITED_GROUP]->(c)
-                )
-                """,
-                event_id=event_id, isbn=isbn, concept_id=concept_id,
-            )
-            return True
-
-    def add_group_members(self, concept_id: str, isbns: list[str], participant_id: str) -> int:
-        """既存グループ(conceptId起点)に本を追加する。save_concept と同じ再強化ロジック。
-        棚からグループへドラッグして追加する操作に使う。"""
-        with get_session() as session:
-            row = session.run(
-                """
-                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
-                UNWIND $isbns AS isbn
-                MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book {isbn: isbn})
-                MERGE (b)-[r:CONCEPT {participantId: $pid}]->(c)
-                    ON CREATE SET
-                        r.edgeId         = randomUUID(),
-                        r.createdAt      = datetime(),
-                        r.reinforceCount = 1,
-                        r.strength       = 1.0
-                    ON MATCH SET
-                        r.reinforceCount = coalesce(r.reinforceCount, 1) + 1,
-                        r.strength       = CASE WHEN coalesce(r.strength, 0.0) + 0.2 > 1.0
-                                                THEN 1.0
-                                                ELSE coalesce(r.strength, 0.0) + 0.2 END
-                SET r.origin           = "user_initiated",
-                    r.confidence       = "confirmed",
-                    r.lastReinforcedAt = datetime()
-                RETURN count(r) AS n
-                """,
-                concept_id=concept_id, isbns=isbns, pid=participant_id,
-            ).single()
-            n = row["n"] if row else 0
-
-            if n:
-                event_id = self._create_event(
-                    session, "GroupEditEvent", participant_id, "EDITED_BY",
-                    {"action": "add_member", "conceptId": concept_id},
-                )
-                session.run(
-                    """
-                    MATCH (e:GroupEditEvent {eventId: $event_id})
-                    MATCH (c:Concept {conceptId: $concept_id})
-                    MERGE (e)-[:EDITED_GROUP]->(c)
-                    WITH e
-                    UNWIND $isbns AS isbn
-                    MATCH (b:Book {isbn: isbn})
-                    MERGE (e)-[:AFFECTED_BOOK]->(b)
-                    """,
-                    event_id=event_id, concept_id=concept_id, isbns=isbns,
-                )
-            return n
-
-    def remove_group_members(self, concept_id: str, isbns: list[str], participant_id: str) -> int:
-        """グループから本を複数まとめて外す。remove_group_member の複数冊版。
-        棚でグループハイライト中に複数選択してまとめて除外する操作に使う。"""
-        with get_session() as session:
-            row = session.run(
-                """
-                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
-                UNWIND $isbns AS isbn
-                OPTIONAL MATCH (b:Book {isbn: isbn})-[r:CONCEPT {participantId: $pid}]->(c)
-                DELETE r
-                WITH c, count(r) AS removed
-                OPTIONAL MATCH (c)<-[remaining:CONCEPT {participantId: $pid}]-(:Book)
-                WITH c, removed, count(remaining) AS n
-                FOREACH (_ IN CASE WHEN n = 0 THEN [1] ELSE [] END | DETACH DELETE c)
-                RETURN removed
-                """,
-                concept_id=concept_id, isbns=isbns, pid=participant_id,
-            ).single()
-            removed = row["removed"] if row else 0
-
-            if removed:
-                event_id = self._create_event(
-                    session, "GroupEditEvent", participant_id, "EDITED_BY",
-                    {"action": "remove_member", "conceptId": concept_id},
-                )
-                session.run(
-                    """
-                    MATCH (e:GroupEditEvent {eventId: $event_id})
-                    OPTIONAL MATCH (c:Concept {conceptId: $concept_id})
-                    FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
-                        MERGE (e)-[:EDITED_GROUP]->(c)
-                    )
-                    WITH e
-                    UNWIND $isbns AS isbn
-                    MATCH (b:Book {isbn: isbn})
-                    MERGE (e)-[:AFFECTED_BOOK]->(b)
-                    """,
-                    event_id=event_id, concept_id=concept_id, isbns=isbns,
-                )
-            return removed
-
-    def _merge_concepts(self, session, participant_id: str, source_concept_ids: list[str], target_text: str) -> dict | None:
-        """リネーム・統合の共通下請け。target_text へ get-or-create した Concept に、
-        各 source の CONCEPT エッジを付け替え、空になった source は削除する。
-        呼び出し側のセッション内で実行する（イベント記録とトランザクションを揃えるため）。"""
-        target_row = session.run(
-            """
-            MERGE (target:Concept {participantId: $pid, text: $target_text})
-                ON CREATE SET target.conceptId = randomUUID(), target.createdAt = datetime()
-            RETURN target.conceptId AS concept_id
-            """,
-            pid=participant_id, target_text=target_text,
-        ).single()
-        if not target_row:
-            return None
-        target_concept_id = target_row["concept_id"]
-
-        for source_id in source_concept_ids:
-            if source_id == target_concept_id:
-                continue
-            session.run(
-                """
-                MATCH (target:Concept {conceptId: $target_concept_id})
-                MATCH (source:Concept {conceptId: $source_id, participantId: $pid})
-                OPTIONAL MATCH (b:Book)-[r:CONCEPT {participantId: $pid}]->(source)
-                FOREACH (_ IN CASE WHEN b IS NOT NULL THEN [1] ELSE [] END |
-                    MERGE (b)-[nr:CONCEPT {participantId: $pid}]->(target)
-                        ON CREATE SET
-                            nr.edgeId         = coalesce(r.edgeId, randomUUID()),
-                            nr.createdAt      = coalesce(r.createdAt, datetime()),
-                            nr.reinforceCount = coalesce(r.reinforceCount, 1),
-                            nr.strength       = coalesce(r.strength, 1.0),
-                            nr.origin         = coalesce(r.origin, "user_initiated"),
-                            nr.confidence     = coalesce(r.confidence, "confirmed")
-                        ON MATCH SET
-                            nr.reinforceCount = coalesce(nr.reinforceCount, 1) + coalesce(r.reinforceCount, 1),
-                            nr.strength       = CASE WHEN coalesce(nr.strength, 0.0) >= coalesce(r.strength, 0.0)
-                                                    THEN nr.strength ELSE r.strength END
-                )
-                WITH source, r
-                WHERE r IS NOT NULL
-                DELETE r
-                """,
-                target_concept_id=target_concept_id, source_id=source_id, pid=participant_id,
-            )
-            session.run(
-                """
-                MATCH (source:Concept {conceptId: $source_id, participantId: $pid})
-                WHERE NOT (source)<-[:CONCEPT {participantId: $pid}]-(:Book)
-                DETACH DELETE source
-                """,
-                source_id=source_id, pid=participant_id,
-            )
-
-        count_row = session.run(
-            """
-            MATCH (target:Concept {conceptId: $target_concept_id})
-            OPTIONAL MATCH (target)<-[:CONCEPT {participantId: $pid}]-(b:Book)
-            RETURN target.text AS text, count(DISTINCT b) AS book_count
-            """,
-            target_concept_id=target_concept_id, pid=participant_id,
-        ).single()
-        return {
-            "concept_id": target_concept_id,
-            "text": count_row["text"] if count_row else target_text,
-            "book_count": count_row["book_count"] if count_row else 0,
-        }
-
-    def rename_group(self, concept_id: str, new_text: str, participant_id: str) -> dict | None:
-        """グループ名を変更する。既存の別グループと同名になる場合は実質的な統合になる
-        （merge_concepts と同じ下請けを使うため）。"""
-        with get_session() as session:
-            result = self._merge_concepts(session, participant_id, [concept_id], new_text)
-            if result:
-                event_id = self._create_event(
-                    session, "GroupEditEvent", participant_id, "EDITED_BY",
-                    {"action": "rename", "newText": new_text},
-                )
-                session.run(
-                    """
-                    MATCH (e:GroupEditEvent {eventId: $event_id})
-                    MATCH (c:Concept {conceptId: $concept_id})
-                    MERGE (e)-[:EDITED_GROUP]->(c)
-                    """,
-                    event_id=event_id, concept_id=result["concept_id"],
-                )
-            return result
-
-    def merge_groups(self, source_concept_ids: list[str], target_text: str, participant_id: str) -> dict | None:
-        """2つ以上のグループをドラッグ&ドロップ等で統合する。"""
-        with get_session() as session:
-            # 統合元へのリレーションは、統合処理で source が消える前に張る必要がある。
-            event_id = self._create_event(
-                session, "GroupMergeEvent", participant_id, "MERGED_BY",
-                {"targetText": target_text},
-            )
-            session.run(
-                """
-                MATCH (e:GroupMergeEvent {eventId: $event_id})
-                UNWIND $source_ids AS sid
-                MATCH (source:Concept {conceptId: sid, participantId: $pid})
-                MERGE (e)-[:MERGE_SOURCE]->(source)
-                """,
-                event_id=event_id, source_ids=source_concept_ids, pid=participant_id,
-            )
-
-            result = self._merge_concepts(session, participant_id, source_concept_ids, target_text)
-            if result:
-                session.run(
-                    """
-                    MATCH (e:GroupMergeEvent {eventId: $event_id})
-                    MATCH (target:Concept {conceptId: $target_concept_id})
-                    MERGE (e)-[:MERGE_RESULT]->(target)
-                    """,
-                    event_id=event_id, target_concept_id=result["concept_id"],
-                )
-            return result
-
-    def delete_group(self, concept_id: str, participant_id: str) -> dict | None:
-        """グループを削除する（=対象Conceptを全所属本から一括で外す）。
-        削除前に本文とメンバーisbnをイベントへスナップショットしておく
-        （対象ノードが消えた後もログとUndo用に情報を残すため）。"""
-        with get_session() as session:
-            snapshot = session.run(
-                """
-                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
-                OPTIONAL MATCH (c)<-[:CONCEPT {participantId: $pid}]-(b:Book)
-                RETURN c.text AS text, collect(DISTINCT b.isbn) AS member_isbns
-                """,
-                concept_id=concept_id, pid=participant_id,
-            ).single()
-            if not snapshot:
-                return None
-
-            self._create_event(
-                session, "GroupDeleteEvent", participant_id, "DELETED_BY",
-                {"conceptId": concept_id, "text": snapshot["text"], "memberIsbns": snapshot["member_isbns"]},
-            )
-
-            session.run(
-                """
-                MATCH (c:Concept {conceptId: $concept_id, participantId: $pid})
-                DETACH DELETE c
-                """,
-                concept_id=concept_id, pid=participant_id,
-            )
-            return {
-                "concept_id": concept_id,
-                "text": snapshot["text"],
-                "member_isbns": snapshot["member_isbns"],
-            }
-
-    def log_group_highlight_event(self, concept_id: str, action: str, participant_id: str) -> None:
-        """左パネルからのハイライト操作を記録する（表示のオン/オフ）。"""
-        with get_session() as session:
-            event_id = self._create_event(
-                session, "GroupHighlightEvent", participant_id, "HIGHLIGHTED_BY",
-                {"action": action, "conceptId": concept_id},
-            )
-            session.run(
-                """
-                MATCH (e:GroupHighlightEvent {eventId: $event_id})
-                OPTIONAL MATCH (c:Concept {conceptId: $concept_id})
-                FOREACH (_ IN CASE WHEN c IS NOT NULL THEN [1] ELSE [] END |
-                    MERGE (e)-[:HIGHLIGHTED_GROUP]->(c)
-                )
-                """,
-                event_id=event_id, concept_id=concept_id,
-            )
-
-    def log_mode_switch_event(self, mode: str, participant_id: str) -> None:
-        """通常モード⇄グルーピングモードの切り替えを記録する。"""
-        with get_session() as session:
-            self._create_event(
-                session, "ModeSwitchEvent", participant_id, "SWITCHED_BY", {"mode": mode},
-            )
+            # 以前はここで作成ログ(GroupCreateEvent)も残していたが、グルーピングの
+            # 操作ログは使わなくなったので作らない。対話から生まれた意味づけの由来は
+            # MeaningProposal -[:BECAME]-> Concept で追える。
+            return row["conceptId"] if row else None
 
     # ============================================================
     # 感想（Impression）
@@ -766,22 +434,6 @@ class BookshelfNeo4j:
             ).single()
             return dict(row) if row else None
 
-    def set_possessed_since(self, isbn: str, participant_id: str, possessed_since: str) -> bool:
-        """「所持している日数」の褪せ表現の元になる日付を手動で設定する。
-        OWNS関係のプロパティなので、同じ本でも参加者ごとに別の日付を持てる。"""
-        with get_session() as session:
-            row = session.run(
-                """
-                MATCH (:Participant {participantId: $pid})-[own:OWNS]->(:Book {isbn: $isbn})
-                SET own.possessedSince = date($possessed_since)
-                RETURN true AS ok
-                """,
-                pid=participant_id,
-                isbn=isbn,
-                possessed_since=possessed_since,
-            ).single()
-            return row is not None
-
     # ============================================================
     # 棚レイアウト更新
     #
@@ -793,7 +445,10 @@ class BookshelfNeo4j:
     #   bs:adjacentTo    → [:SHELF_NEXT]
     # ============================================================
 
-    def update_shelf_layout_chain(self, layout_data: list[dict], participant_id: str):
+    def update_shelf_layout_chain(
+        self, layout_data: list[dict], participant_id: str, moved_isbns: list[str] | None = None,
+        dialogue_session_id: str | None = None,
+    ):
         """
         layout_data: [
             {
@@ -810,8 +465,16 @@ class BookshelfNeo4j:
           1. ShelfPosition ノードを生成・更新し memoryWeight を付与
           2. ShelfPosition → Book の LOCATES を張り替える（常に現在位置1つだけ）
           3. 隣接 Book 間の SHELF_NEXT を「共起の履歴」として積み上げる
-          4. 実際に移動した本だけ PlacementEvent を記録する
+          4. 移動の記録（moved_isbns = ユーザーが直接ドラッグした本だけが対象。
+             挿し込みで押し出されて位置がずれただけの本は記録しない）
+             - 対話中（dialogue_session_id あり）: PlacementEvent を作り、
+               その対話へ DURING_DIALOGUE でつなぐ。対話が生んだ移動だけを履歴に残す。
+             - 対話の外: 履歴は残さない。次の対話のきっかけにするため、
+               Participant.pendingMoves（"isbn|元の段|元の列"）に1冊1件だけ加える。
+               最初の対話までの並べ替えは整理なので、最初の対話の開始時に捨てる
+               （graph/dialogue/store.py）。
         """
+        moved_set = set(moved_isbns or [])
         # ── 棚ごとにグループ化・ソート ───────────────────────────
         rows: dict[int, list[dict]] = defaultdict(list)
         for book in layout_data:
@@ -837,7 +500,7 @@ class BookshelfNeo4j:
             for i in range(len(shelf_books) - 1):
                 a = shelf_books[i]
                 b = shelf_books[i + 1]
-                sw_a    = self._spine_width_px(a.get("pages", 200))
+                sw_a    = self._spine_width_px(a.get("pages", 200), a.get("height_mm"))
                 gap_px  = (b.get("x_pos", 0) - a.get("x_pos", 0)) * self.PX_SCALE - sw_a
                 if gap_px < self.ADJACENCY_GAP_PX:
                     relations.append({
@@ -847,6 +510,15 @@ class BookshelfNeo4j:
                     })
 
         current_keys = [f"{rel['from']}>{rel['to']}" for rel in relations]
+
+        # 同じISBNの本を棚に2冊以上置けるようになったため、「この本がいる位置」は
+        # isbn単位では1つに定まらない。3で使う「古いLOCATESの掃除」は、この同期で
+        # 書き込む全スロットを除いた本当に空いたスロットだけを対象にする必要がある
+        # （そうしないと、複数冊が互いのLOCATESを消し合ってしまう）。
+        isbn_pos_ids: dict[str, list[str]] = defaultdict(list)
+        for item in enriched:
+            pos_id = self._pos_id(participant_id, item["shelf_index"], item["order_index"])
+            isbn_pos_ids[item["isbn"]].append(pos_id)
 
         # ── Neo4j 更新 ────────────────────────────────────────────
         with get_session() as session:
@@ -863,13 +535,14 @@ class BookshelfNeo4j:
                 is_isolated  = item["is_isolated"]
                 isbn         = item["isbn"]
                 pos_id       = self._pos_id(participant_id, shelf_index, column_index)
+                current_pos_ids_for_isbn = isbn_pos_ids[isbn]
                 memory_weight = self._calc_memory_weight(shelf_index, is_edge, is_isolated)
 
                 # 1. 直前の位置を先に読む（移動の判定に使う）
                 prev = session.run(
                     """
                     MATCH (pos:ShelfPosition {participantId: $pid})-[:LOCATES]->(:Book {isbn: $isbn})
-                    RETURN pos.posId AS posId
+                    RETURN pos.posId AS posId, pos.shelfIndex AS shelfIndex, pos.columnIndex AS columnIndex
                     LIMIT 1
                     """,
                     pid=participant_id,
@@ -897,13 +570,14 @@ class BookshelfNeo4j:
                     MATCH (b:Book {isbn: $isbn})
                     WITH pos, b
                     OPTIONAL MATCH (old:ShelfPosition {participantId: $pid})-[l:LOCATES]->(b)
-                    WHERE old.posId <> $pos_id
+                    WHERE NOT old.posId IN $current_pos_ids
                     DELETE l
                     WITH pos, b
                     MERGE (pos)-[:LOCATES]->(b)
                     """,
                     pid=participant_id,
                     pos_id=pos_id,
+                    current_pos_ids=current_pos_ids_for_isbn,
                     shelf_index=shelf_index,
                     column_index=column_index,
                     x_pos=item.get("x_pos", 0.0),
@@ -913,10 +587,27 @@ class BookshelfNeo4j:
                     isbn=isbn,
                 )
 
-                # 3. 実際に位置が変わった本だけ PlacementEvent を残す。
-                #    以前は同期のたびに全冊分のイベントを作っていたため、
-                #    ログが蔵書数×同期回数まで膨らみ、変遷の分析に使えなかった。
-                if prev_pos_id == pos_id:
+                # 3. 移動の記録。ユーザーが直接動かし、実際に位置が変わった本だけが対象。
+                if prev_pos_id == pos_id or isbn not in moved_set:
+                    continue
+
+                if not dialogue_session_id:
+                    # 対話の外: 履歴は残さず「次の対話で話題にする本」に加えるだけ
+                    # （同じ本は最初に動かす前の位置を残すため、すでにあれば加えない）
+                    entry = "|".join([
+                        isbn,
+                        "" if not prev or prev["shelfIndex"] is None else str(prev["shelfIndex"]),
+                        "" if not prev or prev["columnIndex"] is None else str(prev["columnIndex"]),
+                    ])
+                    session.run(
+                        """
+                        MATCH (p:Participant {participantId: $pid})
+                        WITH p, coalesce(p.pendingMoves, []) AS pm
+                        WHERE none(x IN pm WHERE x STARTS WITH $prefix)
+                        SET p.pendingMoves = pm + [$entry]
+                        """,
+                        pid=participant_id, prefix=isbn + "|", entry=entry,
+                    )
                     continue
 
                 event_id = f"evt_{participant_id}_{isbn}_{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
@@ -925,12 +616,16 @@ class BookshelfNeo4j:
                     CREATE (e:PlacementEvent {
                         eventId:       $event_id,
                         participantId: $pid,
+                        direct:        true,
                         timestamp:     datetime(),
                         createdAt:     datetime()
                     })
                     WITH e
                     MATCH (p:Participant {participantId: $pid})
                     MERGE (e)-[:PLACED_BY]->(p)
+                    WITH e
+                    MATCH (s:DialogueSession {sessionId: $sid, participantId: $pid})
+                    MERGE (e)-[:DURING_DIALOGUE]->(s)
                     WITH e
                     MATCH (b:Book {isbn: $isbn})
                     MERGE (e)-[:PLACED_BOOK]->(b)
@@ -942,6 +637,7 @@ class BookshelfNeo4j:
                     pid=participant_id,
                     isbn=isbn,
                     pos_id=pos_id,
+                    sid=dialogue_session_id,
                 )
 
                 if prev_pos_id:
@@ -996,369 +692,9 @@ class BookshelfNeo4j:
                 current_keys=current_keys,
             )
 
-    def get_graph_overview(self, participant_id: str, shelf_isbns: list[str] | None = None) -> dict:
-        """
-        ナレッジグラフ全体を俯瞰するための統計スナップショット。
-        AIによる提案生成の入力として使う。
-        shelf_isbns を渡すと、book_catalog はその本棚に現在並んでいる本だけに絞り込む
-        （AI提案が棚に無い本を指してしまい、ハイライトと連動できなくなるのを防ぐため）。
-        """
-        with get_session() as session:
-            total_books = session.run(
-                "MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book) RETURN count(b) AS total",
-                pid=participant_id,
-            ).single()["total"]
-
-            ndc_distribution = [
-                dict(r) for r in session.run(
-                    """
-                    MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)-[:CLASSIFIED_AS]->(n:NDC)
-                    WITH substring(n.code, 0, 1) AS ndc_l1, b
-                    RETURN
-                        ndc_l1,
-                        count(DISTINCT b)              AS book_count,
-                        collect(DISTINCT b.title)[0..3] AS sample_titles
-                    ORDER BY book_count DESC
-                    """,
-                    pid=participant_id,
-                )
-            ]
-
-            concept_clusters = [
-                dict(r) for r in session.run(
-                    """
-                    MATCH (c:Concept {participantId: $pid})<-[:CONCEPT]-(b:Book)
-                    WITH c, collect(DISTINCT b.title) AS titles, collect(DISTINCT b.isbn) AS isbns,
-                         count(DISTINCT b) AS book_count
-                    WHERE book_count >= 2
-                    RETURN c.text AS concept, titles, isbns, book_count
-                    ORDER BY book_count DESC
-                    LIMIT 10
-                    """,
-                    pid=participant_id,
-                )
-            ]
-
-            favorite_authors = [
-                dict(r) for r in session.run(
-                    """
-                    MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)-[:WRITTEN_BY]->(a:Author)
-                    WITH a, count(DISTINCT b) AS book_count,
-                         collect(DISTINCT b.title) AS titles, collect(DISTINCT b.isbn) AS isbns
-                    WHERE book_count >= 2
-                    RETURN a.name AS author, book_count, titles, isbns
-                    ORDER BY book_count DESC
-                    LIMIT 10
-                    """,
-                    pid=participant_id,
-                )
-            ]
-
-            isolated_books = [
-                dict(r) for r in session.run(
-                    """
-                    MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)
-                    WHERE NOT (b)-[:CONCEPT {participantId: $pid}]-()
-                      AND NOT (b)-[:SHELF_NEXT {participantId: $pid}]-()
-                    RETURN b.title AS title, b.isbn AS isbn,
-                           coalesce(b.description, '') AS description
-                    LIMIT 15
-                    """,
-                    pid=participant_id,
-                )
-            ]
-
-            book_meanings = [
-                dict(r) for r in session.run(
-                    """
-                    MATCH (b:Book)-[r:CONCEPT {participantId: $pid}]->(c:Concept)
-                    RETURN b.isbn AS isbn, b.title AS title, c.text AS meaning,
-                           r.confidence AS confidence, r.origin AS origin,
-                           coalesce(r.strength, 1.0) AS strength
-                    ORDER BY c.createdAt DESC
-                    LIMIT 12
-                    """,
-                    pid=participant_id,
-                )
-            ]
-
-            book_catalog = [
-                dict(r) for r in session.run(
-                    """
-                    MATCH (:Participant {participantId: $pid})-[:OWNS]->(b:Book)
-                    WHERE $shelf_isbns IS NULL OR b.isbn IN $shelf_isbns
-                    RETURN b.isbn AS isbn,
-                           b.title AS title,
-                           coalesce(b.authors, '')     AS authors,
-                           coalesce(b.publisher, '')   AS publisher,
-                           coalesce(b.description, '') AS description
-                    ORDER BY b.title
-                    """,
-                    pid=participant_id,
-                    shelf_isbns=shelf_isbns,
-                )
-            ]
-
-            return {
-                "total_books":      total_books,
-                "ndc_distribution": ndc_distribution,
-                "concept_clusters": concept_clusters,
-                "favorite_authors": favorite_authors,
-                "isolated_books":   isolated_books,
-                "book_meanings":    book_meanings,
-                "book_catalog":     book_catalog,
-            }
-
-    # ============================================================
-    # Book-Book 関係の抽出（NetworkXによる構造分析用）
-    # ============================================================
-
-    def get_book_edges(self, participant_id: str, shelf_isbns: list[str] | None = None) -> list[dict]:
-        """
-        意味づけ(Concept)・著者・出版社・NDC分類・本棚での隣接、という観点で
-        つながっている本のペアを収集する。NetworkXでグラフを組み立てる材料。
-
-        著者・出版社・NDCは全被験者で共有のノードなので、
-        両端が「その被験者の蔵書」であることを必ず条件に入れること。
-        """
-        # 所有関係のフィルタ。これを落とすと他人の本が混ざる。
-        own = "MATCH (me:Participant {participantId: $pid})"
-        scope = (
-            "WHERE a.isbn < b.isbn "
-            "AND (me)-[:OWNS]->(a) AND (me)-[:OWNS]->(b) "
-            "AND ($shelf_isbns IS NULL OR (a.isbn IN $shelf_isbns AND b.isbn IN $shelf_isbns))"
-        )
-
-        queries = {
-            "concept": f"""
-                {own}
-                MATCH (a:Book)-[:CONCEPT {{participantId: $pid}}]->(:Concept {{participantId: $pid}})
-                      <-[:CONCEPT {{participantId: $pid}}]-(b:Book)
-                {scope}
-                RETURN DISTINCT a.isbn AS source, b.isbn AS target
-            """,
-            "author": f"""
-                {own}
-                MATCH (a:Book)-[:WRITTEN_BY]->(:Author)<-[:WRITTEN_BY]-(b:Book)
-                {scope}
-                RETURN DISTINCT a.isbn AS source, b.isbn AS target
-            """,
-            "publisher": f"""
-                {own}
-                MATCH (a:Book)-[:PUBLISHED_BY]->(:Publisher)<-[:PUBLISHED_BY]-(b:Book)
-                {scope}
-                RETURN DISTINCT a.isbn AS source, b.isbn AS target
-            """,
-            "ndc": f"""
-                {own}
-                MATCH (a:Book)-[:CLASSIFIED_AS]->(:NDC)<-[:CLASSIFIED_AS]-(b:Book)
-                {scope}
-                RETURN DISTINCT a.isbn AS source, b.isbn AS target
-            """,
-            "shelf": f"""
-                {own}
-                MATCH (a:Book)-[r:SHELF_NEXT {{participantId: $pid}}]-(b:Book)
-                {scope} AND coalesce(r.isCurrent, true) = true
-                RETURN DISTINCT a.isbn AS source, b.isbn AS target
-            """,
-        }
-
-        edges: list[dict] = []
-        with get_session() as session:
-            for edge_type, query in queries.items():
-                for r in session.run(query, pid=participant_id, shelf_isbns=shelf_isbns):
-                    edges.append({"source": r["source"], "target": r["target"], "type": edge_type})
-        return edges
-
     # ============================================================
     # 本1冊を中心にした関連本の抽出（タップ時の詳細パネル用）
     # ============================================================
-
-    def get_book_relations(self, isbn: str, participant_id: str) -> dict | None:
-        """
-        1冊を中心に、意味づけ(Concept)・著者・出版社・NDC分類・本棚での隣接、
-        という観点でつながっている本を「理由」付きで取得する。
-        あわせて、そのつながりを描画するための小さな部分グラフ(nodes/links)も返す。
-        """
-        with get_session() as session:
-            book_row = session.run(
-                """
-                MATCH (b:Book {isbn: $isbn})
-                RETURN
-                    b.isbn AS isbn, b.title AS title, b.authors AS authors,
-                    b.publisher AS publisher, b.published_year AS published_year,
-                    b.cover AS cover, b.spine_image AS spine_image,
-                    coalesce(b.description, '') AS description
-                """,
-                isbn=isbn,
-            ).single()
-            if not book_row:
-                return None
-            book = dict(book_row)
-
-            reasons_by_isbn: dict[str, list[dict]] = defaultdict(list)
-            related_meta: dict[str, dict] = {}
-            sub_nodes: dict[str, dict] = {
-                f"book_{isbn}": {"id": f"book_{isbn}", "type": "Book", **book},
-            }
-            sub_links: list[dict] = []
-
-            def _register_related(row, reason, mid_id, mid_node, mid_link_type):
-                oid = row["isbn"]
-                if oid not in related_meta:
-                    related_meta[oid] = {
-                        "isbn":        oid,
-                        "title":       row["title"],
-                        "cover":       row["cover"],
-                        "spine_image": row["spine_image"],
-                        "authors":     row["authors"],
-                    }
-                reasons_by_isbn[oid].append(reason)
-                sub_nodes.setdefault(mid_id, mid_node)
-                sub_nodes.setdefault(f"book_{oid}", {"id": f"book_{oid}", "type": "Book", **related_meta[oid]})
-                sub_links.append({"source": f"book_{isbn}", "target": mid_id, "type": mid_link_type})
-                sub_links.append({"source": f"book_{oid}",  "target": mid_id, "type": mid_link_type})
-
-            # 同じ意味づけ (Concept) ── 「この本は同じ意味づけをしています」
-            for r in session.run(
-                """
-                MATCH (b:Book {isbn: $isbn})-[:CONCEPT {participantId: $pid}]->(c:Concept {participantId: $pid})
-                      <-[:CONCEPT {participantId: $pid}]-(o:Book)
-                WHERE o.isbn <> $isbn
-                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
-                       o.spine_image AS spine_image, o.authors AS authors,
-                       c.text AS concept_text, c.conceptId AS cid
-                """,
-                isbn=isbn,
-                pid=participant_id,
-            ):
-                _register_related(
-                    r,
-                    {"type": "concept", "label": "同じ意味づけ", "detail": r["concept_text"]},
-                    f"concept_{r['cid']}",
-                    {"id": f"concept_{r['cid']}", "type": "Concept", "text": r["concept_text"]},
-                    "CONCEPT",
-                )
-
-            # 同じ著者（自分の蔵書に限る）
-            for r in session.run(
-                """
-                MATCH (me:Participant {participantId: $pid})
-                MATCH (b:Book {isbn: $isbn})-[:WRITTEN_BY]->(a:Author)<-[:WRITTEN_BY]-(o:Book)
-                WHERE o.isbn <> $isbn AND (me)-[:OWNS]->(o)
-                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
-                       o.spine_image AS spine_image, o.authors AS authors,
-                       a.name AS author_name, id(a) AS aid
-                """,
-                isbn=isbn,
-                pid=participant_id,
-            ):
-                _register_related(
-                    r,
-                    {"type": "author", "label": "同じ著者", "detail": r["author_name"]},
-                    f"author_{r['aid']}",
-                    {"id": f"author_{r['aid']}", "type": "Author", "name": r["author_name"]},
-                    "WRITTEN_BY",
-                )
-
-            # 同じ出版社（自分の蔵書に限る）
-            for r in session.run(
-                """
-                MATCH (me:Participant {participantId: $pid})
-                MATCH (b:Book {isbn: $isbn})-[:PUBLISHED_BY]->(p:Publisher)<-[:PUBLISHED_BY]-(o:Book)
-                WHERE o.isbn <> $isbn AND (me)-[:OWNS]->(o)
-                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
-                       o.spine_image AS spine_image, o.authors AS authors,
-                       p.name AS publisher_name, id(p) AS pid_node
-                """,
-                isbn=isbn,
-                pid=participant_id,
-            ):
-                _register_related(
-                    r,
-                    {"type": "publisher", "label": "同じ出版社", "detail": r["publisher_name"]},
-                    f"publisher_{r['pid_node']}",
-                    {"id": f"publisher_{r['pid_node']}", "type": "Publisher", "name": r["publisher_name"]},
-                    "PUBLISHED_BY",
-                )
-
-            # 同じNDC分類（自分の蔵書に限る）
-            for r in session.run(
-                """
-                MATCH (me:Participant {participantId: $pid})
-                MATCH (b:Book {isbn: $isbn})-[:CLASSIFIED_AS]->(n:NDC)<-[:CLASSIFIED_AS]-(o:Book)
-                WHERE o.isbn <> $isbn AND (me)-[:OWNS]->(o)
-                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
-                       o.spine_image AS spine_image, o.authors AS authors,
-                       n.code AS ndc_code, id(n) AS nid
-                """,
-                isbn=isbn,
-                pid=participant_id,
-            ):
-                _register_related(
-                    r,
-                    {"type": "ndc", "label": "同じNDC分類", "detail": r["ndc_code"]},
-                    f"ndc_{r['nid']}",
-                    {"id": f"ndc_{r['nid']}", "type": "NDC", "code": r["ndc_code"]},
-                    "CLASSIFIED_AS",
-                )
-
-            # 本棚で隣接（現在隣り合っているもの）
-            for r in session.run(
-                """
-                MATCH (b:Book {isbn: $isbn})-[rel:SHELF_NEXT {participantId: $pid}]-(o:Book)
-                WHERE o.isbn <> $isbn AND coalesce(rel.isCurrent, true) = true
-                RETURN DISTINCT o.isbn AS isbn, o.title AS title, o.cover AS cover,
-                       o.spine_image AS spine_image, o.authors AS authors
-                """,
-                isbn=isbn,
-                pid=participant_id,
-            ):
-                oid = r["isbn"]
-                if oid not in related_meta:
-                    related_meta[oid] = {
-                        "isbn": oid, "title": r["title"], "cover": r["cover"],
-                        "spine_image": r["spine_image"], "authors": r["authors"],
-                    }
-                reasons_by_isbn[oid].append({"type": "shelf", "label": "本棚で隣接", "detail": None})
-                sub_nodes.setdefault(f"book_{oid}", {"id": f"book_{oid}", "type": "Book", **related_meta[oid]})
-                sub_links.append({"source": f"book_{isbn}", "target": f"book_{oid}", "type": "SHELF_NEXT"})
-
-            related = [
-                {**meta, "reasons": reasons_by_isbn[oid]}
-                for oid, meta in related_meta.items()
-            ]
-            related.sort(key=lambda r: -len(r["reasons"]))
-
-            return {
-                "book": book,
-                "related": related[:12],
-                "subgraph": {
-                    "nodes": list(sub_nodes.values()),
-                    "links": sub_links,
-                },
-            }
-
-    def get_book_concepts(self, isbn: str, participant_id: str) -> list[dict]:
-        """指定した本に紐づく意味づけ(Concept)と、それを共有する他の本のISBN一覧を返す。
-        本棚でカーソルを合わせた時のホバー強調（意味づけの表示）に使う軽量クエリ。"""
-        with get_session() as session:
-            result = session.run(
-                """
-                MATCH (b:Book {isbn: $isbn})-[r:CONCEPT {participantId: $pid}]->(c:Concept {participantId: $pid})
-                OPTIONAL MATCH (c)<-[:CONCEPT {participantId: $pid}]-(o:Book)
-                WHERE o.isbn <> $isbn
-                WITH c, r, collect(DISTINCT o.isbn) AS related_isbns
-                RETURN c.text AS text, related_isbns,
-                       r.edgeId AS edge_id,
-                       coalesce(r.confidence, 'confirmed') AS confidence,
-                       coalesce(r.strength, 1.0) AS strength
-                ORDER BY c.text
-                """,
-                isbn=isbn,
-                pid=participant_id,
-            )
-            return [dict(r) for r in result]
 
     def get_growth_stats(self, participant_id: str) -> dict:
         """知識グラフがどれだけ育っているかの素の数値。
@@ -1406,24 +742,10 @@ _neo4j = BookshelfNeo4j()
 add_book_with_meaning             = _neo4j.add_book_with_meaning
 update_book_attributes            = _neo4j.update_book_attributes
 remove_book_ownership             = _neo4j.remove_book_ownership
+reconcile_shelf                   = _neo4j.reconcile_shelf
 groups_from_neo4j                 = _neo4j.groups_from_neo4j
 save_concept                      = _neo4j.save_concept
-delete_concept_edge               = _neo4j.delete_concept_edge
 update_shelf_layout_chain         = _neo4j.update_shelf_layout_chain
-get_graph_overview                = _neo4j.get_graph_overview
-get_book_relations                = _neo4j.get_book_relations
-get_book_concepts                 = _neo4j.get_book_concepts
 get_book_basic                    = _neo4j.get_book_basic
-set_possessed_since               = _neo4j.set_possessed_since
 save_book_impression              = _neo4j.save_book_impression
-get_book_edges                    = _neo4j.get_book_edges
 get_growth_stats                  = _neo4j.get_growth_stats
-list_participant_groups            = _neo4j.list_participant_groups
-remove_group_member                = _neo4j.remove_group_member
-remove_group_members               = _neo4j.remove_group_members
-add_group_members                  = _neo4j.add_group_members
-rename_group                      = _neo4j.rename_group
-merge_groups                      = _neo4j.merge_groups
-delete_group                      = _neo4j.delete_group
-log_group_highlight_event         = _neo4j.log_group_highlight_event
-log_mode_switch_event             = _neo4j.log_mode_switch_event

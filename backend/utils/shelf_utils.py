@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from models import ShelfLayout, ShelfDesign, RegisteredBook
 from graph.main_kg.neo4j_crud import groups_from_neo4j
+from shelf_period import DEFAULT_PERIOD
 import logging
 
 logger = logging.getLogger(__name__)
@@ -30,30 +31,18 @@ class ShelfService:
 
     # ── 外部API ──────────────────────────────────────────────────
 
-    def add_to_shelf(self, db: Session, book, participant_id: str) -> str:
-        """本をその被験者の棚に配置する。
+    def add_to_shelf(self, db: Session, book, participant_id: str, period: str = DEFAULT_PERIOD) -> str:
+        """本をその被験者の（時期ごとの）棚に配置する。
+
+        棚には同じ本を複数冊置けるので、既に同じisbnが棚にあっても
+        新しい1冊として置く（"already_on_shelf" では弾かない）。
 
         戻り値:
-          "placed"           … 新しく棚に置いた
-          "already_on_shelf" … 既にその被験者の棚にある（失敗ではない）
-          "error"            … 配置に失敗した
-
-        「既に棚にある」と「失敗」は呼び出し側での扱いが違う
-        （前者は手元から取り除いてよい）ので、真偽値ではなく区別して返す。
+          "placed" … 棚に置いた
+          "error"  … 配置に失敗した
         """
-        already_placed = (
-            db.query(ShelfLayout)
-            .filter(
-                ShelfLayout.participant_id == participant_id,
-                ShelfLayout.isbn == book.isbn,
-            )
-            .first()
-        )
-        if already_placed:
-            return "already_on_shelf"
-
         try:
-            self._place_one(db, book, participant_id)
+            self._place_one(db, book, participant_id, period)
             db.commit()
             return "placed"
 
@@ -144,8 +133,8 @@ class ShelfService:
 
     # ── 内部: 1冊ランダム配置 ─────────────────────────────────────
 
-    def _place_one(self, db: Session, book, participant_id: str):
-        design       = self._get_design(db, participant_id)
+    def _place_one(self, db: Session, book, participant_id: str, period: str = DEFAULT_PERIOD):
+        design       = self._get_design(db, participant_id, period)
         shelf_max_px = getattr(design, "shelf_max_width", self.SHELF_MAX_WIDTH_PX)
 
         w = self.calc_virtual_width(book.pages)
@@ -153,7 +142,8 @@ class ShelfService:
         shelf_info: dict[int, dict] = {}
 
         for row in db.query(ShelfLayout).filter(
-            ShelfLayout.participant_id == participant_id
+            ShelfLayout.participant_id == participant_id,
+            ShelfLayout.period == period,
         ).order_by(
             ShelfLayout.shelf_index, ShelfLayout.x_pos
         ).all():
@@ -189,6 +179,7 @@ class ShelfService:
         # ✅ width_unit 完全削除
         new_layout = ShelfLayout(
             participant_id=participant_id,
+            period=period,
             isbn=book.isbn,
             shelf_index=shelf_idx,
             order_index=order_idx,
@@ -198,19 +189,19 @@ class ShelfService:
         )
 
         db.add(new_layout)
-        logger.info(f"[_place_one] {book.isbn} → 棚{shelf_idx} x={x_pos}")
+        logger.info(f"[_place_one] {book.isbn} → 棚{shelf_idx} x={x_pos} (period={period})")
 
     # ── ユーティリティ ────────────────────────────────────────────
 
     @staticmethod
-    def _get_design(db: Session, participant_id: str) -> ShelfDesign:
+    def _get_design(db: Session, participant_id: str, period: str = DEFAULT_PERIOD) -> ShelfDesign:
         design = (
             db.query(ShelfDesign)
-            .filter(ShelfDesign.participant_id == participant_id)
+            .filter(ShelfDesign.participant_id == participant_id, ShelfDesign.period == period)
             .first()
         )
         if not design:
-            design = ShelfDesign(participant_id=participant_id, total_shelves=1)
+            design = ShelfDesign(participant_id=participant_id, period=period, total_shelves=1)
             db.add(design)
             db.flush()
         return design

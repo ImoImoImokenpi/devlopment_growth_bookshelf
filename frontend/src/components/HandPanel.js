@@ -6,7 +6,7 @@ import { MyBookshelfContext } from "../context/MyBookshelfContext";
 
 function HandPanel({ isOpen, onClose }) {
   const { myHand, setMyHand } = useContext(MyHandContext);
-  const { fetchBookshelf } = useContext(MyBookshelfContext);
+  const { fetchBookshelf, period } = useContext(MyBookshelfContext);
   const [selectedIds, setSelectedIds] = useState([]);
 
   const removeFromHand = async (bookIsbn) => {
@@ -26,9 +26,9 @@ function HandPanel({ isOpen, onClose }) {
 
   const addSelectedBooks = async () => {
     if (selectedIds.length === 0) return;
-    if (!window.confirm(`${selectedIds.length}冊を本棚に追加しますか？`)) return;
+    if (!window.confirm(`${selectedIds.length}冊を育つ本棚に追加しますか？`)) return;
     try {
-      const res = await axios.post("http://localhost:8000/books/add_from_hand", { isbns: selectedIds });
+      const res = await axios.post(`http://localhost:8000/books/add_from_hand?period=${period}`, { isbns: selectedIds });
       const { added, skipped } = res.data;
       setMyHand((prev) => prev.filter((b) => !added.includes(b.isbn)));
       await fetchBookshelf();

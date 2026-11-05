@@ -49,6 +49,11 @@ class MockClient:
     def chat(self, system_blocks: list[str], messages: list[dict], max_tokens: int = 1024,
              json_schema: dict | None = None) -> str:
         time.sleep(self.DELAY_SECONDS)
+        props = (json_schema or {}).get("properties", {})
+        if "pick" in props:
+            return self._recommend(messages)
+        if "plans" in props:
+            return self._plan(messages)
         books = re.findall(r"- (B\d+)「(.+?)」", "\n".join(system_blocks))
         note = messages[-1]["content"] if messages and messages[-1]["role"] == "system" else ""
         user_texts = [
@@ -67,13 +72,28 @@ class MockClient:
             return picked
 
         if "最初のひと言" in note:
-            self._book_cursor = 0
+            # 本物のきまりに合わせて、これまでの対話で話題にした本を避け、意味づけのない本を優先する
+            context = "\n".join(system_blocks)
+            history = context.split("# これまでの対話", 1)[1].split("# 対話のきっかけ", 1)[0] if "# これまでの対話" in context else ""
+            asked = set(re.findall(r"『(.+?)』", history))
+            lines = re.findall(r"^- (B\d+)「(.+?)」(.*)$", context, flags=re.M)
+            fresh = [i for i, (bid, title, rest) in enumerate(lines)
+                     if title not in asked and "持ち主の意味づけ" not in rest]
+            start = fresh[0] if fresh else 0
+            self._book_cursor = start
             pair = next_books(2)
             names = "』と『".join(short(t) for _, t in pair) or "この本棚"
             return self._json(
                 f"（モック）『{names}』は、どんな考えで並べましたか？",
                 focus=[i for i, _ in pair],
             )
+
+        # 「本を入れて」と頼まれたら、締めくくらずに受ける（持ち主が終えようとしているときは除く）
+        latest = user_texts[-1] if user_texts else ""
+        if "必ず締めくくる" not in note and len(messages) >= 2 and messages[-2]["content"] == latest:
+            request = self._book_request(latest)
+            if request:
+                return self._json("（モック）本棚の知識グラフから探して置いてみます。", book_request=request)
 
         wrap_up = "必ず締めくくる" in note or "締めくくってよい" in note
         if wrap_up:
@@ -85,8 +105,7 @@ class MockClient:
                     "books": pair,
                     "reason": f"「{text[:30]}」という言葉から（モック）",
                 })
-            tail = "残したいものを下で選んでください。" if proposals else ""
-            return self._json(f"（モック）お話ありがとうございました。{tail}", done=True, proposals=proposals)
+            return self._json("（モック）お話ありがとうございました。", done=True, proposals=proposals)
 
         last = user_texts[-1] if user_texts else ""
         nxt = next_books(1)
@@ -97,9 +116,46 @@ class MockClient:
         )
 
     @staticmethod
-    def _json(message: str, focus=None, done: bool = False, proposals=None) -> str:
+    def _recommend(messages: list[dict]) -> str:
+        """おすすめ（routers/recommend.py）。最初の候補を、根拠につながる本の最初の1冊の右に置く。"""
+        text = messages[-1]["content"] if messages else ""
+        basis = re.search(r"# 根拠（知識グラフ）\n(.+)", text)
+        anchor = re.search(r"# 根拠につながる本\n- (B\d+)", text)
+        title = re.search(r"- C1「(.+?)」", text)
+        has_candidate = title is not None
+        return json.dumps({
+            "pick": "C1" if has_candidate else "",
+            "reason": f"（モック）『{title.group(1)[:20] if title else ''}』は{basis.group(1) if basis else ''}とつながりそうです。",
+            "anchor": anchor.group(1) if anchor else "",
+            "side": "right",
+            "placement_reason": "（モック）根拠の本の隣に置きました。",
+        }, ensure_ascii=False)
+
+    @staticmethod
+    def _plan(messages: list[dict]) -> str:
+        """頼まれた冊数の計画（routers/recommend.py）。意味づけ → テーマ → 本の順に根拠を1つずつ使う。"""
+        text = messages[-1]["content"] if messages else ""
+        m = re.search(r"# 加える冊数\n(\d+)冊", text)
+        count = int(m.group(1)) if m else 3
+        ids = re.findall(r"^- ([KTB]\d+)[「]", text, flags=re.M)
+        plans = [{"basis": i, "keywords": [], "aim": f"（モック）{i}を根拠に1冊"} for i in ids[:count]]
+        return json.dumps({"plans": plans}, ensure_ascii=False)
+
+    @staticmethod
+    def _book_request(text: str) -> dict | None:
+        """「本を5冊入れて」のようなお願いを読み取る（モック用のおおまかな判定）。"""
+        if not re.search(r"(入れ|いれ|加え|くわえ|足し|たし|追加|置い|おい|おすすめ)", text) or not re.search(r"(本|冊)", text):
+            return None
+        digits = text.translate(str.maketrans("０１２３４５６７８９", "0123456789"))
+        m = re.search(r"(\d+)\s*冊", digits)
+        wish = "バランスよく" if "バランス" in text else ""
+        return {"count": min(int(m.group(1)), 5) if m else 3, "wish": wish}
+
+    @staticmethod
+    def _json(message: str, focus=None, done: bool = False, proposals=None, book_request=None) -> str:
         return json.dumps(
-            {"message": message, "focus": focus or [], "done": done, "proposals": proposals or []},
+            {"message": message, "focus": focus or [], "done": done, "proposals": proposals or [],
+             "book_request": book_request or {"count": 0, "wish": ""}},
             ensure_ascii=False,
         )
 

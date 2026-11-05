@@ -20,7 +20,31 @@ const STORAGE_KEY = "growth_bookshelf.participant_id";
 
 const DEFAULT_PARTICIPANT_ID = "P00";
 
-function getParticipantId() {
+// 今開いている本棚（持ち主は本棚を複数持てる）。バックエンドは X-Shelf-Id で
+// 本棚ごとに配置・知識グラフ・対話を分ける。持ち主ごとに覚えておく。
+const SHELF_HEADER = "X-Shelf-Id";
+const shelfStorageKey = (pid) => `growth_bookshelf.shelf_id.${pid}`;
+
+export function getActiveShelfId() {
+  const pid = getParticipantId();
+  try {
+    return localStorage.getItem(shelfStorageKey(pid)) || pid;
+  } catch {
+    return pid;
+  }
+}
+
+// 本棚を切り替える。手元・本棚・対話などの状態を全部取り直すため、画面を読み込み直す。
+export function switchShelf(scopeId) {
+  try {
+    localStorage.setItem(shelfStorageKey(getParticipantId()), scopeId);
+  } catch {
+    // 覚えておけなくても、この読み込みの間は切り替えられないだけ
+  }
+  window.location.reload();
+}
+
+export function getParticipantId() {
   try {
     return localStorage.getItem(STORAGE_KEY) || DEFAULT_PARTICIPANT_ID;
   } catch {
@@ -48,8 +72,12 @@ export function installParticipantHeader() {
         if (!config.headers.has(PARTICIPANT_HEADER)) {
           config.headers.set(PARTICIPANT_HEADER, getParticipantId());
         }
+        if (!config.headers.has(SHELF_HEADER)) {
+          config.headers.set(SHELF_HEADER, getActiveShelfId());
+        }
       } else if (!config.headers || !(PARTICIPANT_HEADER in config.headers)) {
         config.headers = {
+          [SHELF_HEADER]: getActiveShelfId(),
           ...(config.headers || {}),
           [PARTICIPANT_HEADER]: getParticipantId(),
         };
@@ -84,6 +112,9 @@ export function installParticipantHeader() {
     // 呼び出し側が既に明示的にヘッダを付けている場合は上書きしない。
     if (!headers.has(PARTICIPANT_HEADER)) {
       headers.set(PARTICIPANT_HEADER, getParticipantId());
+    }
+    if (!headers.has(SHELF_HEADER)) {
+      headers.set(SHELF_HEADER, getActiveShelfId());
     }
 
     return originalFetch(input, { ...(init || {}), headers });

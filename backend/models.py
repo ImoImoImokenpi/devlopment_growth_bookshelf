@@ -125,3 +125,22 @@ class ShelfDesign(Base):
     shelf_size = Column(Integer)
     total_shelves = Column(Integer)
     last_forced_concept_count = Column(Integer, default=0)  # 前回「強制対話」を行った時点のConceptノード累計数
+    grid_cols = Column(Integer)  # グリッドの本棚の1行のマス数（空なら utils/shelf_geometry.py の GRID_COLS）
+
+
+class Bookshelf(Base):
+    """持ち主がつくった本棚（1人が複数持てる）。
+
+    本棚ごとに配置・知識グラフ・対話・おすすめをすべて分けるため、各本棚に
+    「スコープID」(scope_id) を割り当て、ほかのテーブル・Neo4j ではそれを
+    participant_id として使う（participant.py の resolve_participant_id）。
+    最初の本棚のスコープIDは持ち主のIDそのもの（これまでのデータがそのまま入る）。
+    2つ目からは "P00-S2" のように持ち主のIDに番号を付ける。
+    """
+    __tablename__ = "bookshelves"
+    id = Column(Integer, primary_key=True, index=True)
+    participant_id = Column(String, nullable=False, index=True)   # 持ち主（本棚の外のID）
+    scope_id = Column(String, nullable=False, unique=True, index=True)
+    name = Column(String, nullable=False)
+    sort_order = Column(Integer, nullable=False, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

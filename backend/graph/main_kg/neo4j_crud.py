@@ -13,6 +13,7 @@
 """
 from graph.main_kg.neo4j_driver import get_session
 from collections import defaultdict
+from utils.shelf_geometry import SHELF_MODE
 from datetime import datetime
 import uuid
 
@@ -500,9 +501,14 @@ class BookshelfNeo4j:
             for i in range(len(shelf_books) - 1):
                 a = shelf_books[i]
                 b = shelf_books[i + 1]
-                sw_a    = self._spine_width_px(a.get("pages", 200), a.get("height_mm"))
-                gap_px  = (b.get("x_pos", 0) - a.get("x_pos", 0)) * self.PX_SCALE - sw_a
-                if gap_px < self.ADJACENCY_GAP_PX:
+                if SHELF_MODE == "grid":
+                    # グリッド: 同じ行で隣のマス（間に空きマスがあれば隣ではない）
+                    adjacent = b.get("order_index", 0) - a.get("order_index", 0) == 1
+                else:
+                    sw_a     = self._spine_width_px(a.get("pages", 200), a.get("height_mm"))
+                    gap_px   = (b.get("x_pos", 0) - a.get("x_pos", 0)) * self.PX_SCALE - sw_a
+                    adjacent = gap_px < self.ADJACENCY_GAP_PX
+                if adjacent:
                     relations.append({
                         "from":        a["isbn"],
                         "to":          b["isbn"],

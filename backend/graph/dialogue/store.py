@@ -28,6 +28,7 @@ LLMには知識グラフから読んだ次の材料を渡す（組み立ては r
 from __future__ import annotations
 
 from graph.main_kg.neo4j_driver import get_session
+from graph.recommendation.store import normalize_recommended_for
 
 MAX_CHANGED_BOOKS = 8
 
@@ -80,7 +81,7 @@ def get_changes_since_last_dialogue(participant_id: str) -> dict:
         pending = row["pending"] if row else []
 
         if since is None:
-            return {"is_first_dialogue": True, "moved": [], "added_isbns": []}
+            return {"is_first_dialogue": True, "moved": [], "added_isbns": [], "recommended": {}, "removed": []}
 
         moved = []
         for entry in pending[-MAX_CHANGED_BOOKS:]:
@@ -97,24 +98,68 @@ def get_changes_since_last_dialogue(participant_id: str) -> dict:
             """
             MATCH (:Participant {participantId: $pid})-[own:OWNS]->(b:Book)
             WHERE own.addedAt > $since
-            RETURN b.isbn AS isbn
+            RETURN b.isbn AS isbn, own.addedBy AS added_by, own.recommendedFor AS recommended_for
             ORDER BY own.addedAt DESC
             LIMIT $limit
             """,
             pid=participant_id, since=since, limit=MAX_CHANGED_BOOKS,
         )
-        added_isbns = [r["isbn"] for r in added]
+        added_isbns, recommended = [], {}
+        for r in added:
+            added_isbns.append(r["isbn"])
+            # 意味づけからのおすすめで加わった本（持ち主が選んで置いた本ではない）
+            if r["added_by"] == "recommendation":
+                recommended[r["isbn"]] = normalize_recommended_for(r["recommended_for"])
 
-    return {"is_first_dialogue": False, "moved": moved, "added_isbns": added_isbns}
+    # 前回の対話より後に持ち主が外したおすすめ（どこが合わなかったかを対話で聞くきっかけにする）
+    from graph.recommendation.store import get_removed_recommendations
+    removed = get_removed_recommendations(participant_id, limit=MAX_CHANGED_BOOKS, since=since)
+    return {"is_first_dialogue": False, "moved": moved, "added_isbns": added_isbns,
+            "recommended": recommended, "removed": removed}
+
+
+def get_recent_dialogues(participant_id: str, limit: int = 5) -> list[dict]:
+    """これまでの対話（新しい順）。同じ問いを繰り返さないよう、対話のLLMに渡す。
+    各対話の最初の問い・話題にした本（きっかけの本と最初に尋ねた本）・加わった意味づけを返す。"""
+    with get_session() as session:
+        result = session.run(
+            """
+            MATCH (s:DialogueSession {participantId: $pid})
+            WITH s ORDER BY s.startedAt DESC LIMIT $limit
+            OPTIONAL MATCH (s)-[:HAS_TURN]->(t:DialogueTurn {role: 'assistant'})
+            WITH s, t ORDER BY t.index
+            WITH s, head(collect(t.text)) AS first_question
+            OPTIONAL MATCH (s)-[:DISCUSSED_BOOK|OPENED_WITH]->(b:Book)
+            WITH s, first_question, collect(DISTINCT {isbn: b.isbn, title: b.title}) AS books
+            OPTIONAL MATCH (m:MeaningProposal {participantId: $pid, status: 'accepted'})-[:PROPOSED_IN]->(s)
+            WITH s.startedAt AS started_at, first_question, books,
+                 collect(DISTINCT coalesce(m.finalText, m.text)) AS meanings
+            RETURN toString(date(started_at)) AS date, first_question,
+                   [x IN books WHERE x.isbn IS NOT NULL] AS books, meanings
+            ORDER BY started_at DESC
+            """,
+            pid=participant_id, limit=limit,
+        )
+        return [dict(r) for r in result]
 
 
 def create_session(
     participant_id: str, session_id: str, discussed_isbns: list[str], changes_text: str,
+    opened_with_isbns: list[str] | None = None, history_text: str = "",
 ) -> None:
     """changes_text: 対話のきっかけ（動かした本・加えた本）をLLM向けに書いた文。
-    会話の途中でも同じきっかけを渡し続けるため、開始時に固定して保存する。
-    きっかけに使った「前回の対話以降に動かした本」(pendingMoves) はここで空にする。"""
+    history_text: これまでの対話をLLM向けに書いた文（同じ問いを繰り返さないため）。
+    会話の途中でも同じきっかけ・履歴を渡し続けるため、開始時に固定して保存する。
+    opened_with_isbns: 最初の問いで尋ねた本（次の対話で「もう話題にした本」として使う）。
+    きっかけに使った「前回の対話以降に動かした本」(pendingMoves) はここで空にする。
+    はじめての対話なら、それまでの整理中に積み上がった隣り合わせの履歴もリセットする。"""
     with get_session() as session:
+        is_first = session.run(
+            "MATCH (s:DialogueSession {participantId: $pid}) RETURN count(s) = 0 AS first",
+            pid=participant_id,
+        ).single()["first"]
+        if is_first:
+            reset_adjacency_history(session, participant_id)
         session.run(
             """
             MERGE (p:Participant {participantId: $pid})
@@ -122,17 +167,63 @@ def create_session(
             SET p.pendingMoves = []
             CREATE (s:DialogueSession {
                 sessionId: $sid, participantId: $pid,
-                status: 'active', changesText: $changes_text,
+                status: 'active', changesText: $changes_text, historyText: $history_text,
                 startedAt: datetime(), createdAt: datetime()
             })
             MERGE (s)-[:HELD_BY]->(p)
             WITH s
-            UNWIND $isbns AS isbn
-            MATCH (b:Book {isbn: isbn})
-            MERGE (s)-[:DISCUSSED_BOOK]->(b)
+            CALL (s) {
+                UNWIND $isbns AS isbn
+                MATCH (b:Book {isbn: isbn})
+                MERGE (s)-[:DISCUSSED_BOOK]->(b)
+            }
+            CALL (s) {
+                UNWIND $opened AS isbn
+                MATCH (b:Book {isbn: isbn})
+                MERGE (s)-[:OPENED_WITH]->(b)
+            }
             """,
             pid=participant_id, sid=session_id, isbns=discussed_isbns, changes_text=changes_text,
+            opened=opened_with_isbns or [], history_text=history_text,
         )
+
+
+def reset_adjacency_history(session, participant_id: str) -> None:
+    """隣り合わせの履歴(SHELF_NEXT)を「今の並び」から数え直す。
+    最初の対話までの並べ替えは整理なので、隣になった回数に数えない。
+    今隣り合っている組は1回目として残し、以前隣だった組の記録は消す。"""
+    session.run(
+        """
+        MATCH (:Book)-[r:SHELF_NEXT {participantId: $pid}]->(:Book)
+        WHERE NOT coalesce(r.isCurrent, false)
+        DELETE r
+        """,
+        pid=participant_id,
+    )
+    session.run(
+        """
+        MATCH (:Book)-[r:SHELF_NEXT {participantId: $pid}]->(:Book)
+        SET r.coOccurrenceCount = 1,
+            r.firstSeenAt = datetime(), r.formedAt = datetime(), r.lastSeenAt = datetime()
+        REMOVE r.separatedAt
+        """,
+        pid=participant_id,
+    )
+
+
+def supersede_pending_proposals(participant_id: str, session_id: str) -> int:
+    """締めくくりのあと持ち主が「もう少し話す」を選んだとき、確認中だった意味づけの候補を
+    「置き換え(superseded)」にする。次の締めくくりで対話全体から改めてまとめ直すため。"""
+    with get_session() as session:
+        return session.run(
+            """
+            MATCH (m:MeaningProposal {participantId: $pid, status: 'pending'})
+                  -[:PROPOSED_IN]->(:DialogueSession {sessionId: $sid, participantId: $pid})
+            SET m.status = 'superseded', m.resolvedAt = datetime()
+            RETURN count(m) AS c
+            """,
+            pid=participant_id, sid=session_id,
+        ).single()["c"]
 
 
 def get_session_moves(participant_id: str, session_id: str) -> list[dict]:
@@ -162,6 +253,7 @@ def get_session_info(participant_id: str, session_id: str) -> dict | None:
             MATCH (s:DialogueSession {sessionId: $sid, participantId: $pid})
             OPTIONAL MATCH (s)-[:DISCUSSED_BOOK]->(b:Book)
             RETURN s.status AS status, s.changesText AS changes_text,
+                   coalesce(s.historyText, '') AS history_text,
                    collect(b.isbn) AS discussed_isbns
             """,
             pid=participant_id, sid=session_id,

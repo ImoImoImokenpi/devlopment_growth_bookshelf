@@ -174,6 +174,7 @@ def run_migrations(engine) -> None:
         # --- 既存の単発マイグレーション（旧 main.py から移設） ---
         _add_column_if_missing(conn, "registered_books", "spine_color", "VARCHAR")
         _add_column_if_missing(conn, "shelfdesign", "last_forced_concept_count", "INTEGER DEFAULT 0")
+        _add_column_if_missing(conn, "shelfdesign", "grid_cols", "INTEGER")
 
         # --- フェーズ1: 属性タグ基盤（高さ・色の手動補正の出所を記録） ---
         _add_column_if_missing(conn, "registered_books", "spine_color_source", "VARCHAR DEFAULT 'auto_colorthief'")

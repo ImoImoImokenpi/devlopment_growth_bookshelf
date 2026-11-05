@@ -199,7 +199,7 @@ export default function Gallery() {
 
       <div style={s.bookcase} ref={bookcaseRef}>
         {books.length === 0 ? (
-          <p style={s.empty}>登録された本がありません。「本の登録」から背表紙を登録してください。</p>
+          <p style={s.empty}>登録された本がありません。「本を探す」から本を探して手元に加えてください。</p>
         ) : (
           <>
             <div style={s.topBoard} />

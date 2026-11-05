@@ -8,12 +8,13 @@ import { useShelfWorkspace } from "../context/ShelfWorkspaceContext";
 // ─────────────────────────────────────────────
 const TOP_GAP         = 40;
 const FRAME           = 20;
+const SHELF_WIDTH     = 400; // 本棚の幅（固定。backend/utils/shelf_geometry.py の SHELF_WIDTH_PX と合わせる）
 const SHELF_PAD       = 0;
 const SNAP            = 15;
 const WOOD_URL        = "/sources/wood_texture.jpg";
 const DARK_WOOD_URL   = "/sources/dark_wood_texture.jpg";
 const SYNC_DELAY_MS   = 10_000;
-const MAX_BOOK_HEIGHT = 250;
+const MIN_BOOK_HEIGHT = 250; // 段の本を置く高さの最小値。これより背の高い本があれば段を広げる
 const LONG_PRESS_MS      = 400; // これ以上押し続けたら「移動」ジェスチャーとみなす
 const TAP_MOVE_THRESHOLD = 6;   // 長押しに至らなかった場合、この移動量未満なら「タップ」扱い
 const SPINE_PALETTES = [
@@ -42,6 +43,8 @@ function hashCode(str) {
   for (let i = 0; i < str.length; i++) h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
   return Math.abs(h);
 }
+// おすすめで加わった本の箱の色（持っている本と見分けられるよう、淡い地に点線の枠）
+const RECOMMENDED_BOX = { bg: "#fbf5e2", border: "#b8923a", text: "#5a4320" };
 function getPalette(isbn) {
   return SPINE_PALETTES[hashCode(isbn || "") % SPINE_PALETTES.length];
 }
@@ -155,6 +158,13 @@ function SpineShelfView() {
   // 本棚上の質問カードと右ペインの「まとめて確認」で扱う（設計書6.2）。
   // 強調する本も右ペインから共有されるので、ここでは状態を持たない。
 
+  // 段の高さは、棚でいちばん背の高い本に合わせて広げる（本が上の段にはみ出さないように）
+  const MAX_BOOK_HEIGHT = useMemo(() => {
+    const tallest = books
+      .filter(b => !deletedIds.has(b.id))
+      .reduce((m, b) => Math.max(m, resolveSpineHeight(b) || 0), 0);
+    return Math.max(MIN_BOOK_HEIGHT, Math.ceil(tallest));
+  }, [books, deletedIds]);
   const unitShelfHeight = TOP_GAP + MAX_BOOK_HEIGHT + SHELF_PAD;
 
   const PX_TO_MM_SCALE = 1.2;
@@ -178,18 +188,8 @@ function SpineShelfView() {
       });
   }, [books, localLayout, unitShelfHeight, deletedIds]);
 
-  const WIDTH = useMemo(() => {
-    const maxWidth = d3.max(
-      shelves.map((s) => {
-        const total = s.books.reduce(
-          (sum, b) => sum + resolveSpineWidth(b),
-          0
-        );
-        return total + FRAME * 2;
-      })
-    );
-    return Math.min(Math.max(maxWidth || 400, 400), 1200);
-  }, [shelves]);
+  // 本棚の幅は固定。本があふれたら段を足す（バックエンドの utils/shelf_geometry.py と同じ値）
+  const WIDTH = SHELF_WIDTH;
 
   const HEIGHT = unitShelfHeight * shelfCount + FRAME * (shelfCount + 1);
 
@@ -656,18 +656,44 @@ function SpineShelfView() {
           .attr("class", "spine-book")
           .attr("id", d => `spine-${d.id}`)
           .attr("transform", d => `translate(${d.x}, ${d.y})`),
-        update => update,
+        // 本棚を取り直したとき（おすすめの本が差し込まれて押しのけられた等）は、
+        // 位置が変わった本だけ新しい位置へ動かす
+        update => update.each(function(d) {
+          const target = `translate(${d.x}, ${d.y})`;
+          const node = d3.select(this);
+          if (node.attr("transform") !== target) {
+            node.transition().duration(300).ease(d3.easeCubicOut).attr("transform", target);
+          }
+        }),
         exit => exit.remove()
       )
       .call(dragHandler);
 
     bookGroups.each(function(d) {
       const g = d3.select(this);
+      // 段の高さが変わったら、背表紙を下端に合わせて描き直す
+      if (g.attr("data-bh") !== String(MAX_BOOK_HEIGHT)) g.selectAll("*").remove();
       if (g.select("rect").empty()) {
+        g.attr("data-bh", MAX_BOOK_HEIGHT);
         const p = getPalette(d.isbn);
         const sw = resolveSpineWidth(d);
         const sh = resolveSpineHeight(d);
         const offset = MAX_BOOK_HEIGHT - sh;
+
+        if (d.recommended && !d.spine_image) {
+          // おすすめで加わった本（まだ手元にない本）は、APIの寸法どおりの箱に書名を入れて描く
+          g.append("rect").attr("y", offset).attr("width", sw).attr("height", sh).attr("rx", 2)
+            .attr("fill", RECOMMENDED_BOX.bg).attr("stroke", RECOMMENDED_BOX.border)
+            .attr("stroke-width", 1.2).attr("stroke-dasharray", "4 3");
+          g.append("title").text(`おすすめ：${d.title}${d.recommended_for ? `（${d.recommended_for}から）` : ""}`);
+          g.append("text").attr("x", sw / 2).attr("y", offset + 11).attr("text-anchor", "middle")
+            .attr("font-size", 9).attr("fill", RECOMMENDED_BOX.border).text("✦");
+          const fo = g.append("foreignObject").attr("y", offset + 16).attr("width", sw).attr("height", Math.max(0, sh - 22));
+          fo.append("xhtml:div")
+            .attr("style", `color:${RECOMMENDED_BOX.text}; font-size:10px; writing-mode:vertical-rl; padding:2px; height:100%; width:100%; box-sizing:border-box; display:flex; align-items:center; font-family:serif; font-weight:600; overflow:hidden; line-height:1.15;`)
+            .text(d.title);
+          return;
+        }
 
         g.append("rect").attr("y", offset).attr("width", sw).attr("height", sh).attr("rx", 2).attr("fill", p.bg).attr("filter", "url(#bookShadow)");
 
@@ -748,7 +774,7 @@ function SpineShelfView() {
       });
     });
 
-  }, [booksWithPosition, WIDTH, HEIGHT, highlightIsbns, conceptHighlights, focusIsbn]);
+  }, [booksWithPosition, WIDTH, HEIGHT, MAX_BOOK_HEIGHT, highlightIsbns, conceptHighlights, focusIsbn]);
 
   return (
     <div style={s.container}>

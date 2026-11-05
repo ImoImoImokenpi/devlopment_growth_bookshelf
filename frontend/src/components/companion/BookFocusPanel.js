@@ -1,11 +1,14 @@
 // 右ペイン「本の詳細」。本棚で1冊タップすると表示される。
 //
-// 上から: 表紙・書名・著者 → 出版社 / 年 / 寸法（高さ×ページ数）/ 分類 / ジャンル / 内容 → 感想
+// 上から: 表紙・書名・著者 → （おすすめで加わった本なら）おすすめの理由
+//        → 出版社 / 年 / 寸法（高さ×ページ数）/ 分類 / ジャンル / 内容 → 感想
 // 書誌情報は登録データ（/register/{isbn}）から取る。
 // 高さは対話のLLMも使うので、寸法の横の「編集」で直せるようにしている。
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { NDC_L1 } from "../../utils/ndc";
 import { useShelfWorkspace } from "../../context/ShelfWorkspaceContext";
+import { MyBookshelfContext } from "../../context/MyBookshelfContext";
+import { useShelves } from "../../context/ShelvesContext";
 
 const API = "http://localhost:8000";
 const DESCRIPTION_PREVIEW_CHARS = 120;
@@ -25,6 +28,8 @@ export default function BookFocusPanel() {
   const [busy, setBusy] = useState(false);
 
   const [impression, setImpression] = useState("");
+  // 意味づけからのおすすめで加わった本なら、その記録（意味づけ・理由・置き場所）
+  const [recommendation, setRecommendation] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -46,13 +51,18 @@ export default function BookFocusPanel() {
     setNewTag("");
     setIsSaved(false);
     setImpression("");
+    setRecommendation(null);
     setLoading(true);
     fetchBook().finally(() => setLoading(false));
 
     let cancelled = false;
     fetch(`${API}/knowledge_graph/book/${focusIsbn}/basic`)
       .then(res => (res.ok ? res.json() : null))
-      .then(basic => { if (!cancelled) setImpression(basic?.impression || ""); })
+      .then(basic => {
+        if (cancelled) return;
+        setImpression(basic?.impression || "");
+        setRecommendation(basic?.recommendation || null);
+      })
       .catch(err => console.error(err));
     return () => { cancelled = true; };
   }, [focusIsbn, fetchBook]);
@@ -163,6 +173,8 @@ export default function BookFocusPanel() {
             </div>
           </div>
 
+          {recommendation && <RecommendationNote rec={recommendation} />}
+
           <dl style={s.rows}>
             <Row label="出版社">{book.publisher || "—"}</Row>
             <Row label="年">{book.published_year || "—"}</Row>
@@ -239,6 +251,86 @@ export default function BookFocusPanel() {
               {isSaving ? "保存中…" : "保存"}
             </button>
           </div>
+
+          <MoveToShelf isbn={focusIsbn} title={book.title} onMoved={() => setFocusIsbn(null)} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// この本を別の本棚へ移す（本は1冊につきどれか1つの本棚に置く）。
+// 移した先の本棚では新しく加わった本として扱い、この本棚の意味づけ・対話はこの本棚に残る。
+function MoveToShelf({ isbn, title, onMoved }) {
+  const { shelves, activeScopeId, moveBookToShelf } = useShelves();
+  const { fetchBookshelf } = useContext(MyBookshelfContext);
+  const { flushLayoutSync } = useShelfWorkspace();
+  const others = shelves.filter(sh => sh.scope_id !== activeScopeId);
+  const [toId, setToId] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+
+  if (!others.length) return null;
+
+  const move = async () => {
+    const target = others.find(sh => String(sh.id) === String(toId));
+    if (!target || busy) return;
+    const ok = window.confirm(
+      `『${title || "この本"}』を「${target.name}」へ移します。
+` +
+      "この本棚で付けた意味づけや対話の記録は、この本棚に残ります。よろしいですか？"
+    );
+    if (!ok) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await flushLayoutSync(); // まだ保存していない並べ替えを先に保存する
+      await moveBookToShelf(isbn, target.id);
+      await fetchBookshelf();
+      onMoved();
+    } catch (err) {
+      setError(err.message);
+      setBusy(false);
+    }
+  };
+
+  return (
+    <>
+      <div style={s.sectionTitle}>別の本棚へ移す</div>
+      <div style={s.moveRow}>
+        <select style={s.moveSelect} value={toId} onChange={e => setToId(e.target.value)}>
+          <option value="">移す先の本棚を選ぶ</option>
+          {others.map(sh => <option key={sh.id} value={sh.id}>{sh.name}（{sh.book_count}冊）</option>)}
+        </select>
+        <button style={{ ...s.saveBtn, ...(!toId || busy ? { opacity: 0.5 } : {}) }} onClick={move} disabled={!toId || busy}>
+          {busy ? "移しています…" : "移す"}
+        </button>
+      </div>
+      {error && <div style={s.statusError}>{error}</div>}
+    </>
+  );
+}
+
+// おすすめで加わった本の「おすすめされた理由」
+function RecommendationNote({ rec }) {
+  const place = rec.anchor_title
+    ? `『${rec.anchor_title}』の${rec.side === "left" ? "左" : "右"}`
+    : null;
+  return (
+    <div style={s.rec}>
+      <div style={s.recHead}>
+        <span style={s.recMark}>✦</span>おすすめで加わった本
+        {rec.created_at && <span style={s.recDate}>{rec.created_at}</span>}
+      </div>
+      {rec.trigger === "request" && (
+        <div style={s.recPlace}>対話でのお願い{rec.wish ? `「${rec.wish}」` : ""}に応えて</div>
+      )}
+      <div style={s.recConcept}>{rec.basis}から</div>
+      {rec.aim && <div style={s.recPlace}>{rec.aim}</div>}
+      {rec.reason && <div style={s.recReason}>{rec.reason}</div>}
+      {(place || rec.placement_reason) && (
+        <div style={s.recPlace}>
+          置き場所: {place || "—"}{rec.placement_reason ? `。${rec.placement_reason}` : ""}
         </div>
       )}
     </div>
@@ -279,6 +371,20 @@ const s = {
   title: { fontFamily: "serif", fontSize: 17, fontWeight: 700, color: "#2a1f0e", lineHeight: 1.5 },
   authors: { fontSize: 13, color: "#6b5c47", marginTop: 6, lineHeight: 1.6 },
 
+  rec: {
+    margin: "0 0 16px", padding: "10px 12px", borderRadius: 8,
+    background: "#fbf5e2", border: "1px dashed #b8923a",
+  },
+  recHead: {
+    display: "flex", alignItems: "center", gap: 5,
+    fontSize: 12.5, fontWeight: 700, color: "#8a6a24",
+  },
+  recMark: { fontSize: 11 },
+  recDate: { marginLeft: "auto", fontSize: 11.5, fontWeight: 400, color: "#9a8b76" },
+  recConcept: { fontSize: 13, fontWeight: 700, color: "#2a1f0e", marginTop: 6 },
+  recReason: { fontSize: 13.5, color: "#3d3020", lineHeight: 1.75, marginTop: 4 },
+  recPlace: { fontSize: 12, color: "#8a7a62", lineHeight: 1.6, marginTop: 6 },
+
   rows: { margin: 0 },
   row: {
     display: "grid", gridTemplateColumns: "64px 1fr", gap: 10,
@@ -317,6 +423,11 @@ const s = {
   textarea: {
     width: "100%", minHeight: 72, padding: 10, borderRadius: 8, border: "1px solid #e5ded0",
     fontSize: 13.5, lineHeight: 1.7, fontFamily: "inherit", resize: "vertical", boxSizing: "border-box",
+  },
+  moveRow: { display: "flex", gap: 8, alignItems: "center" },
+  moveSelect: {
+    flex: 1, minWidth: 0, padding: "7px 8px", borderRadius: 8, border: "1px solid #e0d8c0",
+    fontSize: 12.5, fontFamily: "inherit", background: "#fff", color: "#4a3728",
   },
   saveRow: { display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 10, marginTop: 8 },
   savedHint: { fontSize: 12, color: "#7ab893" },

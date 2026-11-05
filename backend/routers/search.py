@@ -107,6 +107,12 @@ class NDLSearchService:
     GOOGLE_BOOKS  = "https://www.googleapis.com/books/v1/volumes"
     OPENBD_API    = "https://api.openbd.jp/v1/get"
     NDL_THUMBNAIL = "https://ndlsearch.ndl.go.jp/thumbnail/{isbn}.jpg"
+    # 国会図書館の書影はブラウザらしいヘッダーがないと返らないことがある
+    COVER_HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+        "Referer":    "https://ndlsearch.ndl.go.jp/",
+        "Accept":     "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+    }
 
     RETRY_COUNT = 3
 
@@ -173,10 +179,11 @@ class NDLSearchService:
 
     # ── SRU 検索 ─────────────────────────────────────────────────
 
-    async def search_ndl_sru(self, query: str, start: int, max_records: int):
+    async def search_ndl_sru(self, query: str, start: int, max_records: int, cql: str | None = None):
+        """cql を渡すとその検索式をそのまま使う（既定は書名・著者名での検索）。"""
         params = {
             "operation":      "searchRetrieve",
-            "query":          f'title all "{query}" OR creator all "{query}"',
+            "query":          cql or f'title all "{query}" OR creator all "{query}"',
             "startRecord":    start,
             "maximumRecords": max_records,
             "recordSchema":   "dcndl",
@@ -327,17 +334,23 @@ class NDLSearchService:
 
     # ── 書影取得 ──────────────────────────────────────────────────
 
+    async def download_cover(self, url: str) -> Optional[bytes]:
+        """書影URLから画像を取ってくる。画像でなければ None。"""
+        try:
+            r = await HttpClientManager.get().get(
+                url, timeout=8, follow_redirects=True, headers=self.COVER_HEADERS,
+            )
+            if r.status_code == 200 and "image" in r.headers.get("content-type", ""):
+                return r.content
+        except Exception:
+            pass
+        return None
+
     async def fetch_ndl_cover(self, isbn: str) -> Optional[str]:
         isbn13 = self._isbn10_to_13(isbn) if len(isbn) == 10 else isbn
         url    = self.NDL_THUMBNAIL.format(isbn=isbn13)
-
-        try:
-            r = await HttpClientManager.get().get(url)
-            if r.status_code == 200:
-                return url
-            return None
-        except Exception:
-            return None
+        # URLがあっても画像が無いことがあるので、実際に画像が返るか確かめる
+        return url if await self.download_cover(url) else None
 
     @staticmethod
     def _google_books_params(isbn: str) -> dict:
@@ -358,7 +371,15 @@ class NDLSearchService:
             if not items:
                 return None
 
-            image_links = items[0].get("volumeInfo", {}).get("imageLinks", {})
+            # Google Books は一致しない本も返すことがあるので、ISBNが合う本だけ使う
+            want = {isbn, self._isbn10_to_13(isbn) if len(isbn) == 10 else isbn}
+            info = next((
+                it.get("volumeInfo", {}) for it in items
+                if want & {i.get("identifier") for i in it.get("volumeInfo", {}).get("industryIdentifiers") or []}
+            ), None)
+            if info is None:
+                return None
+            image_links = info.get("imageLinks", {})
 
             cover = (
                 image_links.get("large")
@@ -418,27 +439,19 @@ class NDLSearchService:
             return None
 
     async def fetch_cover(self, isbn: str) -> Optional[str]:
-        is_japanese = isbn.startswith("9784") or (
-            len(isbn) == 10 and isbn.startswith("4")
-        )
+        """書影URLを決める唯一の入り口（登録・おすすめ・表紙の中継で共通）。
 
-        if not is_japanese:
-            logger.debug(
-                "[Cover] 非日本語ISBNのため書影取得スキップ isbn=%s",
-                isbn,
-            )
-            return None
-
-        results = await asyncio.gather(
-            self.fetch_ndl_cover(isbn),
-            self.fetch_google_cover(isbn),
-            return_exceptions=True,
-        )
-
-        for r in results:
-            if isinstance(r, str) and r:
-                return r
-
+        国会図書館（日本の本のみ）→ Google Books の順に探し、画像が見つかった最初のURLを返す。
+        """
+        isbn = (isbn or "").replace("-", "")
+        is_japanese = isbn.startswith("9784") or (len(isbn) == 10 and isbn.startswith("4"))
+        if is_japanese:
+            url = await self.fetch_ndl_cover(isbn)
+            if url:
+                return url
+        url = await self.fetch_google_cover(isbn)
+        if url:
+            return url
         logger.debug("[Cover] 書影取得できず isbn=%s", isbn)
         return None
 
@@ -456,6 +469,10 @@ _isbn10_to_13             = NDLSearchService._isbn10_to_13
 NDL_TIMEOUT               = NDLSearchService.NDL_TIMEOUT
 fetch_openbd_descriptions = _ndl_service.fetch_openbd_descriptions
 fetch_google_description  = _ndl_service.fetch_google_description
+search_ndl_sru            = _ndl_service.search_ndl_sru
+fetch_cover               = _ndl_service.fetch_cover
+download_cover            = _ndl_service.download_cover
+GOOGLE_BOOKS_URL          = NDLSearchService.GOOGLE_BOOKS
 
 
 @asynccontextmanager

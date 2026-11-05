@@ -11,8 +11,12 @@ from graph.main_kg.neo4j_crud import (
     update_shelf_layout_chain, remove_book_ownership, reconcile_shelf,
 )
 from graph.dialogue.store import get_session_info as get_dialogue_session_info
+from graph.recommendation.store import normalize_recommended_for
+from graph.recommendation.store import mark_removed_by_isbn as mark_recommendation_removed
 from graph.placement_analysis.profile import compute_and_save_placement_profile
 import logging
+from utils.shelf_geometry import SHELF_MODE
+from utils.shelf_utils import ShelfService
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +45,45 @@ def _get_or_create_design(db: Session, participant_id: str, period: str) -> Shel
         db.add(design)
         db.flush()
     return design
+
+
+class GridColsRequest(BaseModel):
+    cols: int
+    # 減らすとなくなる列に本があるとき、下の行へ折り返してよいか（持ち主が確認したか）
+    allow_wrap: bool = False
+
+
+@router.post("/grid-cols")
+def set_grid_cols(
+    body: GridColsRequest,
+    db: Session = Depends(get_db),
+    participant_id: str = Depends(resolve_participant_id),
+    period: str = Depends(_period_param),
+):
+    """グリッドの本棚の1行のマス数を変える。減らしたときにはみ出した本は下の行へ折り返す。
+    並びが変わるので、今の本棚なら知識グラフの隣り合わせも写し直す（移動の記録はしない）。"""
+    service = ShelfService()
+    current = service.grid_cols(db, participant_id, period)
+    if body.cols < current and not body.allow_wrap:
+        # なくなる列（body.cols 列目より右）に本があれば、確認なしには折り返さない
+        service.normalize_grid(db, participant_id, period)
+        blocked = (
+            db.query(ShelfLayout)
+            .filter(ShelfLayout.participant_id == participant_id, ShelfLayout.period == period,
+                    ShelfLayout.order_index >= body.cols)
+            .count()
+        )
+        if blocked:
+            db.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail={"message": "なくなる列に本があります", "books_in_removed_columns": blocked},
+            )
+    cols = service.set_grid_cols(db, participant_id, period, body.cols)
+    db.commit()
+    if period == PRESENT:
+        _sync_chain_from_db(db, participant_id)
+    return {"grid_cols": cols}
 
 
 @router.post("/add_shelves")
@@ -116,18 +159,30 @@ def fetch_bookshelf(
     design = _get_or_create_design(db, participant_id, period)
     db.commit()
 
+    # グリッドの本棚では、背表紙の本棚の並びが残っていればマスに合わせ直す（初回だけ）
+    if SHELF_MODE == "grid" and ShelfService().normalize_grid(db, participant_id, period):
+        db.commit()
+        if period == PRESENT:
+            _sync_chain_from_db(db, participant_id)
+
     layouts = db.query(ShelfLayout)\
         .filter(ShelfLayout.participant_id == participant_id, ShelfLayout.period == period)\
         .order_by(ShelfLayout.shelf_index, ShelfLayout.x_pos)\
         .all()
 
     if not layouts:
-        return {"shelves": [], "total_shelves": design.total_shelves}
+        return {"shelves": [], "total_shelves": design.total_shelves,
+                "grid_cols": ShelfService().grid_cols(db, participant_id, period)}
 
     layout_map = {l.isbn: l for l in layouts}
 
     title_map: dict[str, str] = {}
     possessed_since_map: dict[str, str | None] = {}
+    # 意味づけからのおすすめで加わった本（routers/recommend.py）。本棚では別の見た目で描く
+    recommended_map: dict[str, str] = {}
+    # 前回の対話より後に加わった本（画面で「新」の印を付ける）。次の対話が始まると消える。
+    # 対話をまだしていないうちは、それまでの追加は整理なので印を付けない（対話のきっかけと同じ決まり）。
+    new_isbns: set[str] = set()
     # possessedSince（OWNS）は「今、実際に持っている本棚」を前提にした研究データ
     # なので、period="present" のときだけNeo4jから引く。「過去」の棚は仮の並びで
     # 実際の所有関係を表さないため、常に未設定（褪せ演出なし）として扱う。
@@ -137,7 +192,11 @@ def fetch_bookshelf(
                 """
                 MATCH (b:Book) WHERE b.isbn IN $isbns
                 OPTIONAL MATCH (:Participant {participantId: $pid})-[own:OWNS]->(b)
-                RETURN b.isbn AS isbn, b.title AS title, toString(own.possessedSince) AS possessed_since
+                OPTIONAL MATCH (s:DialogueSession {participantId: $pid})
+                WITH b, own, max(s.startedAt) AS since
+                RETURN b.isbn AS isbn, b.title AS title, toString(own.possessedSince) AS possessed_since,
+                       own.addedBy AS added_by, own.recommendedFor AS recommended_for,
+                       since IS NOT NULL AND own.addedAt > since AS is_new
                 """,
                 isbns=list(layout_map.keys()),
                 pid=participant_id,
@@ -145,6 +204,10 @@ def fetch_bookshelf(
             for r in result:
                 title_map[r["isbn"]] = r["title"]
                 possessed_since_map[r["isbn"]] = r["possessed_since"]
+                if r["added_by"] == "recommendation":
+                    recommended_map[r["isbn"]] = normalize_recommended_for(r["recommended_for"])
+                if r["is_new"]:
+                    new_isbns.add(r["isbn"])
 
     reg_books = db.query(RegisteredBook).filter(RegisteredBook.isbn.in_(list(layout_map.keys()))).all()
     # period="past" ではNeo4jを引かないので、タイトルはRegisteredBook（登録時に
@@ -182,11 +245,15 @@ def fetch_bookshelf(
             "published_year":  published_year_map.get(l.isbn),
             "registered_at":   registered_at_map.get(l.isbn),
             "possessed_since": possessed_since_map.get(l.isbn),
+            "recommended":     l.isbn in recommended_map,
+            "recommended_for": recommended_map.get(l.isbn),
+            "is_new":          l.isbn in new_isbns,
         })
 
     return {
         "shelves":       [{"shelf_index": k, "books": v} for k, v in sorted(shelves.items())],
         "total_shelves": design.total_shelves,
+        "grid_cols":     ShelfService().grid_cols(db, participant_id, period),
     }
 
 
@@ -199,6 +266,20 @@ def _run_placement_analysis_sync(participant_id: str) -> None:
         compute_and_save_placement_profile(participant_id)
     except Exception as e:
         logger.warning("本棚配置分析システムへの反映に失敗しました: %s", e)
+
+
+def _sync_chain_from_db(db: Session, participant_id: str) -> None:
+    """SQLite の今の並びを知識グラフ（ShelfPosition・SHELF_NEXT）へ写す。移動の記録はしない。"""
+    payload = [
+        {"id": r.id, "isbn": r.isbn, "shelf_index": r.shelf_index, "x_pos": r.x_pos,
+         "order_index": r.order_index, "pages": r.pages or 200, "height_mm": r.height_mm}
+        for r in db.query(ShelfLayout)
+        .filter(ShelfLayout.participant_id == participant_id, ShelfLayout.period == PRESENT)
+    ]
+    try:
+        update_shelf_layout_chain(payload, participant_id=participant_id, moved_isbns=[])
+    except Exception as e:
+        logger.warning("グリッドに合わせた並びを知識グラフへ写せませんでした: %s", e)
 
 
 @router.post("/sync-layout")
@@ -304,4 +385,9 @@ def remove_book_from_shelf(
     ).count()
     if remaining == 0:
         remove_book_ownership(isbn, participant_id=participant_id)
+        # おすすめで加わった本なら、受け入れられなかった記録として残す（次のおすすめと対話に生かす）
+        try:
+            mark_recommendation_removed(participant_id, isbn)
+        except Exception as e:
+            logger.warning("外したおすすめを記録できませんでした: %s", e)
     return {"status": "deleted", "isbn": isbn}

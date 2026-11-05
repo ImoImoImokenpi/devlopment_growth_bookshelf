@@ -13,24 +13,35 @@
 //
 // グルーピング（左のグループパネル・ModeToggle）はいったん画面から外している。
 // 部品（components/grouping, ModeToggle）とSpineShelfView側の処理は残してある。
+//
+// 本棚の型は SHELF_VIEW で切り替える。今はグリッドの本棚（GridShelfView）だけを出し、
+// 背表紙の本棚（SpineShelfView）と棚の設定メニューは画面から外している（コードは残してある）。
+// 背表紙に戻すときは、ここを "spine" にし、backend/utils/shelf_geometry.py の
+// SHELF_MODE も "spine" にする。
 import { useState } from "react";
 import SpineShelfView from "../components/SpineShelfView";
+import GridShelfView from "../components/GridShelfView";
 import OwnBookGrid from "../components/OwnBookGrid";
 import ShelfSettingsMenu from "../components/ShelfSettingsMenu";
 import PageHeader from "../components/PageHeader";
 import { PAGE_PAD_X, PAGE_PAD_TOP } from "../components/Layout";
 import CompanionPanel from "../components/companion/CompanionPanel";
+import ShelfSwitcher from "../components/shelves/ShelfSwitcher";
+import { ShelvesProvider, useShelves } from "../context/ShelvesContext";
 import DialoguePanel from "../components/dialogue/DialoguePanel";
 import {
   ShelfWorkspaceProvider,
   useShelfWorkspace,
 } from "../context/ShelfWorkspaceContext";
 
+const SHELF_VIEW = "grid"; // "grid" | "spine"
+
 const SIDE_PANEL_W = 380;      // 本の詳細パネルの幅(px)
 const DIALOGUE_PANEL_W = 460;  // 対話パネルの幅(px)
 
 function HomeWorkspace() {
   const { focusIsbn, setFocusIsbn, shelfWidthPct, growth } = useShelfWorkspace();
+  const { activeShelf } = useShelves();
   const [isDialogueOpen, setIsDialogueOpen] = useState(false);
   // 背表紙⇄グリッドの切り替えは「棚の設定」の中にある。デフォルトは背表紙表示。
   const [viewMode, setViewMode] = useState("spine");
@@ -56,10 +67,13 @@ function HomeWorkspace() {
       <div style={s.header}>
         <PageHeader
           title="育つ本棚"
-          sub={growth?.books != null ? `${growth.books}冊 ・ 本棚と対話しよう！` : "本棚と対話しよう！"}
+          sub={[activeShelf?.name, growth?.books != null ? `${growth.books}冊` : null, "本棚と対話しよう！"].filter(Boolean).join(" ・ ")}
           right={
             <div style={s.actions}>
-              <ShelfSettingsMenu viewMode={viewMode} onViewModeChange={setViewMode} />
+              <ShelfSwitcher />
+              {SHELF_VIEW === "spine" && (
+                <ShelfSettingsMenu viewMode={viewMode} onViewModeChange={setViewMode} />
+              )}
               <button
                 className="talk-btn"
                 style={{ ...s.talkBtn, ...(isDialogueOpen ? s.talkBtnActive : {}) }}
@@ -81,7 +95,11 @@ function HomeWorkspace() {
         {/* 作業スペース。本棚と右パネル（本の詳細・対話）を1つのまとまりとして中央に置き、
             パネルが本棚のすぐ横に開くようにする。本棚は自分の列の中で縦スクロールする。 */}
         <div style={s.stage}>
-          {viewMode === "spine" ? (
+          {SHELF_VIEW === "grid" ? (
+            <div className="shelf-stage" style={s.gridCol}>
+              <GridShelfView />
+            </div>
+          ) : viewMode === "spine" ? (
             <div
               className="shelf-stage"
               style={{ ...s.shelfCol, width: `min(${shelfWidthPct}vw, 100%)` }}
@@ -119,9 +137,11 @@ function HomeWorkspace() {
 
 export default function Home() {
   return (
-    <ShelfWorkspaceProvider>
-      <HomeWorkspace />
-    </ShelfWorkspaceProvider>
+    <ShelvesProvider>
+      <ShelfWorkspaceProvider>
+        <HomeWorkspace />
+      </ShelfWorkspaceProvider>
+    </ShelvesProvider>
   );
 }
 

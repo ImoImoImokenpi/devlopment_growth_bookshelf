@@ -1,7 +1,7 @@
 // アプリ共通の上部ナビバー。メインの3画面を行き来する。
 //   育つ本棚   (/)          : 自分の本棚（背表紙を自由に並べ替えられる）
 //   ギャラリー (/Gallery)   : 登録済みの本をすべて表示。ここから本を「手元」に追加する
-//   本の登録   (/Register)  : 背表紙の写真とISBNで書誌情報を登録する
+//   本を探す   (/Search)    : 書名・著者・ISBNで本を探して、手元に加える
 // 右端の「手元の本」から、手元に集めた本を育つ本棚へ加える(HandPanel)。
 import { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -28,10 +28,10 @@ const LINKS = [
     ),
   },
   {
-    to: "/Register", label: "本の登録",
+    to: "/Search", label: "本を探す",
     icon: (
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 5v14" /><path d="M5 12h14" />
+        <circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" />
       </svg>
     ),
   },

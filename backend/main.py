@@ -11,6 +11,9 @@ import routers.knowledge_graph as knowledge_graph_router
 import routers.bookshelf as bookshelf_router
 import routers.register as register_router
 import routers.dialogue as dialogue_router
+import routers.recommend as recommend_router
+import routers.shelves as shelves_router
+from graph.recommendation.store import ensure_recommendation_schema
 from routers.search import lifespan
 
 # DB初期化（未作成のテーブルを新スキーマで作る → 既存テーブルを移行する、の順）
@@ -40,6 +43,11 @@ try:
 except Exception as e:
     import logging
     logging.getLogger(__name__).warning("本棚対話のスキーマ初期化をスキップしました: %s", e)
+try:
+    ensure_recommendation_schema()
+except Exception as e:
+    import logging
+    logging.getLogger(__name__).warning("おすすめのスキーマ初期化をスキップしました: %s", e)
 
 app = FastAPI(lifespan=lifespan)
 
@@ -56,8 +64,10 @@ app.add_middleware(
 app.include_router(myhand_router.router)
 app.include_router(knowledge_graph_router.router)
 app.include_router(dialogue_router.router)
+app.include_router(recommend_router.router)
 app.include_router(bookshelf_router.router)
 app.include_router(register_router.router)
+app.include_router(shelves_router.router)
 
 @app.get("/")
 def root():

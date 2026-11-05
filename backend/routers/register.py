@@ -20,6 +20,8 @@ from routers.search import (
     NDL_TIMEOUT,
     fetch_openbd_descriptions,
     fetch_google_description,
+    fetch_cover,
+    download_cover,
 )
 
 router = APIRouter(prefix="/register", tags=["register"])
@@ -152,7 +154,7 @@ class BookRegistrationService:
         pages, height_mm = _extract_extent(extent)
 
         isbn13 = clean if len(clean) == 13 else _isbn10_to_13(clean)
-        cover  = f"https://ndlsearch.ndl.go.jp/thumbnail/{isbn13}.jpg"
+        cover  = await fetch_cover(isbn13)
 
         openbd      = await fetch_openbd_descriptions([isbn13])
         description = openbd.get(isbn13)
@@ -274,26 +276,21 @@ _llm                  = get_llm_client()
 # ── 表紙画像をプロキシ ──────────────────────────────
 @router.get("/cover/{isbn}")
 async def proxy_cover(isbn: str, db: Session = Depends(get_db)):
-    client = get_http_client()
-
-    book       = db.query(RegisteredBook).filter(RegisteredBook.isbn == isbn).first()
-    candidates = []
+    """保存済みの書影URL → 見つからなければ fetch_cover で探し直して保存する。"""
+    book = db.query(RegisteredBook).filter(RegisteredBook.isbn == isbn).first()
     if book and book.cover:
-        candidates.append(book.cover)
-    candidates.append(f"https://ndlsearch.ndl.go.jp/thumbnail/{isbn}.jpg")
+        data = await download_cover(book.cover)
+        if data:
+            return Response(content=data, media_type="image/jpeg")
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Referer":    "https://ndlsearch.ndl.go.jp/",
-        "Accept":     "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
-    }
-    for url in candidates:
-        try:
-            r = await client.get(url, timeout=8, follow_redirects=True, headers=headers)
-            if r.status_code == 200 and "image" in r.headers.get("content-type", ""):
-                return Response(content=r.content, media_type="image/jpeg")
-        except Exception:
-            continue
+    url = await fetch_cover(isbn)
+    if url and (not book or url != book.cover):
+        data = await download_cover(url)
+        if data:
+            if book:
+                book.cover = url
+                db.commit()
+            return Response(content=data, media_type="image/jpeg")
 
     raise HTTPException(status_code=404, detail="Cover not found")
 

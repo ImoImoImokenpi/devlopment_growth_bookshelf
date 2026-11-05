@@ -1,0 +1,149 @@
+{
+ "P00": [
+  {
+   "a": "9784062180610",
+   "b": "9784873113166",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 8, 26, 13, 47, 46, 861000000, tzinfo=<UTC>), 'isCurrent': False, 'separatedAt': neo4j.time.DateTime(2026, 8, 26, 14, 22, 15, 80000000, tzinfo=<UTC>), 'formedAt': neo4j.time.DateTime(2026, 8, 26, 13, 47, 46, 861000000, tzinfo=<UTC>), 'coOccurrenceCount': 1, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 26, 13, 47, 46, 861000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784062180610",
+   "b": "9784774142043",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 9, 3, 8, 19, 2, 725000000, tzinfo=<UTC>), 'isCurrent': False, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 4, 6, 41, 59, 502000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': True, 'coOccurrenceCount': 1, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784062180610",
+   "b": "9784822280536",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 35, 1, 272000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784788514348",
+   "b": "9784772695671",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784627817715",
+   "b": "9784062180610",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 9, 3, 8, 19, 2, 725000000, tzinfo=<UTC>), 'isCurrent': False, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 4, 6, 41, 59, 502000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 1, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784627817715",
+   "b": "9784774142043",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 4, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784774136844",
+   "b": "9784873113166",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 8, 26, 13, 20, 2, 282000000, tzinfo=<UTC>), 'isCurrent': False, 'separatedAt': neo4j.time.DateTime(2026, 8, 26, 13, 47, 46, 884000000, tzinfo=<UTC>), 'formedAt': neo4j.time.DateTime(2026, 8, 12, 9, 35, 1, 272000000, tzinfo=<UTC>), 'coOccurrenceCount': 2, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784774136844",
+   "b": "9784798138824",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': True, 'coOccurrenceCount': 2, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 26, 13, 47, 46, 861000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784591174326",
+   "b": "9784822280536",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 9, 3, 8, 19, 2, 725000000, tzinfo=<UTC>), 'isCurrent': False, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 4, 6, 41, 59, 502000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 8, 19, 9, 2, 10, 659000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': True, 'coOccurrenceCount': 1, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 19, 9, 2, 10, 659000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784093864633",
+   "b": "9784344035614",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': True, 'coOccurrenceCount': 3, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784756609045",
+   "b": "9784326000616",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': True, 'coOccurrenceCount': 2, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784822255558",
+   "b": "9784788514348",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': True, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784873113166",
+   "b": "9784774136844",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': True, 'coOccurrenceCount': 2, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 26, 14, 22, 15, 58000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784873113166",
+   "b": "9784798138824",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 8, 26, 13, 20, 2, 282000000, tzinfo=<UTC>), 'isCurrent': False, 'separatedAt': neo4j.time.DateTime(2026, 8, 26, 13, 47, 46, 884000000, tzinfo=<UTC>), 'formedAt': neo4j.time.DateTime(2026, 8, 12, 9, 35, 1, 272000000, tzinfo=<UTC>), 'coOccurrenceCount': 2, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784305709516",
+   "b": "9784103391319",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784772695671",
+   "b": "9784305709516",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': True, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784903607092",
+   "b": "9784903607115",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': True, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784903607115",
+   "b": "9784903607085",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': True, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784903607085",
+   "b": "9784897722443",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784385360638",
+   "b": "9784822255558",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784585200666",
+   "b": "9784093864633",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': True, 'coOccurrenceCount': 3, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784326000616",
+   "b": "9784756609045",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 9, 1, 5, 30, 37, 818000000, tzinfo=<UTC>), 'isCurrent': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>), 'formedAt': neo4j.time.DateTime(2026, 8, 12, 9, 35, 1, 272000000, tzinfo=<UTC>), 'coOccurrenceCount': 2, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784480689795",
+   "b": "9784585200666",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784897722443",
+   "b": "9784756609045",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': False, 'coOccurrenceCount': 2, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784897722443",
+   "b": "9784326000616",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 9, 1, 5, 30, 37, 818000000, tzinfo=<UTC>), 'isCurrent': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 1, 5, 32, 20, 785000000, tzinfo=<UTC>), 'formedAt': neo4j.time.DateTime(2026, 8, 12, 9, 35, 1, 272000000, tzinfo=<UTC>), 'coOccurrenceCount': 2, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784798138824",
+   "b": "9784627817715",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': False, 'heightSimilar': True, 'coOccurrenceCount': 3, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784478000410",
+   "b": "9784385360638",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 1, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784774142043",
+   "b": "9784062180610",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 4, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  },
+  {
+   "a": "9784344035614",
+   "b": "9784591174326",
+   "props": "{'participantId': 'P00', 'lastSeenAt': neo4j.time.DateTime(2026, 10, 30, 16, 46, 42, 697000000, tzinfo=<UTC>), 'isCurrent': True, 'genreSame': False, 'separatedAt': neo4j.time.DateTime(2026, 9, 17, 8, 48, 6, 444000000, tzinfo=<UTC>), 'authorSame': False, 'formedAt': neo4j.time.DateTime(2026, 9, 17, 9, 23, 22, 370000000, tzinfo=<UTC>), 'colorSimilar': True, 'heightSimilar': False, 'coOccurrenceCount': 3, 'shelf_index': 0, 'firstSeenAt': neo4j.time.DateTime(2026, 8, 12, 9, 17, 31, 268000000, tzinfo=<UTC>)}"
+  }
+ ]
+}

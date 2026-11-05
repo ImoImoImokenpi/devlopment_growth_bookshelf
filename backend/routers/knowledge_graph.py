@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from graph.main_kg.neo4j_crud import get_book_basic, get_growth_stats, save_book_impression
+from graph.recommendation.store import get_book_recommendation
 from participant import resolve_participant_id
 
 router = APIRouter(prefix="/knowledge_graph")
@@ -16,10 +17,12 @@ router = APIRouter(prefix="/knowledge_graph")
 
 @router.get("/book/{isbn}/basic")
 def get_book_basic_endpoint(isbn: str, participant_id: str = Depends(resolve_participant_id)):
-    """本の詳細パネル用：書誌情報と感想を返す。"""
+    """本の詳細パネル用：書誌情報と感想を返す。
+    おすすめで加わった本なら、おすすめの理由（recommendation）も付ける。"""
     data = get_book_basic(isbn, participant_id=participant_id)
     if not data:
         raise HTTPException(status_code=404, detail="本が見つかりません")
+    data["recommendation"] = get_book_recommendation(participant_id, isbn)
     return data
 
 
